@@ -5,16 +5,16 @@
 &emsp; [1.1、下载下载绿色版安装包](#1.1、下载下载绿色版安装包)   
 &emsp; [1.2、创建组合用户](#1.2、创建组合用户)  
 &emsp; [1.3、安装](#1.3、安装)  
-&emsp;&emsp; [1.3.1 解压、创建软连接](#1.3.1 解压、创建软连接)  
-&emsp;&emsp; [1.3.2 配置](#1.3.2 配置)  
-&emsp;&emsp; [1.3.3 更改目录权限](#1.3.3 更改目录权限)  
-&emsp;&emsp; [1.3.4 安装依赖包、安装mysql](#1.3.4 安装依赖包、安装mysql)  
-&emsp;&emsp; [1.3.5 命令的地方显示当前目录](#1.3.5 命令的地方显示当前目录)  
-&emsp;&emsp; [1.3.6 删除配置文件](#1.3.6 删除配置文件)  
-&emsp;&emsp; [1.3.7 查看进程、启动mysql](#1.3.7 查看进程、启动mysql)  
-&emsp;&emsp; [1.3.8更改密码、删除空账号](#1.3.8更改密码、删除空账号)  
-&emsp;&emsp; [1.3.9 开机自启动](#1.3.9 开机自启动)  
-&emsp;[1.4 java连接驱动包下载](#1.4 java连接驱动包下载)
+&emsp;&emsp; [1.3.1、解压、创建软连接](#1.3.1、解压、创建软连接)  
+&emsp;&emsp; [1.3.2、配置](#1.3.2、配置)  
+&emsp;&emsp; [1.3.3、更改目录权限](#1.3.3、更改目录权限)  
+&emsp;&emsp; [1.3.4、安装依赖包、安装mysql](#1.3.4、安装依赖包、安装mysql)  
+&emsp;&emsp; [1.3.5、命令的地方显示当前目录](#1.3.5、命令的地方显示当前目录)  
+&emsp;&emsp; [1.3.6、删除配置文件](#1.3.6、删除配置文件)  
+&emsp;&emsp; [1.3.7、查看进程、启动mysql](#1.3.7、查看进程、启动mysql)  
+&emsp;&emsp; [1.3.8、更改密码、删除空账号](#1.3.8、更改密码、删除空账号)  
+&emsp;&emsp; [1.3.9、开机自启动](#1.3.9、开机自启动)  
+&emsp;[1.4、java连接驱动包下载](#1.4、java连接驱动包下载)
 
 
 ## 1、绿色版mysql安装
@@ -29,12 +29,12 @@
     useradd -u 514 -g dba -G root -d /usr/local/mysql mysqladmin
 
 ### 1.3、安装  
-#### 1.3.1 解压、创建软连接
+#### 1.3.1、解压、创建软连接
     tar -zxvf mysql-5.6.39-linux-glibc2.12-x86_64.tar.gz -C /zz/app
     ln -s /zz/app/mysql-5.6.39-linux-glibc2.12-x86_64/ /zz/app/mysql
     ln -s /zz/app/mysql-5.6.39-linux-glibc2.12-x86_64/ /usr/local/mysql
 
-#### 1.3.2 配置
+#### 1.3.2、配置
 创建目录：
 
     mkdir /usr/local/mysql/logs
@@ -56,7 +56,7 @@
     user		= mysqladmin
     socket  = /tmp/mysql.sock
 
-#### 1.3.3 更改目录权限
+#### 1.3.3、更改目录权限
     chown mysqladmin:dba /etc/my.cnf
     chmod 640 /etc/my.cnf
     chown -R mysqladmin:dba /usr/local/mysql
@@ -64,13 +64,13 @@
     chown -R mysqladmin:dba /zz/app/mysql/
     chown -R mysqladmin:dba /var/run/mysqld
 
-#### 1.3.4 安装依赖包、安装mysql
+#### 1.3.4、安装依赖包、安装mysql
 	#root执行
 	yum -y install libaio
 	#mysqladmin执行
 	scripts/mysql_install_db --user=mysqladmin --basedir=/zz/app/mysql --datadir=/zz/app/mysql/data 
 
-#### 1.3.5 命令的地方显示当前目录
+#### 1.3.5、命令的地方显示当前目录
 /usr/local/mysql/为mysql的家目录
 
     cp /etc/skel/.* /usr/local/mysql/
@@ -92,7 +92,7 @@
 > master:mysqladmin:/usr/local/mysql:>
 
 
-#### 1.3.6 删除配置文件
+#### 1.3.6、删除配置文件
     rm -f /zz/app/mysql/my.cnf #删不删都行
 
 #### 1.3.7 查看进程、启动mysql
@@ -101,7 +101,7 @@
     mysqld_safe &
     netstat -nlp|grep 3306 #查看端口
 
-#### 1.3.8更改密码、删除空账号
+#### 1.3.8、更改密码、删除空账号
     #mysql安装之后，会创建root(密码是空,要修改)和一个空账号(密码是空，要删除)
     #mysqladmin用户执行
     mysql -uroot -p #提示输入密码，直接回车回车
@@ -115,7 +115,7 @@
     flush privileges;
 
 
-#### 1.3.9 开机自启动
+#### 1.3.9、开机自启动
 	#root用户执行
 	cp support-files/mysql.server /etc/rc.d/init.d/mysql
 	chmod +x /etc/rc.d/init.d/mysql
@@ -125,6 +125,6 @@
 	#加入下面命令
 	su - mysqladmin -c "/etc/init.d/mysql start --federated"
 
-#### 1.4 java连接驱动包下载
+#### 1.4、java连接驱动包下载
 地址：https://dev.mysql.com/downloads/connector/  
 选择：Connector/J
