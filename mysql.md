@@ -125,6 +125,6 @@
 	#加入下面命令
 	su - mysqladmin -c "/etc/init.d/mysql start --federated"
 
-#### 1.4.java连接驱动包下载
+#### java连接驱动包下载
 地址：https://dev.mysql.com/downloads/connector/  
 选择：Connector/J
