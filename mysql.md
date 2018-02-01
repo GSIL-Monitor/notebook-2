@@ -13,7 +13,7 @@
 &emsp;&emsp; [1.3.6.删除配置文件](#1.3.6.删除配置文件)  
 &emsp;&emsp; [1.3.7.查看进程、启动mysql](#1.3.7.查看进程、启动mysql)  
 &emsp;&emsp; [1.3.8.更改密码、删除空账号](#1.3.8.更改密码、删除空账号)  
-&emsp;&emsp; [1.3.9.开机自启动](#1.3.9、开机自启动)  
+&emsp;&emsp; [1.3.9.开机自启动](#1、开机自启动)  
 &emsp;[java连接驱动包下载](#java连接驱动包下载)
 
 
@@ -115,7 +115,7 @@
     flush privileges;
 
 
-#### 1.3.9、开机自启动
+#### 1、开机自启动
 	#root用户执行
 	cp support-files/mysql.server /etc/rc.d/init.d/mysql
 	chmod +x /etc/rc.d/init.d/mysql
