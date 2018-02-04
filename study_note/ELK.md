@@ -46,9 +46,9 @@
     `sysctl -p`
 
 - 配置文件
-  [master节点配置文件](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/elasticsearch(master).yml)
-  [jvm配置](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/jvm.options)
-  [work节点配置文件](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/elasticsearch(work1).yml)
+  [master节点配置文件](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/elasticsearch(master).yml)  
+  [jvm配置](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/jvm.options)  
+  [work节点配置文件](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/elasticsearch/elasticsearch(work1).yml)  
 
 - 启动
   `/zz/app/es/bin/elasticsearch -d`
@@ -70,13 +70,13 @@
 curl -XPUT 'http://master:9200/customer?pretty'
 curl -XGET 'http://master:9200/_cat/indices?v'
 ```
-> 返回结果：
-> health status index    uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-> green  open   twotest  sCHl66lTTeCIZtn1-yeLWA   5   1          1            0      8.6kb          4.3kb
-> green  open   customer 3HidYr5aRlG1ghWT-jVl-A   5   1          0            0       650b           390b
+> 返回结果：  
+> health status index    uuid                   pri rep docs.count docs.deleted store.size pri.store.size  
+> green  open   twotest  sCHl66lTTeCIZtn1-yeLWA   5   1          1            0      8.6kb          4.3kb  
+> green  open   customer 3HidYr5aRlG1ghWT-jVl-A   5   1          0            0       650b           390b  
 >
-> 第一个命令使用PUT动词创建名为“customer”的索引。我们简单地追加pretty到调用的结尾，告诉它打印JSON响应（如果有的话）
-> 第二个命令的结果告诉我们，我们现在有一个名为customer的索引，它有5个主分片和1个副本（默认值），它包含0个文档。
+> 第一个命令使用PUT动词创建名为“customer”的索引。我们简单地追加pretty到调用的结尾，告诉它打印JSON响应（如果有的话）  
+> 第二个命令的结果告诉我们，我们现在有一个名为customer的索引，它有5个主分片和1个副本（默认值），它包含0个文档。  
 >
 > 您可能还会注意到，客户索引的黄色健康状况已被标记。从我们以前的讨论中回想一下，黄色意味着某些副本尚未被分配。这个索引发生的原因是因为Elasticsearch默认为此索引创建了一个副本。由于我们目前只有一个节点正在运行，所以一个副本不能被分配（为了高可用性），直到另一个节点加入集群的后来的时间点。一旦该副本被分配到第二个节点上，该索引的运行状况将变为绿色
 
@@ -261,12 +261,11 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 ```
 
 ##### 1.2.6.10 总结
-上面并没有列举全面，比如2.0版本的ES，还支持多值的percentile Rank百分比排名，Geo Bounds地理位置信息，Scripted Metric脚本；单值的top hits等等。
-•	在性能上，ES也做了很多的优化：比如max和min，如果对于排序的字段，那么就直接跳过了计算的步骤，直接取出目标值即可。
-•	当然有些聚合也是需要特定的场合的，比如cardinality计算唯一值是通过哈希的方式，如果字段数据规模很大，那么会消耗很多的性能。
-•	另外桶之间是可以嵌套的，比如在range聚合下嵌套了一个max聚合，那么会在range得到的每个结果组上，再次进行max的统计。
-•	在聚合中支持脚本的使用，可以增加统计的灵活度。
-很多内容还需要在实践中使用，才能了解它的优势。
+  上面并没有列举全面，比如2.0版本的ES，还支持多值的percentile Rank百分比排名，Geo Bounds地理位置信息，Scripted Metric脚本；单值的top hits等等。  
+  •	在性能上，ES也做了很多的优化：比如max和min，如果对于排序的字段，那么就直接跳过了计算的步骤，直接取出目标值即可。  
+  •	当然有些聚合也是需要特定的场合的，比如cardinality计算唯一值是通过哈希的方式，如果字段数据规模很大，那么会消耗很多的性能。  
+  •	另外桶之间是可以嵌套的，比如在range聚合下嵌套了一个max聚合，那么会在range得到的每个结果组上，再次进行max的统计。  
+  •	在聚合中支持脚本的使用，可以增加统计的灵活度。很多内容还需要在实践中使用，才能了解它的优势。
 
 
 
@@ -331,11 +330,11 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 ## 2. elasticsearch-head
 ### 2.1 安装head插件
 - 下载head插件
-```
+  ```
   wget https://github.com/mobz/elasticsearch-head/archive/master.zip
   unzip master.zip
   ln -s elasticsearch-head-master/ es_head
-```
+  ```
 - 安装node
   ```
   #下载安装node
@@ -408,17 +407,17 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 - 访问
   > http://master:9100/
 
-附：
-wiki上的解释是 Cross-origin resource sharing (CORS) is a mechanism that allows restricted resources ，即跨域访问。
-这个字段默认为false，在Elasticsearch安装集群之外的一台机上用Sense、Head等监控插件访问Elasticsearch是不允许的。这个字段最早可以追溯到1.4.x版本，而非5.x特有。
-具体这个http.cors.x字段还有哪些用途和用法，见下表：
+- 附：
+  wiki上的解释是 Cross-origin resource sharing (CORS) is a mechanism that allows restricted resources ，即跨域访问。
+  这个字段默认为false，在Elasticsearch安装集群之外的一台机上用Sense、Head等监控插件访问Elasticsearch是不允许的。这个字段最早可以追溯到1.4.x版本，而非5.x特有。
+  具体这个http.cors.x字段还有哪些用途和用法，见下表：
 
-http.cors.enabled	是否支持跨域，默认为false
-http.cors.allow-origin	当设置允许跨域，默认为*,表示支持所有域名，如果我们只是允许某些网站能访问，那么可以使用正则表达式。比如只允许本地地址。 /https?:\/\/localhost(:[0-9]+)?/
-http.cors.max-age	浏览器发送一个“预检”OPTIONS请求，以确定CORS设置。最大年龄定义多久的结果应该缓存。默认为1728000（20天）
-http.cors.allow-methods	允许跨域的请求方式，默认OPTIONS,HEAD,GET,POST,PUT,DELETE
-http.cors.allow-headers	跨域允许设置的头信息，默认为X-Requested-With,Content-Type,Content-Length
-http.cors.allow-credentials	是否返回设置的跨域Access-Control-Allow-Credentials头，如果设置为true,那么会返回给客户端。
+  http.cors.enabled是否支持跨域，默认为false
+  http.cors.allow-origin当设置允许跨域，默认为*,表示支持所有域名，如果我们只是允许某些网站能访问，那么可以使用正则表达式。比如只允许本地地址。 /https?:\/\/localhost(:[0-9]+)?/
+  http.cors.max-age浏览器发送一个“预检”OPTIONS请求，以确定CORS设置。最大年龄定义多久的结果应该缓存。默认为1728000（20天）
+  http.cors.allow-methods允许跨域的请求方式，默认OPTIONS,HEAD,GET,POST,PUT,DELETE
+  http.cors.allow-headers跨域允许设置的头信息，默认为X-Requested-With,Content-Type,Content-Length
+  http.cors.allow-credentials是否返回设置的跨域Access-Control-Allow-Credentials头，如果设置为true,那么会返回给客户端。
 
 
 ### 2.2 安装时遇到的问题
