@@ -2,8 +2,8 @@
 
 ## 1.1 安装
 - 官网地址
-  [https://www.elastic.co/downloads](https://www.elastic.co/downloads)
-  [https://www.elastic.co/downloads/past-releases](https://www.elastic.co/downloads/past-releases)
+  [https://www.elastic.co/downloads](https://www.elastic.co/downloads)  
+  [https://www.elastic.co/downloads/past-releases](https://www.elastic.co/downloads/past-releases)  
 
 - 下载、解压、创建存储文件夹、创建用户、更改权限
   ```
@@ -396,28 +396,28 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
   ```
 
 - vim elasticsearch-head/_site/app.js
-  `http://master:9200`
+  ```http://master:9200```
 
 - vim elasticsearch-head/package.json
-  `"license": "Apache-2.0",`
+  ```"license": "Apache-2.0",```
 
-- 启动
-  `nohup elasticsearch-head/node_modules/grunt/bin/grunt server &`
+- 启动  
+  ```nohup elasticsearch-head/node_modules/grunt/bin/grunt server &```
 
 - 访问
   > http://master:9100/
 
-- 附：
+- 附：  
   wiki上的解释是 Cross-origin resource sharing (CORS) is a mechanism that allows restricted resources ，即跨域访问。
-  这个字段默认为false，在Elasticsearch安装集群之外的一台机上用Sense、Head等监控插件访问Elasticsearch是不允许的。这个字段最早可以追溯到1.4.x版本，而非5.x特有。
-  具体这个http.cors.x字段还有哪些用途和用法，见下表：
+  这个字段默认为false，在Elasticsearch安装集群之外的一台机上用Sense、Head等监控插件访问Elasticsearch是不允许的。这个字段最早可以追溯到1.4.x版本，而非5.x特有。  
+  具体这个http.cors.x字段还有哪些用途和用法，见下表：  
 
-  http.cors.enabled是否支持跨域，默认为false
-  http.cors.allow-origin当设置允许跨域，默认为*,表示支持所有域名，如果我们只是允许某些网站能访问，那么可以使用正则表达式。比如只允许本地地址。 /https?:\/\/localhost(:[0-9]+)?/
-  http.cors.max-age浏览器发送一个“预检”OPTIONS请求，以确定CORS设置。最大年龄定义多久的结果应该缓存。默认为1728000（20天）
-  http.cors.allow-methods允许跨域的请求方式，默认OPTIONS,HEAD,GET,POST,PUT,DELETE
-  http.cors.allow-headers跨域允许设置的头信息，默认为X-Requested-With,Content-Type,Content-Length
-  http.cors.allow-credentials是否返回设置的跨域Access-Control-Allow-Credentials头，如果设置为true,那么会返回给客户端。
+  http.cors.enabled是否支持跨域，默认为false  
+  http.cors.allow-origin当设置允许跨域，默认为*,表示支持所有域名，如果我们只是允许某些网站能访问，那么可以使用正则表达式。比如只允许本地地址。 /https?:\/\/localhost(:[0-9]+)?/  
+  http.cors.max-age浏览器发送一个“预检”OPTIONS请求，以确定CORS设置。最大年龄定义多久的结果应该缓存。默认为1728000（20天）  
+  http.cors.allow-methods允许跨域的请求方式，默认OPTIONS,HEAD,GET,POST,PUT,DELETE  
+  http.cors.allow-headers跨域允许设置的头信息，默认为X-Requested-With,Content-Type,Content-Length  
+  http.cors.allow-credentials是否返回设置的跨域Access-Control-Allow-Credentials头，如果设置为true,那么会返回给客户端。  
 
 
 ### 2.2 安装时遇到的问题
@@ -450,7 +450,7 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 - 安装grunt-contrib-jasmine时报错
   > error This is probably not a problem with npm. There is likely additional logging output above.
 
-  是因为在执行安装的过程中需要执行install.js，这里会下载Chromium,官网建议是进行跳过，我们可以执行 —ignore-scripts 忽略这个js执行。也可以通过设置环境变量set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1阻止下载 Chromium （因为封网，直接下载会失败）
+  是因为在执行安装的过程中需要执行install.js，这里会下载Chromium,官网建议是进行跳过，我们可以执行 —ignore-scripts 忽略这个js执行。也可以通过设置环境变量set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1阻止下载 Chromium （因为封网，直接下载会失败）  
   处理：
   `npm install grunt-contrib-jasmine --registry=https://registry.npm.taobao.org --ignore-scripts`
 
@@ -489,8 +489,8 @@ ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/k
   tar -zxvf kibana-5.2.0-linux-x86_64.tar.gz
   ln -s kibana-5.2.0-linux-x86_64 kibana
   ```
-- 修改配置
-  vim config/kibana.yml
+- 修改配置  
+  vim config/kibana.yml  
   [配置文件kibana.yml](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kibana/kibana.yml)
 - 启动
   `nohup ./bin/kibana &`
@@ -510,8 +510,8 @@ ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/k
 
 # 6. x-pack
 ## 6.1 安装
-https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.2.0.zip
-https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.6.4.zip
+https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.2.0.zip  
+https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.6.4.zip  
 
 Installing X-Pack in Elasticsearch
 bin/elasticsearch-plugin install x-pack
