@@ -1,8 +1,6 @@
-# **ELK**
+# 1. elasticsearch
 
-## 1. elasticsearch
-
-### 1.1 安装
+## 1.1 安装
 - 官网地址
   [https://www.elastic.co/downloads](https://www.elastic.co/downloads)
   [https://www.elastic.co/downloads/past-releases](https://www.elastic.co/downloads/past-releases)
@@ -54,18 +52,18 @@
   `/zz/app/es/bin/elasticsearch -d`
 
 
-### 1.2 命令
-#### 1.2.1 查看集群健康值
+## 1.2 命令
+### 1.2.1 查看集群健康值
 `curl -XGET 'http://master:9200/_cluster/health?pretty'`
 > 每当我们要求群集健康时，我们都会得到绿色，黄色或红色。绿色表示一切都很好（集群完全正常），黄色表示所有数据都可用，但某些副本尚未分配（集群完全正常运行），而红色表示某些数据由于任何原因而无法使用。请注意，即使群集是红色的，它仍然部分功能（即它将继续从可用碎片中提供搜索请求），但由于缺少数据，因此您可能需要尽快修复
 
-#### 1.2.2 查看集群节点列表
+### 1.2.2 查看集群节点列表
   ```curl -XGET 'http://master:9200/_cat/nodes?v'
   #现在我们来看看我们的指数
   curl -XGET 'http://master:9200/_cat/indices?v'
   ```
 
-#### 1.2.3 创建索引
+### 1.2.3 创建索引
 ```
 curl -XPUT 'http://master:9200/customer?pretty'
 curl -XGET 'http://master:9200/_cat/indices?v'
@@ -80,7 +78,7 @@ curl -XGET 'http://master:9200/_cat/indices?v'
 >
 > 您可能还会注意到，客户索引的黄色健康状况已被标记。从我们以前的讨论中回想一下，黄色意味着某些副本尚未被分配。这个索引发生的原因是因为Elasticsearch默认为此索引创建了一个副本。由于我们目前只有一个节点正在运行，所以一个副本不能被分配（为了高可用性），直到另一个节点加入集群的后来的时间点。一旦该副本被分配到第二个节点上，该索引的运行状况将变为绿色
 
-#### 1.2.4 插入、查询、删除
+### 1.2.4 插入、查询、删除
 ```
 <REST动词> / <索引> / <类型> / <ID>
 curl -XPOST http://master:9200/mytest/typetest1/ -d '{"name":"张三", "age":17}'
@@ -90,7 +88,7 @@ curl -XGET http://master:9200/mytest/typetest1/_search?pretty
 curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"match_all":{}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"aggs":{}}'
 ```
 
-#### 1.2.5 crul命令批量插入数据
+### 1.2.5 crul命令批量插入数据
 - vim test.json
   ```
   {"index":{"_index":"wushan_rh_log_destri","_type":"rh_log_destri","_id":"3"}}
@@ -101,12 +99,12 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 - 插入json文件中的数据
   `curl -XPOST http://master:9200/_bulk --data-binary @test.json`
 
-#### 1.2.6 聚合函数
+### 1.2.6 聚合函数
 
-##### 1.2.6.1 参考地址
+#### 1.2.6.1 参考地址
   [https://www.cnblogs.com/xing901022/p/4944043.html](https://www.cnblogs.com/xing901022/p/4944043.html)
 
-##### 1.2.6.2 Sum
+#### 1.2.6.2 Sum
 ```
 "aggs": {
 	"intraday_return": {
@@ -117,7 +115,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.3 Min 求最小值
+#### 1.2.6.3 Min 求最小值
 ```
 {
 	"aggs": {
@@ -130,7 +128,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.4 Max 求最大值
+#### 1.2.6.4 Max 求最大值
 ```
 {
 	"aggs": {
@@ -143,7 +141,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.5 avg 求平均值
+#### 1.2.6.5 avg 求平均值
 ```
 {
 	"aggs": {
@@ -156,7 +154,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.6 求唯一值
+#### 1.2.6.6 求唯一值
 即不重复的字段有多少
 ```
 {
@@ -170,7 +168,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.7 求百分比
+#### 1.2.6.7 求百分比
 - 多值聚合,percentiles 求百分比
   ```
   {
@@ -201,7 +199,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
   ```
 
 
-##### 1.2.6.8 stats统计
+#### 1.2.6.8 stats统计
 ```
 {
 	"aggs": {
@@ -229,7 +227,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.9 extend stats扩展统计
+#### 1.2.6.9 extend stats扩展统计
 ```
 {
     "aggs" : {
@@ -260,17 +258,17 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.6.10 总结
-  上面并没有列举全面，比如2.0版本的ES，还支持多值的percentile Rank百分比排名，Geo Bounds地理位置信息，Scripted Metric脚本；单值的top hits等等。  
-  •	在性能上，ES也做了很多的优化：比如max和min，如果对于排序的字段，那么就直接跳过了计算的步骤，直接取出目标值即可。  
-  •	当然有些聚合也是需要特定的场合的，比如cardinality计算唯一值是通过哈希的方式，如果字段数据规模很大，那么会消耗很多的性能。  
-  •	另外桶之间是可以嵌套的，比如在range聚合下嵌套了一个max聚合，那么会在range得到的每个结果组上，再次进行max的统计。  
-  •	在聚合中支持脚本的使用，可以增加统计的灵活度。很多内容还需要在实践中使用，才能了解它的优势。
+#### 1.2.6.10 总结
+上面并没有列举全面，比如2.0版本的ES，还支持多值的percentile Rank百分比排名，Geo Bounds地理位置信息，Scripted Metric脚本；单值的top hits等等。  
+•	在性能上，ES也做了很多的优化：比如max和min，如果对于排序的字段，那么就直接跳过了计算的步骤，直接取出目标值即可。  
+•	当然有些聚合也是需要特定的场合的，比如cardinality计算唯一值是通过哈希的方式，如果字段数据规模很大，那么会消耗很多的性能。  
+•	另外桶之间是可以嵌套的，比如在range聚合下嵌套了一个max聚合，那么会在range得到的每个结果组上，再次进行max的统计。  
+•	在聚合中支持脚本的使用，可以增加统计的灵活度。很多内容还需要在实践中使用，才能了解它的优势。
 
 
 
-#### 1.2.7 工作中的查询语句
-##### 1.2.7.1 按文件名分组查询
+### 1.2.7 工作中的查询语句
+#### 1.2.7.1 按文件名分组查询
 ```
 {
 	"size": 1,
@@ -307,18 +305,21 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 }
 ```
 
-##### 1.2.7.1 
+#### 1.2.7.1 
 
 
 
-### 1.3 es备份、还原
-#### 1.3.1 使用es的hdfs插件把数据备份到hdfs上
+## 1.3 es备份、还原
+### 1.3.1 用插件备份到hdfs上
 ```
 curl -XPUT 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test -d '{"indices":"kshttplog-test"}'
 
 curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_restore
 ```
 
+## 1.4 问题
+### 1.4.1 分片无法分配
+参考地址：[https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/](https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/)
 
 
 
@@ -326,9 +327,8 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 
 
 
-
-## 2. elasticsearch-head
-### 2.1 安装head插件
+# 2. elasticsearch-head
+## 2.1 安装head插件
 - 下载head插件
   ```
   wget https://github.com/mobz/elasticsearch-head/archive/master.zip
@@ -455,11 +455,97 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
   `npm install grunt-contrib-jasmine --registry=https://registry.npm.taobao.org --ignore-scripts`
 
 
-
-
-
-## 3. kibana
-
+# 3. kopf
+## 3.1 安装
+- github地址
+  [https://github.com/lmenezes/elasticsearch-kopf](https://github.com/lmenezes/elasticsearch-kopf)
+- 下载解压
+  ```
+  wget https://github.com/lmenezes/elasticsearch-kopf/archive/master.zip
+  unzip master.zip
+  ln -s elasticsearch-kopf-master kopf
   ```
 
+使用nginx代理：
+ln -s /zz/app/elasticsearch-head-master/_site/ /zz/app/nginx/nginx/html/plugin/head
+ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/kopf
+
+初始化进入问题未处理
+
+
+
+# 4. cerebro
+
+
+
+
+# 5. kibana
+## 5.1 安装
+- 官方文档
+  [https://www.elastic.co/guide/en/kibana/5.2/settings.html](https://www.elastic.co/guide/en/kibana/5.2/settings.html)
+- 下载解压
   ```
+  wget https://artifacts.elastic.co/downloads/kibana/kibana-5.2.0-linux-x86_64.tar.gz
+  tar -zxvf kibana-5.2.0-linux-x86_64.tar.gz
+  ln -s kibana-5.2.0-linux-x86_64 kibana
+  ```
+- 修改配置
+  vim config/kibana.yml
+  [配置文件kibana.yml](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kibana/kibana.yml)
+- 启动
+  `nohup ./bin/kibana &`
+- 停止
+  ```
+  #查看端口
+  ps -ef|grep kibana
+  ps -ef|grep 5601
+  fuser -n tcp 5601
+  #杀掉进程
+  kill -9  端口
+  ```
+
+
+
+
+
+# 6. x-pack
+## 6.1 安装
+https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.2.0.zip
+https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.6.4.zip
+
+Installing X-Pack in Elasticsearch
+bin/elasticsearch-plugin install x-pack
+bin/elasticsearch-plugin install file:///path/to/file/x-pack-5.6.4.zip
+
+Installing X-Pack in Kibana
+bin/kibana-plugin install x-pack
+bin/kibana-plugin install file:///path/to/file/x-pack-5.6.4.zip
+
+2、Upgrading X-Pack
+To upgrade X-Pack:
+1.	Stop Elasticsearch.
+  2.Uninstall X-Pack from Elasticsearch:
+  bin/elasticsearch-plugin remove x-pack
+  3.Install the new version of X-Pack into Elasticsearch.
+  bin/elasticsearch-plugin install x-pack
+  4.Restart Elasticsearch.
+
+If you’re upgrading a production cluster, perform a rolling upgrade to ensure recovery is as quick as possible. Rolling upgrades are supported when upgrading to a new minor version. A full cluster restart is required when upgrading to a new major version.
+5.	Uninstall X-Pack from Kibana:
+  bin/kibana-plugin remove x-pack
+  6.Install the new version of X-Pack into Kibana.
+  bin/kibana-plugin install x-pack
+  7.Restart Kibana.
+  3、Uninstalling X-Pack
+  To uninstall X-Pack:
+  1.Stop Elasticsearch.
+  2.Remove X-Pack from Elasticsearch:
+  bin/elasticsearch-plugin remove x-pack
+  3.Restart Elasticsearch.
+  4.Remove X-Pack from Kibana:
+  bin/kibana-plugin remove x-pack
+  5.Restart Kibana.
+  6.Remove X-Pack from Logstash:
+  bin/logstash-plugin remove x-pack
+  7.Restart Logstash.
+
