@@ -22,17 +22,17 @@
 > [https://downloads.mysql.com/archives/community/](https://downloads.mysql.com/archives/community/)  
 > system选择"linux - generic",然后下载对应的tar.gz包
 
-### 1.2.创建组合用户
-用户家目录：/usr/local/mysql
 
-    groupadd -g 101 dba
-    useradd -u 514 -g dba -G root -d /usr/local/mysql mysqladmin
 
 ### 1.3.安装  
 #### 1.3.1.解压、创建软连接
     tar -zxvf mysql-5.6.39-linux-glibc2.12-x86_64.tar.gz -C /zz/app
     ln -s /zz/app/mysql-5.6.39-linux-glibc2.12-x86_64/ /zz/app/mysql
     ln -s /zz/app/mysql-5.6.39-linux-glibc2.12-x86_64/ /usr/local/mysql
+    
+    #创建组合用户，用户家目录：/usr/local/mysql
+    groupadd -g 101 dba
+    useradd -u 514 -g dba -G root -d /usr/local/mysql mysqladmin
 
 #### 1.3.2.配置
 创建目录：

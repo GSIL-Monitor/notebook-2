@@ -395,14 +395,14 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
   }
   ```
 
-- vim elasticsearch-head/_site/app.js
-  ```http://master:9200```
+- vim elasticsearch-head/_site/app.js  
+  `http://master:9200`
 
-- vim elasticsearch-head/package.json
-  ```"license": "Apache-2.0",```
+- vim elasticsearch-head/package.json  
+  `"license": "Apache-2.0",`
 
 - 启动  
-  ```nohup elasticsearch-head/node_modules/grunt/bin/grunt server &```
+  `nohup elasticsearch-head/node_modules/grunt/bin/grunt server &`
 
 - 访问
   > http://master:9100/
@@ -411,7 +411,6 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
   wiki上的解释是 Cross-origin resource sharing (CORS) is a mechanism that allows restricted resources ，即跨域访问。
   这个字段默认为false，在Elasticsearch安装集群之外的一台机上用Sense、Head等监控插件访问Elasticsearch是不允许的。这个字段最早可以追溯到1.4.x版本，而非5.x特有。  
   具体这个http.cors.x字段还有哪些用途和用法，见下表：  
-
   http.cors.enabled是否支持跨域，默认为false  
   http.cors.allow-origin当设置允许跨域，默认为*,表示支持所有域名，如果我们只是允许某些网站能访问，那么可以使用正则表达式。比如只允许本地地址。 /https?:\/\/localhost(:[0-9]+)?/  
   http.cors.max-age浏览器发送一个“预检”OPTIONS请求，以确定CORS设置。最大年龄定义多久的结果应该缓存。默认为1728000（20天）  
@@ -419,8 +418,35 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
   http.cors.allow-headers跨域允许设置的头信息，默认为X-Requested-With,Content-Type,Content-Length  
   http.cors.allow-credentials是否返回设置的跨域Access-Control-Allow-Credentials头，如果设置为true,那么会返回给客户端。  
 
+## 2.2 使用nginx代理
+### 2.2.1 安装nginx，nginx配置中加入配置
+```
+location /plugin {
+	root   html;
+	index  index.html index.htm;
+	access_log /zz/app/nginx/nginx/logs/plugin.access.log main;
+	#lua_need_request_body on;
+}
+```
 
-### 2.2 安装时遇到的问题
+### 2.2.2 head
+```
+wget https://github.com/mobz/elasticsearch-head/archive/master.zip
+unzip master.zip
+ln -s /zz/app/elasticsearch-head-master/_site/ /zz/app/nginx/nginx/html/plugin/head
+```
+
+### 2.2.3 修改head配置
+```
+vim /zz/app/nginx/nginx/html/plugin/head/app.js
+#下面这行使用自己的主机
+this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http://master:9200";
+```
+
+### 2.2.4 访问head插件
+> master/plugin/head
+
+## 2.3 安装时遇到的问题
 - 在elasticsearch-head目录下node_modules/grunt下如果没有grunt二进制程序，需要执行：
   ```
   cd elasticsearch-head
@@ -456,26 +482,96 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 
 
 # 3. kopf
-## 3.1 安装
-- github地址
+## 3.1 安装  
+- github地址  
   [https://github.com/lmenezes/elasticsearch-kopf](https://github.com/lmenezes/elasticsearch-kopf)
+
 - 下载解压
   ```
   wget https://github.com/lmenezes/elasticsearch-kopf/archive/master.zip
   unzip master.zip
-  ln -s elasticsearch-kopf-master kopf
   ```
 
-使用nginx代理：
-ln -s /zz/app/elasticsearch-head-master/_site/ /zz/app/nginx/nginx/html/plugin/head
-ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/kopf
+- 使用nginx代理,类似于head  
+  `ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/kopf`
 
-初始化进入问题未处理
+## 3.2 进入初始化问题
+### 3.2.1 弹框提示版本低
+- 右上角不断弹版本过低
+  ```
+  cd /zz/app/nginx/nginx/html/plugin/kopf
+  fgrep 'This version of kopf is not compatible with your ES version' ./*
+  fgrep 'This version of kopf is not compatible with your ES version' ./*/*
+  ```
+- 上面会搜出 ./dist/kopf.js  这个文件，把相关弹出注释掉
+  ```
+  function(newValue, oldValue) {
+  	var version = ElasticService.getVersion();
+  	if (version && version.isValid()) {
+  		var major = version.getMajor();
+  		if (major != parseInt($scope.version.charAt(0))) {
+  			//AlertService.warn(
+  				//'This version of kopf is not compatible with your ES version',
+  				//'Upgrading to newest supported version is recommended'
+  			//);
+  		}
+  	}
+  }
+  ```
+- 注意修改后清理下浏览器缓存
 
+### 3.2.2 第一次进入提示连接错误
+- 第一次进入提示 Error connecting to http://master:80
+  ```
+  cd /zz/app/nginx/nginx/html/plugin/kopf
+  fgrep '9200' ./*
+  fgrep '9200' ./*/*
+  ```
+- 上面搜后会出现 ./partials/nav_bar.html 和 ./dist/kopf.js
+  - ./dist/kopf.js 中的host做相应的更改
+    ```
+    try {
+    var host = 'http://master:9200'; // default
+    if ($location.host() !== '') { // not opening from fs
+    var location = $scope.readParameter('location');
+    var url = $location.absUrl();
+    if (isDefined(location)) {
+      //host = location;
+      host = 'http://master:9200';
+    } else if (url.indexOf('/_plugin/kopf') > -1) {
+      host = url.substring(0, url.indexOf('/_plugin/kopf'));
+    } else {
+      host = 'http://master:9200';
+      //host = $location.protocol() + '://' + $location.host() +
+      //    ':' + $location.port();
+    }
+    }
+    ElasticService.connect(host);
+    } catch (error) {
+    AlertService.error(error.message, error.body);
+    }
+    ```
+  - ./dist/kopf.js 和 ./partials/nav_bar.html的其他地方的'http://localhost:9200' 改为 'http://master:9200'
 
 
 # 4. cerebro
+## 4.1 安装
+- 下载、解压、启动
+  ```
+  wget https://github.com/lmenezes/cerebro/releases/download/v0.7.2/cerebro-0.7.2.zip
+  unzip cerebro-0.7.2.zip
+  cd cerebro-0.7.2.zip
+  #启动脚本
+  vim start.sh
+  nohup ./bin/cerebro -Dhttp.port=1234 -Dhttp.address=master > /zz/app/cerebro-0.7.2/cerebro.log 2>&1 &
+  ./start.sh
+  ```
 
+- 配置
+  文件 ./conf/application.conf 中可以做相应的配置，例如：用户、访问es的连接
+
+- 访问
+  http://master:1234
 
 
 
@@ -504,7 +600,30 @@ ln -s /zz/app/elasticsearch-kopf-master/_site/ /zz/app/nginx/nginx/html/plugin/k
   kill -9  端口
   ```
 
-
+## 5.2 使用nginx代理
+- nginx加入下面配置
+  ```
+  location / {
+  proxy_pass http://192.168.229.129:5601;
+  proxy_http_version 1.1;
+  proxy_set_header Connection "";
+  proxy_connect_timeout 600s;
+  proxy_read_timeout 600s;
+  proxy_send_timeout 600s;
+  access_log /zz/app/nginx/nginx/logs/kibana.access.log main;
+  }
+  location /plugins {
+  proxy_pass http://192.168.229.129:5601/plugins;
+  proxy_http_version 1.1;
+  proxy_set_header Connection "";
+  proxy_connect_timeout 600s;
+  proxy_read_timeout 600s;
+  proxy_send_timeout 600s;
+  access_log /zz/app/nginx/nginx/logs/kibana.access.log main;
+  }
+  ```
+- 访问
+  http://master
 
 
 
@@ -549,3 +668,7 @@ If you’re upgrading a production cluster, perform a rolling upgrade to ensure 
   bin/logstash-plugin remove x-pack
   7.Restart Logstash.
 
+
+  ```
+
+  ```

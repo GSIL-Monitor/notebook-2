@@ -1,5 +1,10 @@
+私活网站：http://www.finndy.com/
+
+
+
 kakfa 参数：  
 &emsp;读取与记录group的offset相关的配置信息：  
+
 > offset.metadata.max.bytes，默认值4096.用于配置offset的请求的最大请求的消息大小。  
 > offsets.load.buffer.size，默认值5MB，用于在读取offset信息到内存cache时，用于读取缓冲区的大小。  
 > offsets.retention.minutes，默认值24小时，针对一个offset的消费记录的最长保留时间。  
@@ -116,3 +121,52 @@ TensorFlow教程：1基本概念
 4、能利用BASH、CDO、NCO、GRADS、NCL等后处理工具进行结果处理及分析。
 5、掌握高分辨率区域气候模式在生态、水文、风资源等领域应用技术方法
 咨询请联系：张伟010-53853500   手机18201545027  qq：515325120
+
+
+
+# 6
+
+2018最新录制课程ElasticSearch实战
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/224 
+
+浅入深出ElasticSearch构建高性能搜索架构
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/161 
+
+基于MEAN全栈架构的多用户博客系统（Angular2+Node+MongoDB）
+学习地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/223
+
+从零开始学可视化数据分析师就业课程(9个课程，26章，共计324课时！Tableau、Echarts、Power BI、excel)
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/182
+
+Tableau商业智能与可视化应用实战
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/179
+
+大数据可视化－Echarts从入门到上手实战
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/180
+
+Power BI数据分析快速上手及案例实战
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/194
+
+Excel数据处理与分析实战
+课程学习地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/191
+
+2017零基础大数据就业课程（零到大神一“部”之遥） 
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/181
+
+全面深度剖析Spark2--知识点，源码，调优，JVM，图计算，项目
+![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/220
+
+基于Docker实现PaaS平台
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/166
+
+【直播】大数据系统架构分析师高端培训课程
+![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/200
+
+Spark从入门到上手实战
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/my/course/186
+
+基于Python Spark的大数据分析
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/173
+
+Spark全面精讲（基于Spark2版本+含Spark调优+超多案例）
+课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/149

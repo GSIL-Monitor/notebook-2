@@ -103,6 +103,41 @@ kill -HUP 3514	#平滑重启
 到这里nginx就安装完成了，如果只是处理静态html就不用继续安装了  
 如果你需要处理php脚本的话，还需要安装php-fpm  
 
+## 1.9 nginx开机自启
+- 参考网址  
+  [http://blog.csdn.net/u013870094/article/details/52463026](http://blog.csdn.net/u013870094/article/details/52463026)
+- 添加启动脚本  
+  `vim /etc/init.d/nginx`  
+  > 脚本地址：[nginx](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/nginx/nginx)
+  > 参考官网：[http://wiki.nginx.org/RedHatNginxInitScript](http://wiki.nginx.org/RedHatNginxInitScript)
+
+- 修改以下2个配置：  
+  ```
+  nginx=”/usr/sbin/nginx” 修改成nginx执行程序的路径。 
+  NGINX_CONF_FILE=”/etc/nginx/nginx.conf” 修改成配置文件的路径
+  ```
+
+- 保存脚本文件后设置文件的执行权限  
+  `chmod a+x /etc/init.d/nginx`  
+
+- 然后，就可以通过该脚本对nginx服务进行管理了  
+  ```
+  /etc/init.d/nginx start
+  /etc/init.d/nginx stop
+  ```
+
+- 使用chkconfig进行管理  
+  `chkconfig --add /etc/init.d/nginx`  
+
+- 加完这个之后，就可以使用service对nginx进行启动，重启等操作了  
+  ```
+  service nginx start
+  service nginx stop
+  ```
+
+- 设置终端模式开机启动  
+  `chkconfig nginx on`  
+
 # 2. 异常
 ## 2.1 make出错
 - 异常
