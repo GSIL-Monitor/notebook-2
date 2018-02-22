@@ -1,6 +1,9 @@
 # 1. elasticsearch
 
 ## 1.1 安装
+- 官方文档
+  [https://www.elastic.co/guide/en/x-pack/5.2/index.html](https://www.elastic.co/guide/en/x-pack/5.2/index.html)
+
 - 官网地址
   [https://www.elastic.co/downloads](https://www.elastic.co/downloads)  
   [https://www.elastic.co/downloads/past-releases](https://www.elastic.co/downloads/past-releases)  
@@ -310,7 +313,7 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 
 
 ## 1.3 es备份、还原
-### 1.3.1 用插件备份到hdfs上
+### 1.3.1 用插件备份到hdfs上（repository-hdfs）
 ```
 curl -XPUT 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test -d '{"indices":"kshttplog-test"}'
 
@@ -321,11 +324,455 @@ curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_re
 ### 1.4.1 分片无法分配
 参考地址：[https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/](https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/)
 
+## 1.5 备份
+
+### 1.5.1 参考地址
+[http://blog.csdn.net/u014431852/article/details/52905821](http://blog.csdn.net/u014431852/article/details/52905821)
+[中文官网文档](https://www.elastic.co/guide/cn/elasticsearch/guide/current/backing-up-your-cluster.html)
+[使用sshfs挂载远程服务器目录](https://www.jianshu.com/p/cdf5652a88d3)
+[umount命令](http://man.linuxde.net/umount)
+
+要备份你的集群，你可以使用 snapshot API。这个会拿到你集群里当前的状态和数据然后保存到一个共享仓库里。这个备份过程是"智能"的,即增量备份，所有后续的快照会保留的是已存快照和新数据之间的差异。随着你不时的对数据进行快照，备份也在增量的添加和删除。这意味着后续备份会相当快速
+有多个仓库类型可以供你选择
+- 共享文件系统，比如 NAS
+- Amazon S3
+- HDFS (Hadoop 分布式文件系统)
+- Azure Cloud
+
+### 1.5.2 安装sshfs
+- 安装epel扩展源
+  ```rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm```
+
+- 在 Linux 系统上安装 SSHFS
+  ```yum -y install sshfs```
+
+### 1.5.3 创建共享目录
+```
+#选定一个节点的一个目录作为共享目录
+mkdir -p /mnt/es_backup
+chmod -R 777 /mnt/es_backup
+
+#在每个节点的相同位置创建目录，并挂载共享目录
+mkdir /zz/data/es/es_backup
+chmod -R 777 /zz/data/es/es_backup
+sshfs root@work2:/mnt/es_backup /zz/data/es/es_backup/ -o allow_other
+```
+
+- -o allow_other 解决了不同节点往共享仓库中写数据的权限问题
+
+- 查看挂载情况
+```
+mount -l
+#或者是
+df -h
+```
+
+- 测试运行ES的用户是否有对共享目录的写权限
+  ```sudo -u elasticsearch echo "a" >> /zz/data/es/es_backup/a```
+
+### 1.5.4 修改es配置文件
+在elasticsearch.yml中增加path.repo: /zz/data/es/es_backup，配置共享仓库的位置，重启节点
+
+### 1.5.5 为集群创建共享仓库
+```
+#让我部署一个共享 文件系统仓库my_backup
+PUT _snapshot/my_backup 
+{
+    "type": "fs", 
+    "settings": {
+        "location": "/zz/data/es/es_backup",
+        "compress": true
+    }
+}
+```
+- my_backup : 给我们的仓库取一个名字，在本例它叫 my_backup 。
+- fs: 我们指定仓库的类型应该是一个共享文件系统。
+- /zz/data/es/es_backup：一个已挂载的设备作为目的地址。
+  注意：共享文件系统路径必须确保集群所有节点都可以访问到。
+  这步会在挂载点创建仓库和所需的元数据。还有一些其他的配置你可能想要配置的，这些取决于你的节点、网络的性能状况和仓库位置：
+- max_snapshot_bytes_per_sec
+  当快照数据进入仓库时，这个参数控制这个过程的限流情况。默认是每秒 20mb 。
+- max_restore_bytes_per_sec
+  当从仓库恢复数据时，这个参数控制什么时候恢复过程会被限流以保障你的网络不会被占满。默认是每秒 `20mb`。
+- 假设我们有一个非常快的网络，而且对额外的流量也很 OK，那我们可以增加这些默认值
+```
+POST _snapshot/my_backup/ 
+{
+    "type": "fs",
+    "settings": {
+        "location": "/mount/backups/my_backup",
+        "max_snapshot_bytes_per_sec" : "50mb", 
+        "max_restore_bytes_per_sec" : "50mb"
+    }
+}
+```
+- 注意我们用的是 POST 而不是 PUT 。这会更新已有仓库的设置
+
+### 1.5.6 备份数据
+一个仓库可以包含多个快照。 每个快照跟一系列索引相关（比如所有索引，一部分索引，或者单个索引）。当创建快照的时候，你指定你感兴趣的索引然后给快照取一个唯一的名字。
+```
+PUT _snapshot/my_backup/snapshot_name
+```
+- 这个会备份所有打开的索引到 my_backup 仓库下一个命名为 snapshot_name 的快照里。这个调用会立刻返回，然后快照会在后台运行。
+- 通常你会希望你的快照作为后台进程运行，不过有时候你会希望在你的脚本中一直等待到完成。这可以通过添加一个 wait_for_completion 标记实现
+  `PUT _snapshot/my_backup/snapshot_1?wait_for_completion=true`
+  - 这个会阻塞调用直到快照完成。注意大型快照会花很长时间才返回
+
+### 1.5.7 备份指定索引的数据
+默认行为是备份所有打开的索引。备份你的集群的时候指定备份哪些索引
+```
+PUT _snapshot/my_backup/snapshot_2
+{
+    "indices": "index_1,index_2"
+}
+```
+- 这个快照命令现在只会备份 index_1 和 index_2 了。
+
+### 1.5.8 列出快照相关的信息
+- 一旦你开始在你的仓库里积攒起快照了，你可能就慢慢忘记里面各自的细节了 ——特别是快照按照时间划分命名的时候（比如， backup_2014_10_28 ）。
+  要获得单个快照的信息，直接对仓库和快照名发起一个 GET 请求：
+  `GET _snapshot/my_backup/snapshot_2`
+  这个会返回一个小响应，包括快照相关的各种信息：
+  ```
+  {
+     "snapshots": [
+        {
+           "snapshot": "snapshot_1",
+           "indices": [
+              ".marvel_2014_28_10",
+              "index1",
+              "index2"
+           ],
+           "state": "SUCCESS",
+           "start_time": "2014-09-02T13:01:43.115Z",
+           "start_time_in_millis": 1409662903115,
+           "end_time": "2014-09-02T13:01:43.439Z",
+           "end_time_in_millis": 1409662903439,
+           "duration_in_millis": 324,
+           "failures": [],
+           "shards": {
+              "total": 10,
+              "failed": 0,
+              "successful": 10
+           }
+        }
+     ]
+  }
+  ```
+- 要获取一个仓库中所有快照的完整列表，使用 _all 占位符替换掉具体的快照名称：
+    `GET _snapshot/my_backup/_all`
+
+### 1.5.9 监控快照进度
+`GET _snapshot/my_backup/snapshot_3/_status`
+- INITIALIZING
+  分片在检查集群状态看看自己是否可以被快照。这个一般是非常快的。
+- STARTED
+  数据正在被传输到仓库。
+- FINALIZING
+  数据传输完成；分片现在在发送快照元数据。
+- DONE
+  快照完成！
+- FAILED
+  快照处理的时候碰到了错误，这个分片/索引/快照不可能完成了。检查你的日志获取更多信息。
+
+### 1.5.10 删除快照
+最后，我们需要一个命令来删除所有不再有用的旧快照 。这只要对仓库/快照名称发一个简单的 DELETE
+`DELETE _snapshot/my_backup/snapshot_2`
+
+### 1.5.11 取消一个快照编辑
+最后，你可能想取消一个快照或恢复。 因为它们是长期运行的进程，执行操作的时候一个笔误或者过错就会花很长时间来解决——而且同时还会耗尽有价值的资源。
+要取消一个快照，在他进行中的时候简单的删除快照就可以：
+`DELETE _snapshot/my_backup/snapshot_3`
+这个会中断快照进程。然后删除仓库里进行到一半的快照。
+
+### 1.5.12 从快照恢复
+一旦你备份过了数据，恢复它就简单了：只要在你希望恢复回集群的快照 ID 后面加上 _restore 即可：
+`POST _snapshot/my_backup/snapshot_1/_restore`
+
+默认行为是把这个快照里存有的所有索引都恢复。如果 snapshot_1 包括五个索引，这五个都会被恢复到我们集群里。 和 snapshot API 一样，我们也可以选择希望恢复具体哪个索引。
+
+还有附加的选项用来重命名索引。这个选项允许你通过模式匹配索引名称，然后通过恢复进程提供一个新名称。如果你想在不替换现有数据的前提下，恢复老数据来验证内容，或者做其他处理，这个选项很有用。让我们从快照里恢复单个索引并提供一个替换的名称：
+```
+POST /_snapshot/my_backup/snapshot_1/_restore
+{
+    "indices": "index_1", 
+    "rename_pattern": "index_(.+)", 
+    "rename_replacement": "restored_index_$1" 
+}
+```
+- indices: 只恢复 index_1 索引，忽略快照中存在的其余索引。
+- rename_pattern: 查找所提供的模式能匹配上的正在恢复的索引。
+- rename_replacement: 然后把它们重命名成替代的模式。
+- 这个会恢复 index_1 到你及群里，但是重命名成了 restored_index_1 
+- 和快照类似， restore 命令也会立刻返回，恢复进程会在后台进行。如果你更希望你的 HTTP 调用阻塞直到恢复完成，添加 wait_for_completion 标记
+  `POST _snapshot/my_backup/snapshot_1/_restore?wait_for_completion=true`
+
+### 1.5.13 监控恢复操作
+从仓库恢复数据借鉴了 Elasticsearch 里已有的现行恢复机制。 在内部实现上，从仓库恢复分片和从另一个节点恢复是等价的。
+
+如果你想监控恢复的进度，你可以使用 recovery API。这是一个通用目的的 API，用来展示你集群中移动着的分片状态。
+
+这个 API 可以为你在恢复的指定索引单独调用
+`GET restored_index_3/_recovery`
+或者查看你集群里所有索引，可能包括跟你的恢复进程无关的其他分片移动
+`GET /_recovery/`
+- 输出会跟这个类似（注意，根据你集群的活跃度，输出可能会变得非常啰嗦！）：
+```
+{
+  "restored_index_3" : {
+    "shards" : [ {
+      "id" : 0,
+      "type" : "snapshot", 
+      "stage" : "index",
+      "primary" : true,
+      "start_time" : "2014-02-24T12:15:59.716",
+      "stop_time" : 0,
+      "total_time_in_millis" : 175576,
+      "source" : { 
+        "repository" : "my_backup",
+        "snapshot" : "snapshot_3",
+        "index" : "restored_index_3"
+      },
+      "target" : {
+        "id" : "ryqJ5lO5S4-lSFbGntkEkg",
+        "hostname" : "my.fqdn",
+        "ip" : "10.0.1.7",
+        "name" : "my_es_node"
+      },
+      "index" : {
+        "files" : {
+          "total" : 73,
+          "reused" : 0,
+          "recovered" : 69,
+          "percent" : "94.5%" 
+        },
+        "bytes" : {
+          "total" : 79063092,
+          "reused" : 0,
+          "recovered" : 68891939,
+          "percent" : "87.1%"
+        },
+        "total_time_in_millis" : 0
+      },
+      "translog" : {
+        "recovered" : 0,
+        "total_time_in_millis" : 0
+      },
+      "start" : {
+        "check_index_time" : 0,
+        "total_time_in_millis" : 0
+      }
+    } ]
+  }
+}
+```
+- type 字段告诉你恢复的本质；这个分片是在从一个快照恢复。
+- source 哈希描述了作为恢复来源的特定快照和仓库。
+- percent 字段让你对恢复的状态有个概念。这个特定分片目前已经恢复了 94% 的文件；它就快完成了。
+
+- 输出会列出所有目前正在经历恢复的索引，然后列出这些索引里的所有分片。每个分片里会有启动/停止时间、持续时间、恢复百分比、传输字节数等统计值。
 
 
+### 1.5.14 取消一个恢复
+- 要取消一个恢复，你需要删除正在恢复的索引。 因为恢复进程其实就是分片恢复，发送一个 删除索引 API 修改集群状态，就可以停止恢复进程。比如
+  `DELETE /restored_index_3`
+- 如果 restored_index_3 正在恢复中，这个删除命令会停止恢复，同时删除所有已经恢复到集群里的数据
 
 
+## 1.6 使用kopf插件备份
+more -> snapshot
 
+## 1.7 作为服务启动
+### 1.7.1 启动文件
+- vim elasticsearch-5 (修改elasticsearch和jdk的路径)
+
+```
+#!/bin/sh
+#
+# elasticsearch <summary>
+#
+# chkconfig:   2345 80 20
+# description: Starts and stops a single elasticsearch instance on this system 
+#
+### BEGIN INIT INFO
+# Provides: Elasticsearch
+# Required-Start: $network $named
+# Required-Stop: $network $named
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: This service manages the elasticsearch daemon
+# Description: Elasticsearch is a very scalable, schema-free and high-performance search solution supporting multi-tenancy and near realtime search.
+### END INIT INFO
+#
+# init.d / servicectl compatibility (openSUSE)
+#
+if [ -f /etc/rc.status ]; then
+    . /etc/rc.status
+    rc_reset
+fi
+#
+# Source function library.
+#
+if [ -f /etc/rc.d/init.d/functions ]; then
+    . /etc/rc.d/init.d/functions
+fi
+# Sets the default values for elasticsearch variables used in this script
+ES_VERSION="5.2.0"
+ES_USER="elasticsearch"
+ES_GROUP="elasticsearch"
+ES_HOME="/zz/app/elasticsearch-${ES_VERSION}"
+MAX_OPEN_FILES=1024000
+MAX_MAP_COUNT=262144
+PID_DIR="${ES_HOME}"
+# Source the default env file
+ES_ENV_FILE="/etc/sysconfig/elasticsearch"
+if [ -f "$ES_ENV_FILE" ]; then
+    . "$ES_ENV_FILE"
+fi
+# CONF_FILE setting was removed
+if [ ! -z "$CONF_FILE" ]; then
+    echo "CONF_FILE setting is no longer supported. elasticsearch.yml must be placed in the config directory and cannot be renamed."
+    exit 1
+fi
+exec="$ES_HOME/bin/elasticsearch"
+prog="elasticsearch5"
+pidfile="$PID_DIR/${prog}.pid"
+lockfile=/var/lock/subsys/$prog
+export JAVA_HOME=/zz/app/jdk
+# backwards compatibility for old config sysconfig files, pre 0.90.1
+if [ -n $USER ] && [ -z $ES_USER ] ; then 
+   ES_USER=$USER
+fi
+checkJava() {
+    if [ -x "$JAVA_HOME/bin/java" ]; then
+        JAVA="$JAVA_HOME/bin/java"
+    else
+        JAVA=`which java`
+    fi
+    if [ ! -x "$JAVA" ]; then
+        echo "Could not find any executable java binary. Please install java in your PATH or set JAVA_HOME"
+        exit 1
+    fi
+}
+
+start() {
+    checkJava
+    [ -x $exec ] || exit 5
+    if [ -n "$MAX_LOCKED_MEMORY" -a -z "$ES_HEAP_SIZE" ]; then
+        echo "MAX_LOCKED_MEMORY is set - ES_HEAP_SIZE must also be set"
+        return 7
+    fi
+    if [ -n "$MAX_OPEN_FILES" ]; then
+        ulimit -n $MAX_OPEN_FILES
+    fi
+    if [ -n "$MAX_LOCKED_MEMORY" ]; then
+        ulimit -l $MAX_LOCKED_MEMORY
+    fi
+    if [ -n "$MAX_MAP_COUNT" -a -f /proc/sys/vm/max_map_count ]; then
+        sysctl -q -w vm.max_map_count=$MAX_MAP_COUNT
+    fi
+    export ES_GC_LOG_FILE
+    # Ensure that the PID_DIR exists (it is cleaned at OS startup time)
+    if [ -n "$PID_DIR" ] && [ ! -e "$PID_DIR" ]; then
+        mkdir -p "$PID_DIR" && chown "$ES_USER":"$ES_GROUP" "$PID_DIR"
+    fi
+    if [ -n "$pidfile" ] && [ ! -e "$pidfile" ]; then
+        touch "$pidfile" && chown "$ES_USER":"$ES_GROUP" "$pidfile"
+    fi
+    cd $ES_HOME
+    echo -n $"Starting $prog: "
+     #if not running, start it up here, usually something like "daemon $exec"
+    daemon --user $ES_USER --pidfile $pidfile $exec -p $pidfile -d
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+stop() {
+    echo -n $"Stopping $prog: "
+    #curl -XPUT `hostname`:9200/_cluster/settings -d '{
+    #    "transient" : {
+    #    "cluster.routing.allocation.enable" : "none"
+    #    }
+    # }'
+    # stop it here, often "killproc $prog"
+    killproc -p $pidfile -d 86400 $prog
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+restart() {
+    stop
+    start
+}
+reload() {
+    restart
+}
+force_reload() {
+    restart
+}
+rh_status() {
+    # run checks to determine if the service is running or use generic status
+    #if [ ! -f $pidfile ]; then
+    #  echo "$prog not running"
+    #else
+    #  if ps auxw | grep $(cat $pidfile) | grep -v grep > /dev/null; then
+    #    echo "running on pid $(cat $pidfile)"
+    #  else
+    #    echo 'not running (but PID file exists)'
+    #  fi
+    #fi
+    status -p $pidfile $prog
+
+}
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?
+```
+### 1.7.2 添加到启动服务里
+```
+cp elasticsearch-5 /etc/init.d/
+chkconfig --add /etc/init.d/elasticsearch-5
+```
+### 1.7.3 启动、停止
+```
+service elasticsearch-5 start
+service elasticsearch-5 stop
+```
+
+## 1.8 nginx代理elasticsearch
 
 # 2. elasticsearch-head
 ## 2.1 安装head插件
@@ -578,7 +1025,7 @@ this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http:
 # 5. kibana
 ## 5.1 安装
 - 官方文档
-  [https://www.elastic.co/guide/en/kibana/5.2/settings.html](https://www.elastic.co/guide/en/kibana/5.2/settings.html)
+  [https://www.elastic.co/guide/en/kibana/5.2/index.html](https://www.elastic.co/guide/en/kibana/5.2/index.html)
 - 下载解压
   ```
   wget https://artifacts.elastic.co/downloads/kibana/kibana-5.2.0-linux-x86_64.tar.gz
@@ -629,46 +1076,146 @@ this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http:
 
 # 6. x-pack
 ## 6.1 安装
-https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.2.0.zip  
-https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.6.4.zip  
-
-Installing X-Pack in Elasticsearch
-bin/elasticsearch-plugin install x-pack
-bin/elasticsearch-plugin install file:///path/to/file/x-pack-5.6.4.zip
-
-Installing X-Pack in Kibana
-bin/kibana-plugin install x-pack
-bin/kibana-plugin install file:///path/to/file/x-pack-5.6.4.zip
-
-2、Upgrading X-Pack
-To upgrade X-Pack:
-1.	Stop Elasticsearch.
-  2.Uninstall X-Pack from Elasticsearch:
-  bin/elasticsearch-plugin remove x-pack
-  3.Install the new version of X-Pack into Elasticsearch.
+- 下载和es相同版本的x-pack插件
+  wget https://artifacts.elastic.co/downloads/packs/x-pack/x-pack-5.2.0.zip  
+- 注意
+  停es和kibana再安装，先安装es的再安装kibana的，启动es、启动kibana
+- 在es中安装
+  ```
   bin/elasticsearch-plugin install x-pack
-  4.Restart Elasticsearch.
-
-If you’re upgrading a production cluster, perform a rolling upgrade to ensure recovery is as quick as possible. Rolling upgrades are supported when upgrading to a new minor version. A full cluster restart is required when upgrading to a new major version.
-5.	Uninstall X-Pack from Kibana:
-  bin/kibana-plugin remove x-pack
-  6.Install the new version of X-Pack into Kibana.
+  bin/elasticsearch-plugin install file:///path/to/file/x-pack-5.6.4.zip
+  ```
+- 在kibana中安装
+  ```
   bin/kibana-plugin install x-pack
-  7.Restart Kibana.
-  3、Uninstalling X-Pack
-  To uninstall X-Pack:
-  1.Stop Elasticsearch.
-  2.Remove X-Pack from Elasticsearch:
-  bin/elasticsearch-plugin remove x-pack
-  3.Restart Elasticsearch.
-  4.Remove X-Pack from Kibana:
-  bin/kibana-plugin remove x-pack
-  5.Restart Kibana.
-  6.Remove X-Pack from Logstash:
-  bin/logstash-plugin remove x-pack
-  7.Restart Logstash.
-
-
+  bin/kibana-plugin install file:///path/to/file/x-pack-5.6.4.zip
   ```
 
+## 6.3 如果不适用用户验证
+在kibana和es配置文件中修改配置: `xpack.security.enabled: false`
+
+## 6.4 卸载
+```
+bin/elasticsearch-plugin remove x-pack
+bin/kibana-plugin remove x-pack
+```
+
+## 6.5 问题
+### 6.5.1 安装x-packes启动报错
+- master节点异常信息
   ```
+  [2018-02-12T09:53:08,281][ERROR][o.e.x.m.c.i.IndicesStatsCollector] [master] collector [indices-stats-collector] failed to collect data
+  org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [SERVICE_UNAVAILABLE/1/state not recovered / initialized];
+        at org.elasticsearch.cluster.block.ClusterBlocks.globalBlockedException(ClusterBlocks.java:165) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.admin.indices.stats.TransportIndicesStatsAction.checkGlobalBlock(TransportIndicesStatsAction.java:70) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.admin.indices.stats.TransportIndicesStatsAction.checkGlobalBlock(TransportIndicesStatsAction.java:47) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction$AsyncAction.<init>(TransportBroadcastByNodeAction.java:256) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction.doExecute(TransportBroadcastByNodeAction.java:234) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction.doExecute(TransportBroadcastByNodeAction.java:79) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction$RequestFilterChain.proceed(TransportAction.java:173) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction.execute(TransportAction.java:145) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction.execute(TransportAction.java:87) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.node.NodeClient.executeLocally(NodeClient.java:75) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.node.NodeClient.doExecute(NodeClient.java:64) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.support.AbstractClient.execute(AbstractClient.java:403) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.FilterClient.doExecute(FilterClient.java:67) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.xpack.security.InternalClient.doExecute(InternalClient.java:83) ~[?:?]
+        at org.elasticsearch.client.support.AbstractClient.execute(AbstractClient.java:403) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.support.AbstractClient$IndicesAdmin.execute(AbstractClient.java:1226) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.ActionRequestBuilder.execute(ActionRequestBuilder.java:80) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.ActionRequestBuilder.execute(ActionRequestBuilder.java:54) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.ActionRequestBuilder.get(ActionRequestBuilder.java:69) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.xpack.monitoring.collector.indices.IndicesStatsCollector.doCollect(IndicesStatsCollector.java:66) ~[x-pack-5.2.0.jar:5.2.0]
+        at org.elasticsearch.xpack.monitoring.collector.Collector.collect(Collector.java:83) [x-pack-5.2.0.jar:5.2.0]
+        at org.elasticsearch.xpack.monitoring.AgentService$ExportingWorker.collect(AgentService.java:226) [x-pack-5.2.0.jar:5.2.0]
+        at org.elasticsearch.xpack.monitoring.AgentService$ExportingWorker.run(AgentService.java:193) [x-pack-5.2.0.jar:5.2.0]
+        at java.lang.Thread.run(Thread.java:745) [?:1.8.0_121]
+  ```
+
+- work节点异常信息
+  ```
+  [2018-02-12T10:02:25,198][INFO ][o.e.x.m.e.Exporters      ] [work1] skipping exporter [default_local] as it is not ready yet
+  [2018-02-12T10:02:35,204][INFO ][o.e.x.m.e.Exporters      ] [work1] skipping exporter [default_local] as it is not ready yet
+  [2018-02-12T10:02:45,212][INFO ][o.e.x.m.e.Exporters      ] [work1] skipping exporter [default_local] as it is not ready yet
+  [2018-02-12T10:02:55,216][INFO ][o.e.x.m.e.Exporters      ] [work1] skipping exporter [default_local] as it is not ready yet
+  ```
+- 处理
+  如果是正常安装的情况下，先忽略这些；启动master、work节点，启动kibana；es就由red变成了green
+
+## 6.6 x-pack注册license
+
+- x-pack安装后只有一个月的使用期限，注册后有一年的使用期限
+  官网参考：[https://www.elastic.co/guide/en/x-pack/5.6/installing-license.html](https://www.elastic.co/guide/en/x-pack/5.6/installing-license.html)
+
+- 申请一个免费license
+  [https://license.elastic.co/registration](https://license.elastic.co/registration)
+
+- 更新license
+  ```
+  curl -XPUT -u elastic 'http://<host>:<port>/_xpack/license' -H "Content-Type: application/json" -d @license.json
+  #或者是
+  curl -XPUT -u elastic 'http://<host>:<port>/_xpack/license?acknowledge=true' -H "Content-Type: application/json" -d @license.json
+  ```
+
+- 查看license
+  ```
+  curl -XGET -u elastic:changeme 'http://<host>:<port>/_xpack/license'
+  ```
+
+- 重启es集群生效
+
+
+## 6.7 x-pack破解
+### 6.7.1 参考地址
+- 从5.0版本开始，Elastic将一些重要的插件整合成了X-Pack。免费的license只能使用一年，而且很多插件无法使用。如果想要试用，需要进行破解
+  >[http://blog.csdn.net/mvpboss1004/article/details/65445023](http://blog.csdn.net/mvpboss1004/article/details/65445023)
+  >[https://www.cnblogs.com/benwu/articles/6648471.html](https://www.cnblogs.com/benwu/articles/6648471.html)
+  >
+  >[http://fishboy.iteye.com/blog/2391750](http://fishboy.iteye.com/blog/2391750)
+
+### 6.7.2 反编译luyten
+- JD-GUI是无法反编译的，要使用luyten
+- 下载luyten
+  github地址:[https://github.com/deathmarine/Luyten/releases](https://github.com/deathmarine/Luyten/releases)
+- 运行时异常(已经安装jdk配置环境变量了)：
+  > this application requires a java runtime environment 1.7-1.8
+  - 处理：
+    方法一添加注册表:[https://www.cnblogs.com/myit/p/4575359.html](https://www.cnblogs.com/myit/p/4575359.html)
+    方法二使用java -jar运行：[http://blog.csdn.net/k2514091675/article/details/76254729](http://blog.csdn.net/k2514091675/article/details/76254729)
+
+### 6.7.3 反编译
+- 找到es安装x-pack插件后的x-pack jar包，反编译类 LicenseVerifier
+  包：elasticsearch-5.2.0/plugins/x-pack/x-pack-5.2.0.jar
+  类：org.elasticsearch/license/LicenseVerifier.class
+
+- 这个类是检查license完整性的类，我们使其始终返回true，就可以任意修改license并导入。将其改为：
+  ```
+  package org.elasticsearch.license;
+
+  public class LicenseVerifier {
+      public static boolean verifyLicense(final License license, final byte[] encryptedPublicKeyData) {
+          return true;
+      }
+      
+      public static boolean verifyLicense(final License license) {
+          return true;
+      }
+  }
+  ```
+
+- 重新编译class文件。注意这里我们无需编译整个工程，将原来的x-pack-5.2.0.jar和依赖包加入CLASSPATH，即可完成单个文件的编译。实际上只用到了3个依赖包
+  jar包下载maven仓库：[http://mvnrepository.com/artifact/org.elasticsearch/elasticsearch/5.2.0](http://mvnrepository.com/artifact/org.elasticsearch/elasticsearch/5.2.0)
+  ```
+  javac -cp "/usr/share/elasticsearch/lib/elasticsearch-5.2.0.jar:/usr/share/elasticsearch/lib/lucene-core-6.4.0.jar:/usr/share/elasticsearch/plugins/x-pack/x-pack-5.2.0.jar" LicenseVerifier.java
+  ```
+
+- 把x-pack-5.2.0.jar用压缩文件管理器打开，将里面的LicenseVerifier.class替换掉。再把破解了的jar包部署到各节点上，并重启es集群
+
+- 修改申请的license文件，platinum表示白金版，可以使用所有功能。其他的如expiry_date_in_millis、max_nodes等根据自己需要修改即可。
+
+- 把该license导入集群即可(- u指定用户，可以不用)：
+  ```
+  curl -XPUT -u elastic 'http://master:9200/_xpack/license?acknowledge=true' -H "Content-Type: application/json" -d @license.json
+  ```
+
+- 打开kibana中的monitring，可以看到x-pack的许可与期限

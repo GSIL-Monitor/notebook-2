@@ -113,8 +113,8 @@ kill -HUP 3514	#平滑重启
 
 - 修改以下2个配置：  
   ```
-  nginx=”/usr/sbin/nginx” 修改成nginx执行程序的路径。 
-  NGINX_CONF_FILE=”/etc/nginx/nginx.conf” 修改成配置文件的路径
+  nginx="/usr/sbin/nginx" 修改成nginx执行程序的路径。 
+  NGINX_CONF_FILE="/etc/nginx/nginx.conf" 修改成配置文件的路径
   ```
 
 - 保存脚本文件后设置文件的执行权限  

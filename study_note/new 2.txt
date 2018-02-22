@@ -1,5 +1,8 @@
+
+
 1、平台搭建
 2、日志采集、带宽统计、日志打包
+```
 rsyslog -> kafka -> fluentd -> es/hdfs
 fluentd -> es/hdfs
 	fluentd -> kafka -> fluentd -> es/hdfs
@@ -7,7 +10,7 @@ fluentd -> es/hdfs
 		flume -> kafka -> flume -> es/hdfs
 			flume -> kafka -> flume -> es/hbase
 				flume -> kafka -> flume/spark -> es/hbase
-				
+```
 
 日志完整性、fluentd源码修改、flume source修改、flume监控、优化
 统计、监控
@@ -27,14 +30,35 @@ elasticsearch
 	备份：龙存、hdfs（repository-hdfs）
 	数据定时迁移
 	ssd和sata
-	
+
 高可用：
 	keepalived、
 
 监控
 	微信报警、速率、日志条数统计核对、
-	
+
 带宽核对(logstach 同步数据到mysql)、修复
 
 
 内网ip、vnc
+
+
+# 2 问题
+- 各集群版本
+  - fluentd : 2.3
+  - flume : apache-flume-1.6.0-cdh5.8.3
+  - kafka ：kafka_2.11-0.10.2.0
+  - es : 5.2.0
+  - cdh: 5.8.3
+  - Hadoop: 2.6.0-cdh5.8.3
+  - hbase: 1.2.0+cdh5.8.3
+  - hive: 1.1.0+cdh5.8.3
+  - zookeeper: 3.4.5+cdh5.8.3
+  - spark
+- es备份、迁移、合并，x-pack破解踩的坑
+- es单个服务器多进程；标签host、ssd；es代理；client、master、datanode；映射
+- hbase-hive
+- yarn
+- 
+
+
