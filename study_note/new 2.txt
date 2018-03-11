@@ -1,6 +1,4 @@
-
-
-1、平台搭建
+﻿1、平台搭建
 2、日志采集、带宽统计、日志打包
 ```
 rsyslog -> kafka -> fluentd -> es/hdfs
