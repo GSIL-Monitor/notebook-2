@@ -3930,4 +3930,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     send_msg(args.message.replace("\\n","\n"))
 ```
-
