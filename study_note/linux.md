@@ -270,11 +270,14 @@ echo ${result[0]}
     cd /etc/httpd/conf.d #进入目录删除欢迎页面
     mv welcome.conf welcome.conf.bak
 ### 3.1.2、判断是否成功：  
-> 浏览器中访问:http://192.168.229.129/
+- 浏览器中访问:http://192.168.229.129/
 
-## 2、
+# 4. vi
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/linux/vi%E5%91%BD%E4%BB%A4.png?raw=true)
 
-# 4、网址
+
+# 资源
+
 [sort排序](http://blog.csdn.net/liu_sheng_1991/article/details/53230604)  
 [字符串截取](https://www.cnblogs.com/fengbohello/p/5954895.html)  
 [数组操作](https://www.cnblogs.com/Joke-Shi/p/5705856.html)  
