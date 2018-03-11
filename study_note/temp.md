@@ -1,5 +1,68 @@
 免费课程目录
-```\`
+```
+git的使用
+1-git介绍和使用
+2-git中的方法
+3-git版本切换、分支和合并
+4-git中的push和pull方法
+
+
+第2节：HDFS增强
+hdfs客户端操作
+	用流api进行文件下载、目录操作、查看文件夹以及文件信息、客户端流式操作的代码实现、上传文件（写数据）流程、下载文件（读数据）流程。
+NAMENODE工作机制--元数据管理
+	三种存储机制、checkpoint过程、利用原理来分析解决生产中可能遇到的问题和现象
+	日志采集汇聚案例：需求----实现流程、shell脚本实现、回顾hdfs的基本工作机制、运行测试
+hdfs的概念跟特性回顾讲解
+	hdfs的命令行操作常用命令、hdfs的命令行操作常用命令、hdfs实际开发中使用的场景、java操作hdfs环境搭建以及环境测试、hdfs客户端权限身份伪造的问题、windows平台下开发hadoop需要注意的细节、hdfs客户端操作--用流api进行文件上传；
+1-1、HDFS前言
+2-2、HDFS的概念和特性
+3-3、HDFS的shell(命令行客户端)操作
+4-4、HDFS的工作机制
+5-5、NAMENODE的工作机制
+6-6、java的api操作`（上）
+7-7、java的api操作`（下）
+8-8、案例1：开发shell采集脚本
+
+
+
+
+
+MapReduce是一种编程模型，用于大规模数据集（大于1TB）的并行运算。概念"Map（映射）"和"Reduce（归约）"，是它们的主要思想。
+MapReduce极大地方便了编程人员在不会分布式并行编程的情况下，将自己的程序运行在分布式系统上。
+  maptask并行度机制
+    切片的原理、切片大小参数设置、debug跟踪、优化经验之谈、reduceTask并行度决定
+    mapreduce编程案例--倒排索引--需求分析、步骤代码
+    mapreduce编程案例--共同好友--需求思路、实现步骤
+
+  流量汇总排序在一个mr-job中完成、分省份输出案例----自定义partitioner
+    partitioner组件细节--reduce Task个数跟partition分区个数关系
+    Combiner组件的用法及注意事项
+
+  mapreduce工作机制详解
+     maptask端的机制、Reducetask端的机制、mapreduce工作机制详解----shuffle的含义
+
+  maprecduce运算框架中用户可自定义的组件总结
+第4节：MAPREDUCE增强
+1-1、Mapreduce排序
+2-2、自定义partitioner
+3-3、Mapreduce的combiner
+4-4、mapreduce工作机制详解（上）
+5-5、mapreduce工作机制详解（下）
+6-7、maptask并行度设置
+7-8、倒排索引
+8-9、共同好友
+
+
+top
+htop
+
+reboot
+shutdown -h 20:30
+
+ifconfig：io本地会环，
+
+```
 
 
 
