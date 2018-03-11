@@ -263,6 +263,11 @@ rawurl = "rsyslog%E7%89%88%E6%9C%AC%E8%BF%87%E9%AB%98%E5%BC%82%E5%B8%B8.png"
 print(urllib.unquote(rawurl))
 ```
 
+# 6. flask
+- [flask中文文档](http://docs.jinkan.org/docs/flask/)
+
+# 7. django
+- [django菜鸟教程](http://www.runoob.com/django/django-tutorial.html)
 
 
 # 资源地址
