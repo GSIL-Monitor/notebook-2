@@ -165,21 +165,22 @@ stop-yarn.sh
   http://master:8088
 
 
-# 3. 异常
-## 3.1 安装异常
-### 3.1.1 ssh问题：
+# 2. 异常
+
+## 2.1 安装异常
+### 2.1.1 ssh问题：
 没有生成authorized_keys，复制一个
 `cp id_rsa.pub authorized_keys`
 使用的时候直接cat时，ssh localhost不通，还是需要密码，使用cp后问题解决
 
-### 3.1.2 安装后命令有warn
+### 2.1.2 安装后命令有warn
 - 异常信息：
   18/02/24 09:38:15 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 - 处理：
   log4j.logger.org.apache.hadoop.util.NativeCodeLoader=ERROR
 
-## 3.2  运行异常
-### 3.2.1 运行mr连不上master
+## 2.2  运行异常
+### 2.2.1 运行mr连不上master
 - 异常信息：
   18/02/24 10:03:51 INFO client.RMProxy: Connecting to ResourceManager at master/192.168.229.129:8032
   18/02/24 10:03:52 INFO ipc.Client: Retrying connect to server: master/192.168.229.129:8032. Already tried 0 time(s); retry policy is RetryUpToMaximumCountWithFixedSleep(maxRetries=10, sleepTime=1000 MILLISECONDS)
@@ -187,7 +188,7 @@ stop-yarn.sh
 - 处理
   没有启动yarn导致，启动yarn
 
-### 3.2.2 mr内存不足
+### 2.2.2 mr内存不足
 - 异常：
 ```
 18/01/31 15:29:09 INFO mapreduce.Job: Task Id : attempt_1513065790067_2120_m_000259_0, Status : FAILED
@@ -208,6 +209,25 @@ conf.set("mapreduce.map.memory.mb", "2048");
 ```
 
 
-# 3. 向map、reduce传递参数
+# 3. map、reduce
+## 3.1 向map、reduce传递参数
 [hadoop 如何向map和reduce脚本传递参数,加载文件和目录](https://www.cnblogs.com/zhengrunjian/p/4536572.html)  
+
+
+# 4. it-hadoop
+## 4.1 本地mr用户问题
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hadoop%E6%9C%AC%E5%9C%B0%E6%93%8D%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E7%9A%84hdfs%E7%94%A8%E6%88%B7%E9%97%AE%E9%A2%98.png?raw=true)
+
+
+## 4.2 hdfs写文件
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hdfs%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+
+
+## 4.2 hdfs读文件
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hdfs%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+
+
+## 4.3 namenode和secondarynamenode的元数据管理机制
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/secondarynamenode%E5%85%83%E6%95%B0%E6%8D%AEcheckpoint%E6%9C%BA%E5%88%B6.png?raw=true)
+
 

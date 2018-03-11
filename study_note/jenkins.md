@@ -12,9 +12,15 @@ nohup java -Dcom.sun.akuma.Daemon=daemonized -Djava.awt.headless=true -DJENKINS_
 系统管理 -> 管理插件 -> 可选插件 -> (安装：Publish Over SSH, 安装：SSH plugin)
 ## 2.2 配置
 - `cp ~/.ssh/id_rsa /zz/app/jenkins/`
+
 - 系统管理 -> 系统管理 -> Publish over SSH #添加Path to key(/zz/app/jenkins/id_rsa) 和 Key(id_rsa的内容)
+
 - Credentials -> System -> Global credentials (unrestricted) -> Add Credentials #添加执行ssh的用户信息
   参考：[jenkins ssh remote hosts如何设置?](https://www.zhihu.com/question/63573975)
+
+  ​
+
+
 - 系统管理 -> 系统管理 -> SSH remote hosts #开始添加服务器，Credentials选择刚添加的Credentials
 
 ## 2.3 定时删除任务执行日志
