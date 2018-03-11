@@ -232,3 +232,4 @@ mv quasiquotes_2.10-2.0.1.jar /root/.ivy2/cache/org.scalamacros/quasiquotes_2.10
 > [Confluent介绍（一）](http://www.cnblogs.com/zdfjf/p/5646525.html)  
 > [Confluent介绍（二）](http://www.cnblogs.com/zdfjf/p/5696921.html)  
 > [github 上一些kafka streams的例子](https://github.com/JohnReedLOL/kafka-streams/tree/master/src/main/java/io/confluent/examples/streams)
+

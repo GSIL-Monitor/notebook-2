@@ -75,7 +75,14 @@ dpkg-l|grepruby
 yum list installed | grep ruby
 ```
 
+## 1.5 Linux 下使用Trickle限制下载/上传带宽
+http://blog.csdn.net/jb19900111/article/details/17756195
 
+## 1.6 关闭开机自启
+```
+chkconfig servicename list #查看
+chkconfig servicename off #关闭开机自启
+```
 
 # 2、shell
 ## 2.1、时间

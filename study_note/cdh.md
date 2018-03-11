@@ -272,7 +272,8 @@ cloudera-manager.repo
 wget https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo
 
 mkdir -p /var/www/html/parcels
-#去掉1， 不认一直认为是在下载
+
+去掉1， 不认一直认为是在下载
 mv /zz/soft/CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha1 /zz/soft/CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha
 mv /zz/soft/CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel /zz/soft/CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha /zz/soft/manifest.json /var/www/html/parcels
 
@@ -355,6 +356,52 @@ http://blog.csdn.net/cheng830306/article/details/24780717
 
 
 
+/usr/sbin/ntpdate 问题
+28 Feb 12:45:49 ntpdate[42638]: the NTP socket is in use, exiting
+处理
+ps -ef|grep xntpd
+lsof –i:123
+```
+[root@c3n-zj-nb1-183-131-54-182 kafka]# lsof -i:123
+COMMAND  PID USER   FD   TYPE    DEVICE SIZE/OFF NODE NAME
+ntpd    7276  ntp   16u  IPv4 533443168      0t0  UDP *:ntp 
+ntpd    7276  ntp   17u  IPv6 533443169      0t0  UDP *:ntp 
+ntpd    7276  ntp   18u  IPv4 533443175      0t0  UDP localhost:ntp 
+ntpd    7276  ntp   19u  IPv4 533443176      0t0  UDP c3n-zj-nb1-183-131-54-182:ntp 
+ntpd    7276  ntp   20u  IPv4 533443177      0t0  UDP 172.16.54.182:ntp 
+ntpd    7276  ntp   21u  IPv4 533443178      0t0  UDP 101.71.76.54:ntp 
+ntpd    7276  ntp   22u  IPv4 533443179      0t0  UDP 120.199.83.54:ntp 
+ntpd    7276  ntp   23u  IPv6 533443180      0t0  UDP localhost6:ntp 
+ntpd    7276  ntp   24u  IPv6 533443181      0t0  UDP [fe80::1a66:daff:fe71:1f8b]:ntp 
+ntpd    7276  ntp   25u  IPv6 533443182      0t0  UDP [fe80::1a66:daff:fe71:1f8b]:ntp 
+ntpd    7276  ntp   26u  IPv6 533443183      0t0  UDP [fe80::1a66:daff:fe71:1f8b]:ntp 
+ntpd    7276  ntp   27u  IPv6 533443184      0t0  UDP [fe80::1a66:daff:fe71:1f8b]:ntp
+```
+kill -9 7276
+重新同步
+```
+/usr/sbin/ntpdate 183.131.54.181
+```
+
+
+问题：ntpd dead but pid file exists
+```
+[root@c3n-zj-nb1-183-131-54-182 kafka]# service ntpdate status
+[root@c3n-zj-nb1-183-131-54-182 kafka]# service ntpd status   
+ntpd dead but pid file exists
+[root@c3n-zj-nb1-183-131-54-182 kafka]# service ntpd restart
+Shutting down ntpd:                                        [FAILED]
+Starting ntpd:                                             [  OK  ]
+[root@c3n-zj-nb1-183-131-54-182 kafka]# service ntpd status 
+ntpd (pid  51661) is running...
+```
+
+问题：
+提示某台机器时钟偏差爆红
+处理：
+同步时钟，同时配置ntpd的配置，一台同步外网的，其余的要与这台同步；这样cdh才认为所有机器的时间是同步的
+
+启动agent 要用service 启动，不然有些服务会无法启动
 
 
 
@@ -364,4 +411,6 @@ http://blog.csdn.net/cheng830306/article/details/24780717
 
 
 
+/etc/cloudera-scm-agent/config.ini
 
+什么配置

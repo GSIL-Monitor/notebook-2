@@ -170,3 +170,7 @@ Spark从入门到上手实战
 
 Spark全面精讲（基于Spark2版本+含Spark调优+超多案例）
 课程观看地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/149
+
+
+
+Hadoop从入门到上手企业开发视频下载[70集]：https://www.iteblog.com/archives/1273.html

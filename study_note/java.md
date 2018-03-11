@@ -37,3 +37,10 @@
 
 
 
+
+
+
+
+# java资源链接
+《深入理解 Java 内存模型》读书笔记：https://mp.weixin.qq.com/s?__biz=MzIxMTE0ODU5NQ==&mid=2650237071&idx=1&sn=354a9735b0000a215c77c942d3b2a566&chksm=8f5a02d3b82d8bc526af7fd2a89ba805a7377562b9f74295ac98b0e118aac796b16186958a4d&mpshare=1&scene=23&srcid=0302xviToj8leUuYQcmCVn4H#rd
+

@@ -271,7 +271,12 @@ curl http://master:9200/mytest/_search?pretty -d '{"query":{"bool":{"must":[{"ma
 
 
 ### 1.2.7 工作中的查询语句
-#### 1.2.7.1 按文件名分组查询
+#### 1.2.7.1 基本查询
+```
+{"query":{"bool":{"must":[{"match_all":{}}],"must_not":[],"should":[]}},"from":0,"size":10,"sort":[],"aggs":{}}
+```
+
+#### 1.2.7.2 按文件名分组查询
 ```
 {
 	"size": 1,
@@ -320,9 +325,157 @@ curl -XPUT 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test -d '
 curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_restore
 ```
 
+安装repository-hdfs插件
+bin/elasticsearch-plugin install repository-hdfs
+
+```
+hdfs dfs -mkdir /elasticsearch
+hdfs dfs -chown -R elasticsearch:elasticsearch /elasticsearch
+```
+
+
+```
+# hdfs
+PUT /_snapshot/my_hdfsbackup
+{
+  "type": "hdfs",
+  "settings": {
+         "uri": "hdfs://master:9000",
+         "path": "/elasticsearch/esbackup/",
+         "load_defaults": "true",
+         "compress": "true",
+         "conf_location":"hdfs-site.xml"
+  }
+}
+
+GET _snapshot/my_hdfsbackup
+#下面当前所有的仓库信息s
+GET /_snapshot
+GET /_snapshot/_all
+
+DELETE /_snapshot/my_hdfsbackup
+
+
+PUT /_snapshot/my_hdfsbackup/snapshot_1?wait_for_completion=true
+{
+  "indices": "mytest,mytest1",
+  "ignore_unavailable": true,
+  "include_global_state": false
+}
+
+GET /_snapshot/my_hdfsbackup/_all
+
+POST /_snapshot/my_hdfsbackup/snapshot_1/_restore
+{
+  "indices": "mytest,mytest1", 
+  "ignore_unavailable": true,
+  "include_global_state": false,
+  "rename_pattern": "index_(.+)",
+  "rename_replacement": "restored_index_$1"
+}
+```
+
+
+
+安装插件repository-hdfs
+```
+bin/elasticsearch-plugin install repository-hdfs
+```
+安装如下
+```
+-> Downloading repository-hdfs from elastic
+[=================================================] 100%   
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@     WARNING: plugin requires additional permissions     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+* java.lang.RuntimePermission accessDeclaredMembers
+* java.lang.RuntimePermission getClassLoader
+* java.lang.RuntimePermission shutdownHooks
+* java.lang.reflect.ReflectPermission suppressAccessChecks
+* java.util.PropertyPermission * read,write
+* javax.security.auth.AuthPermission doAs
+* javax.security.auth.AuthPermission getSubject
+* javax.security.auth.AuthPermission modifyPrivateCredentials
+See http://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html
+for descriptions of what these permissions allow and the associated risks.
+
+Continue with installation? [y/N]y
+-> Installed repository-hdfs
+```
+
+
+创建仓库后备份索引异常
+```
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "repository_exception",
+        "reason": "[my_hdfsbackup] could not read repository data from index blob"
+      }
+    ],
+    "type": "repository_exception",
+    "reason": "[my_hdfsbackup] could not read repository data from index blob",
+    "caused_by": {
+      "type": "i_o_exception",
+      "reason": "com.google.protobuf.ServiceException: java.security.AccessControlException: access denied (\"javax.security.auth.PrivateCredentialPermission\" \"org.apache.hadoop.security.Credentials\" \"read\")",
+      "caused_by": {
+        "type": "service_exception",
+        "reason": "java.security.AccessControlException: access denied (\"javax.security.auth.PrivateCredentialPermission\" \"org.apache.hadoop.security.Credentials\" \"read\")",
+        "caused_by": {
+          "type": "access_control_exception",
+          "reason": "access denied (\"javax.security.auth.PrivateCredentialPermission\" \"org.apache.hadoop.security.Credentials\" \"read\")"
+        }
+      }
+    }
+  },
+  "status": 500
+}
+```
+处理
+参考地址：https://www.jianshu.com/p/f14f0afed345
+
+
 ## 1.4 问题
 ### 1.4.1 分片无法分配
 参考地址：[https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/](https://birdben.github.io/2016/12/22/Elasticsearch/Elasticsearch%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9B%86%E7%BE%A4red%E7%8A%B6%E6%80%81%E7%9A%84%E5%A4%84%E7%90%86/)
+
+### 1.4.2 启动异常
+```
+[2018-02-23T14:06:37,153][WARN ][r.suppressed             ] path: /_stats, params: {}
+org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [SERVICE_UNAVAILABLE/1/state not recovered / initialized];
+        at org.elasticsearch.cluster.block.ClusterBlocks.globalBlockedException(ClusterBlocks.java:165) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.admin.indices.stats.TransportIndicesStatsAction.checkGlobalBlock(TransportIndicesStatsAction.java:70) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.admin.indices.stats.TransportIndicesStatsAction.checkGlobalBlock(TransportIndicesStatsAction.java:47) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction$AsyncAction.<init>(TransportBroadcastByNodeAction.java:256) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction.doExecute(TransportBroadcastByNodeAction.java:234) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.broadcast.node.TransportBroadcastByNodeAction.doExecute(TransportBroadcastByNodeAction.java:79) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction$RequestFilterChain.proceed(TransportAction.java:173) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction.execute(TransportAction.java:145) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.action.support.TransportAction.execute(TransportAction.java:87) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.node.NodeClient.executeLocally(NodeClient.java:75) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.node.NodeClient.doExecute(NodeClient.java:64) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.support.AbstractClient.execute(AbstractClient.java:403) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.support.AbstractClient$IndicesAdmin.execute(AbstractClient.java:1226) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.client.support.AbstractClient$IndicesAdmin.stats(AbstractClient.java:1547) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.rest.action.admin.indices.RestIndicesStatsAction.lambda$prepareRequest$17(RestIndicesStatsAction.java:148) ~[elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.rest.BaseRestHandler.handleRequest(BaseRestHandler.java:82) [elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.rest.RestController.dispatchRequest(RestController.java:162) [elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.http.HttpServer.dispatchRequest(HttpServer.java:115) [elasticsearch-5.2.0.jar:5.2.0]
+        at org.elasticsearch.http.netty4.Netty4HttpServerTransport.dispatchRequest(Netty4HttpServerTransport.java:515) [transport-netty4-5.2.0.jar:5.2.0]
+        at org.elasticsearch.http.netty4.Netty4HttpRequestHandler.channelRead0(Netty4HttpRequestHandler.java:70) [transport-netty4-5.2.0.jar:5.2.0]
+        at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:105) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at org.elasticsearch.http.netty4.pipelining.HttpPipeliningHandler.channelRead(HttpPipeliningHandler.java:66) [transport-netty4-5.2.0.jar:5.2.0]
+        at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:349) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:341) [netty-transport-4.1.7.Final.jar:4.1.7.Final]
+        at org.elasticsearch.http.netty4.cors.Netty4CorsHandler.channelRead(Netty4CorsHandler.java:76) [transport-netty4-5.2.0.jar:5.2.0]
+        at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363) [netty-transport-4.1.
+```
+- 出现上面的原因是：有分片没有完全分配，分配分配完成就好了
 
 ## 1.5 备份
 
@@ -774,6 +927,186 @@ service elasticsearch-5 stop
 
 ## 1.8 nginx代理elasticsearch
 
+## 1.9 概念
+### 1.9.1 master、client、datanode
+- master节点
+
+主要功能是维护元数据，管理集群各个节点的状态，数据的导入和查询都不会走master节点，所以master节点的压力相对较小，因此master节点的内存分配也可以相对少些；但是master节点是最重要的，如果master节点挂了或者发生脑裂了，你的元数据就会发生混乱，那样你集群里的全部数据可能会发生丢失，所以一定要保证master节点的稳定性。
+
+- data node
+
+是负责数据的查询和导入的，它的压力会比较大，它需要分配多点的内存，选择服务器的时候最好选择配置较高的机器（大内存，双路CPU，SSD... 土豪~）；data node要是坏了，可能会丢失一小份数据。
+
+- client node
+
+是作为任务分发用的，它里面也会存元数据，但是它不会对元数据做任何修改。client node存在的好处是可以分担下data node的一部分压力；为什么client node能分担data node的一部分压力？因为es的查询是两层汇聚的结果，第一层是在data node上做查询结果汇聚，然后把结果发给client node，client node接收到data node发来的结果后再做第二次的汇聚，然后把最终的查询结果返回给用户；所以我们看到，client node帮忙把第二层的汇聚工作处理了，自然分担了data node的压力。
+这里，我们可以举个例子，当你有个大数据查询的任务（比如上亿条查询任务量）丢给了es集群，要是没有client node，那么压力直接全丢给了data node，如果data node机器配置不足以接受这么大的查询，那么就很有可能挂掉，一旦挂掉，data node就要重新recover，重新reblance，这是一个异常恢复的过程，这个过程的结果就是导致es集群服务停止... 但是如果你有client node，任务会先丢给client node，client node要是处理不来，顶多就是client node停止了，不会影响到data node，es集群也不会走异常恢复。
+
+对于es 集群为何要设计这三种角色的节点，也是从分层逻辑去考虑的，只有把相关功能和角色划分清楚了，每种node各尽其责，才能发挥出分布式集群的效果。
+
+## 1.10 elasticsearch资源链接
+- [elasticsearch官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/5.2/index.html)
+- [elasticsearch权威指南中文版](https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html)
+- ​
+
+## 1.11 单台机器多实例
+- 修改，一台机器的多个实例不一样
+  ```
+  node.name
+  path.data
+  ```
+- 多master，
+  discovery.zen.ping.unicast.hosts #master节点
+  discovery.zen.minimum_master_nodes #发现至少master节点个数才能组成集群
+
+## 1.12 es supervisor监控
+/etc/supervisord.conf
+```
+[unix_http_server]
+file=/bbd/logs/supervisor/supervisor.sock   ; (the path to the socket file)
+;chmod=0700                 ; socket file mode (default 0700)
+;chown=nobody:nogroup       ; socket file uid:gid owner
+;username=user              ; (default is no username (open server))
+;password=123               ; (default is no password (open server))
+
+[inet_http_server]         ; inet (TCP) server disabled by default
+port=0.0.0.0:6001        ; (ip_address:port specifier, *:port for all iface)
+;username=user              ; (default is no username (open server))
+;password=123               ; (default is no password (open server))
+
+[supervisord]
+logfile=/bbd/logs/supervisor/supervisord.log ; (main log file;default $CWD/supervisord.log)
+logfile_maxbytes=50MB        ; (max main logfile bytes b4 rotation;default 50MB)
+logfile_backups=10           ; (num of main logfile rotation backups;default 10)
+loglevel=info                ; (log level;default info; others: debug,warn,trace)
+pidfile=/bbd/logs/supervisor/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
+nodaemon=false               ; (start in foreground if true;default false)
+minfds=1024                  ; (min. avail startup file descriptors;default 1024)
+minprocs=200                 ; (min. avail process descriptors;default 200)
+;umask=022                   ; (process file creation umask;default 022)
+;user=chrism                 ; (default is current user, required if root)
+;identifier=supervisor       ; (supervisord identifier, default is 'supervisor')
+;directory=/tmp              ; (default is not to cd during start)
+;nocleanup=true              ; (don't clean up tempfiles at start;default false)
+;childlogdir=/tmp            ; ('AUTO' child log dir, default $TEMP)
+;environment=KEY="value"     ; (key value pairs to add to environment)
+;strip_ansi=false            ; (strip ansi escape codes in logs; def. false)
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+[supervisorctl]
+serverurl=unix:///bbd/logs/supervisor/supervisor.sock ; use a unix:// URL  for a unix socket
+;serverurl=http://127.0.0.1:9001 ; use an http:// url to specify an inet socket
+;username=chris              ; should be same as http_username if set
+;password=123                ; should be same as http_password if set
+;prompt=mysupervisor         ; cmd line prompt (default "supervisor")
+;history_file=~/.sc_history  ; use readline history if available
+; The below sample program section shows all possible program subsection values,
+; create one or more 'real' program: sections to be able to control them under
+; supervisor.
+
+
+[include]
+files = /etc/supervisor/conf.d/*.conf
+```
+
+/etc/supervisor/conf.d/monitor_es.conf
+```
+[program:monitores]
+command=/opt/rh/wechat.py
+stdout_logfile=/opt/rh/logs/monitores.log
+autostart=true
+autorestart=true
+startsecs=5
+priority=1
+stopasgroup=true
+killasgroup=true
+```
+wechat.py
+```
+#!/usr/bin/env python 
+#coding: utf-8
+import time
+import urllib,urllib2,requests
+import json
+import sys
+
+class WeChatMSG(object):
+    def __init__(self,content):
+        self.gettoken_url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken'
+        self.gettoken_content = {
+                            'corpid' : 'ww6f4afe29f8a62102',
+                            'corpsecret' : 'J-ZTRxt3yOHUsQkk-dow3r6Uw28on1HxMZNOxt7iAag' ,
+                            }
+        self.main_content = {
+                            "toparty":"3",
+                            "agentid":"1000003",
+                            "msgtype": "text",
+                            "text":{
+                            "content":content,
+                                    }
+                            }
+
+    def get_access_token(self,string):
+        token_result = json.loads(string.read())
+        access_token=  token_result['access_token']
+        return access_token.encode('utf-8')
+    def geturl(self,url,data):
+        data = self.encodeurl(data)
+        response = urllib2.urlopen('%s?%s' % (url,data))
+        return response.read().decode('utf-8')
+
+    def posturl(self,url,data,isjson = True):
+        if isjson:
+            data = json.dumps(data)
+        response = urllib2.urlopen(url,data)
+        return response.read().decode('utf-8')
+    def encodeurl(self,dict):
+        data = ''
+        for k,v in dict.items():
+            data += '%s=%s%s' % (k,v,'&')
+        return data
+def send_msg(content):
+    msgsender = WeChatMSG(content)
+    access_token_response = msgsender.geturl(msgsender.gettoken_url, msgsender.gettoken_content)
+    access_token =  json.loads(access_token_response)['access_token']
+    sendmsg_url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s' % access_token
+    print msgsender.posturl(sendmsg_url,msgsender.main_content)
+
+def get_es_status():
+    es_url = "http://esclient.bbdcdn.net:9200/_cluster/health"
+    try:
+        response = requests.get(es_url)
+        data = json.loads(response.content)['status']
+    except :
+        data = "connection close"
+    return data
+if __name__ == '__main__':
+    try:
+        error = 0
+        ok = 0
+        while True:
+           status = get_es_status()
+           if status == "red" :
+               print time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "  " + status
+               sys.stdout.flush()
+               send_msg("elasticsearch cluster status is red")
+               error = error + 1
+               time.sleep(300)
+           elif status == "green":
+               ok = ok + 1
+               print time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "  " + status
+               print "ok is %d---error is %d" %(ok,error)
+               sys.stdout.flush()
+               if error >=1 and ok >= 1:
+                   send_msg("elasticsearch cluster status is green")
+                   error = 0
+                   ok = 0
+           time.sleep(60)
+    except Exception:
+        sys.exit(0)
+```
+
+
 # 2. elasticsearch-head
 ## 2.1 安装head插件
 - 下载head插件
@@ -1219,3 +1552,20 @@ bin/kibana-plugin remove x-pack
   ```
 
 - 打开kibana中的monitring，可以看到x-pack的许可与期限
+
+# 7. curator
+https://www.elastic.co/guide/en/elasticsearch/client/curator/5.2/index.html
+
+
+
+
+
+
+
+# 资源链接
+https://www.cnblogs.com/bonelee/p/6617612.html
+es的forcemerge——按照天分割：http://www.bubuko.com/infodetail-1995847.html
+
+Elasticsearch 5.x 源码分析（5）segments merge 流程分析
+
+在ElasticSearch中，集群(Cluster),节点(Node),分片(Shard),Indices(索引),replicas(备份)之间是什么关系？：https://www.zhihu.com/question/26446020?sort=created

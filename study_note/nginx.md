@@ -23,6 +23,7 @@
 
 - 安装zlib库
   ```
+  cd /zz/app/nginx/src
   wget http://zlib.net/zlib-1.2.11.tar.gz
   tar -zxvf zlib-1.2.11.tar.gz
   cd zlib-1.2.11
@@ -33,7 +34,7 @@
 
 - 安装ssl（某些vps默认没装ssl)
   ```
-  cd /usr/local/src
+  cd /zz/app/nginx/src/
   wget https://www.openssl.org/source/openssl-1.0.2n.tar.gz
   tar -zxvf openssl-1.0.2n.tar.gz
   ```
@@ -55,9 +56,9 @@
   --pid-path=/zz/app/nginx/nginx/nginx.pid \
   --lock-path=/run/lock/subsys/nginx \
   --with-http_ssl_module \
-  --with-pcre=/zz/app/nginx/pcre-8.41 \
-  --with-zlib=/zz/app/nginx/zlib-1.2.11 \
-  --with-openssl=/zz/app/nginx/openssl-1.0.2n
+  --with-pcre=/zz/app/nginx/src/pcre-8.41 \
+  --with-zlib=/zz/app/nginx/src/zlib-1.2.11 \
+  --with-openssl=/zz/app/nginx/src/openssl-1.0.2n
 
   make
   #make 有问题了，可以 到你的源码目录内，先make clean  然后./config ....
@@ -69,8 +70,8 @@
 
 ## 1.4 创建nginx用户
   ```
-  /usr/sbin/groupadd nginx
-  /usr/sbin/useradd nginx
+/usr/sbin/groupadd nginx
+/usr/sbin/useradd nginx
   ```
 
 ## 1.5 修改配置文件

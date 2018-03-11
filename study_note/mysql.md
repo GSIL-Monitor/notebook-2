@@ -67,15 +67,18 @@
 #### 1.3.4.安装依赖包、安装mysql
 	#root执行
 	yum -y install libaio
+	
 	#mysqladmin执行
-	scripts/mysql_install_db --user=mysqladmin --basedir=/zz/app/mysql --datadir=/zz/app/mysql/data 
+	scripts/mysql_install_db --user=mysqladmin --basedir=/zz/app/mysql --datadir=/zz/app/mysql/data
 
 #### 1.3.5.命令的地方显示当前目录
 /usr/local/mysql/为mysql的家目录
 
     cp /etc/skel/.* /usr/local/mysql/
     cd /usr/local/mysql/
-    vim .bashrc
+    
+    # vim .bashrc
+    
     MYSQL_BASE=/zz/app/mysql
     export MYSQL_BASE
     PATH=${MYSQL_BASE}/bin:$PATH
@@ -97,14 +100,17 @@
 
 #### 1.3.7.查看进程、启动mysql
     ps -ef|grep mysql
+
     # mysqladmin执行
     mysqld_safe &
     netstat -nlp|grep 3306 #查看端口
 
 #### 1.3.8 更改密码、删除空账号
     #mysql安装之后，会创建root(密码是空,要修改)和一个空账号(密码是空，要删除)
+
     #mysqladmin用户执行
     mysql -uroot -p #提示输入密码，直接回车回车
+    
     show databases;
     use mysql;
     select user,password,host from user;
@@ -124,6 +130,17 @@
 	vim /etc/rc.local
 	#加入下面命令
 	su - mysqladmin -c "/etc/init.d/mysql start --federated"
+
+### 1.3.10 远程连接myslq
+```
+#使用mysqladmin执行
+mysql -uroot -p
+
+grant all on *.* TO 'root'@'%' IDENTIFIED BY 'root';
+flush privileges;
+```
+
+
 
 #### 1.4 java连接驱动包下载
 地址：https://dev.mysql.com/downloads/connector/  
