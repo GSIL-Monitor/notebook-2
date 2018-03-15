@@ -275,6 +275,9 @@ echo ${result[0]}
 # 4. vi
 ![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/linux/vi%E5%91%BD%E4%BB%A4.png?raw=true)
 
+# 5. 格式化插入
+：set paste
+
 
 # 资源
 
