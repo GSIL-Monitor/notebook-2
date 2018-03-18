@@ -263,11 +263,429 @@ rawurl = "rsyslog%E7%89%88%E6%9C%AC%E8%BF%87%E9%AB%98%E5%BC%82%E5%B8%B8.png"
 print(urllib.unquote(rawurl))
 ```
 
+
+
+
+
 # 6. flask
 - [flask中文文档](http://docs.jinkan.org/docs/flask/)
 
+## 6.1 URL与视图
+### 6.1.1 创建Flask项目
+- 在pycharm中file --》 new project --》 Flask
+
+- flask详细代码
+  ```
+  #encoding: utf-8
+
+  # 从flask这个框架中导入Flask这个类
+  from flask import Flask
+
+  # 初始化一个flask对象
+  # Flask()
+  # 需要传一个参数 __name__
+  # 1. 方便flask框架去寻找资源
+  # 2. 方便flask插件比如Flask0Sqlalchemy出现错误的时候， 好去寻找问题所在位置
+  app = Flask(__name__)
+
+  # @app.route是一个装饰器
+  # @开头并且在函数上面，说明是装饰器
+  # 这个装饰器的作用是做一个url与视图函数的映射
+  # 127.0.0.1:5000/  ->  去请求hello_world 这个函数，然后将结果返回浏览器
+  @app.route('/')
+  def hello_world():
+      return 'Hello World!'
+
+  if __name__ == '__main__':
+      # 启动一个应用服务器，来接收用户的请求
+      # while True:
+      #     listen()
+      app.run()
+  ```
+
+### 6.1.2 设置debug模式
+- 在app.run()中传入debug=True；即：`app.run(debug=True)`
+- debug2大功能
+  - 当程序有问题的时候，在页面可以看到错误信息
+  - 只要修改了python文件，程序会自动加载，不需要手动重新启动服务
+
+### 6.1.3 使用配置文件
+- 新建一个`config.py`文件
+- 在app文件中导入这个文件，并配置到app中(取代上面的`app.run(debug=True)`)
+  ```
+  import config
+  app.config.from_object(config)
+  ```
+
+### 6.1.3 url传参
+- 在flask中是参数
+  ```
+  @app.route('/article/<id>') # 参数格式放在<>中
+  def article(id):    #视图函数中需要放和url中同名的参数
+      return u'您请求的参数是：%s' % id
+  ```
+- 请求
+  http://127.0.0.1:5000/article/1
+
+### 6.1.4 反转url
+- 在页面重定向，指定不同的参数，加载不同的数据
+  ```
+  from flask import Flask,url_for
+
+  @app.route('/')
+  def hello_world():
+      a = 1
+      b = 0
+      # c = a / b
+      print url_for('my_list')
+      print url_for('article', id='123')
+      return 'Hello World!'
+
+  @app.route('/list/')
+  def my_list():
+      return 'list'
+
+  @app.route('/article/<id>') # 参数格式放在<>中
+  def article(id):    #视图函数中需要放和url中同名的参数
+      return u'您请求的参数是：%s' % id
+  ```
+  上面请求`http://127.0.0.1:5000/` 会打印list  和  您请求的参数是123
+- 在模版中也会使用反转
+  ```
+  <body>
+  	<a herf="{{ url_for('login') }}" >
+  	<a herf="{{ url_for('logout') }}" >注销</a>
+  </body>
+  ```
+
+### 6.1.5 反转 和 重定向
+- 如果用户没有登录可重定向到登录页面
+  ```
+  from flask import Flask,redirect,url_for
+
+  def hello_world():
+      return redirect('login')    #找的是@app.route里的
+      
+      login_url = url_for('login')
+      return redirect(login_url)    #找的是方法
+
+  @app.route('/login/')
+  def login():
+      return 'login'
+  ```
+
+
+## 6.2 Jinja2模版
+### 6.2.1 模版渲染、参数传递
+1. 如何渲染模版
+- 模版凡在templates文件夹下
+- 从flask中导入render_template
+- 在视图中使用render_template
+2. 模版传参
+- 如果只有一个或少数参数，直接在render_template 函数添加关键字即可
+- 如果多个，可以先放入字典中，然后再render_template 中使用`**字典`，把字典转换成关键参数传递进去
+  ```
+  from flask import Flask,url_for,redirect,render_template
+
+  @app.route('/')
+  def hello_world():
+
+      class Person(object):
+          name = u'张政'
+          age = 18
+      p = Person()
+    
+  	#方式一
+      # return render_template('index.html', username=u'张政')
+
+  	##方式二、三、四
+      content = {
+          'username': u'张政',
+          'gender': u'男',
+          'age': 18,
+
+          'person': p,
+
+          'websites': {
+              'baidu': u'bd',
+              'guge': u'ge'
+          }
+      }
+      #默认是从templates下加载，如果index.html不在templates根下，如templates/another, 就要变成another/index.html
+      return render_template('index.html', **content)
+  ```
+- templates下的index.html
+  ```
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+  </head>
+  <body>
+      这是html
+      <p>用户名：{{ username }}</p>
+      <p>用户名：{{ gender }}</p>
+      <p>用户名：{{ age }}</p>
+
+      <p>名字：{{ person.name }}</p>
+      <p>名字：{{ person.age }}</p>
+
+      <p>百度：{{ websites.baidu }}</p>
+      <p>谷歌：{{ websites['guge'] }}</p>
+  </body>
+  </html>
+  ```
+### 6.2.2 if判断
+- 和python中相差无几，可以使用 > < <= >= == != 进行判断，也可以使用and or not （） 来进行逻辑合并操作
+  ```
+  @app.route('/<is_login>/')
+  def is_l(is_login):
+      if is_login == '1':
+          user = {
+              'username': u'zz'
+          }
+          return render_template('index.html', user=user)
+      else:
+          return render_template('index.html')
+  ```
+- index.html
+  ```
+  <body>
+      这是html
+      {% if user %}
+          <a href="#">{{ user.username }}</a>
+      {% else %}
+          <a href="#">登录</a>
+      {% endif %}
+  </body>
+  ```
+### 6.2.3 for遍历
+1. 字典遍历和python一样，可以使用`items()` `keys()` `values()` `iteriterms()` `iterkeys()` `itervalues()`
+
+  ```
+  @app.route('/')
+  def hello_world():
+      user = {
+          'username': u'zz',
+          'age': 18
+      }
+      for k,v in user.items():
+          print(k)
+          print(v)
+      return render_template('index.html', user = user)
+  ```
+- index.html
+  ```
+  <body>
+    {% for k,v in user.items() %}
+        <p>{{ k }}: {{ v }}</p>
+    {% endfor %}
+  </body>
+  ```
+2. 列表的遍历
+  ```
+      websits = {
+          'baidu': u'bd',
+          'guge': u'gg'
+      }
+      books = [
+          {
+              'name': u'西游记',
+              'author': u'吴承恩',
+              'price': 100
+          },
+          {
+              'name': u'红楼梦',
+              'author': u'曹雪芹',
+              'price': 200
+          }
+          ,
+          {
+              'name': u'三国演义',
+              'author': u'罗贯中',
+              'price': 300
+          }
+      ]
+
+      for k,v in user.items():
+          print(k)
+          print(v)
+      return render_template('index.html', websits = websits, books = books)
+  ```
+- index.html
+  ```
+  <body>
+      {% for websit in websits %}
+          <p>{{ websit }}</p>
+      {% endfor %}
+
+      <table>
+          <thead>
+             <th>书名</th>
+             <th>作者</th>
+             <th>价格 </th>
+          </thead>
+          <tbody>
+              {% for book in books %}
+                  <tr>
+                      <td>{{ book.name }}</td>
+                      <td>{{ book.author }}</td>
+                      <td>{{ book.price }}</td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </body>
+  ```
+
+### 6.2.4 过滤器
+
+  ```
+# app.py
+return render_template('index.html', avatar = "http://img1.imgtn.bdimg.com/it/u=594559231,2167829292&fm=27&gp=0.jpg")
+
+# index.html
+<img src="{{ avatar }}">
+  ```
+
+  ```
+# app.py
+return render_template('index.html')
+
+# index.html
+# 没有默认显示default的
+<img src="{{ avatar|default('http://img.zcool.cn/community/01058a556895750000012716d39e4e.jpg@3000w_1l_2o_100sh.jpg') }}">#}
+  ```
+
+  ```
+# app.py
+books = [
+    {
+        'name': u'西游记',
+        'author': u'吴承恩',
+        'price': 100
+    },
+    {
+        'name': u'红楼梦',
+        'author': u'曹雪芹',
+        'price': 200
+    }
+    ,
+    {
+        'name': u'三国演义',
+        'author': u'罗贯中',
+        'price': 300
+    }
+]
+return render_template('index.html', books = books)
+
+# index.html
+# 获取字典个数
+<p>评论数：{{ books|length }}</p>
+  ```
+
+![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/python/flask%E8%BF%87%E6%BB%A4%E5%99%A8.png?raw=true)
+
+### 2.6.5 继承 和 block 
+
+1. 继承作用 和 语法
+
+   - 作用：可以把一些公用的代码写到模版中，避免每个模版写一遍
+   - 语法：
+
+   ```
+   {% extends 'base.html' %}
+   ```
+
+2. block 实现
+
+   - 作用：可以让子模块实现一些自己的需求，父模版中中需要提前定义好
+   - 注意点：字模版中的代码必须在block快中
+
+   ```
+   # base.html
+   {% block main %}
+   {% endblock %}
+
+   # login.html
+   {% extends 'base.html' %}
+   {% block main %}
+   	<h1>login页面</h1>
+   {% endblock %}
+   ```
+
+### 6.6.6 URL链接 和 加载静态文件
+
+1. 语法：`url_for('static', filename='路径')`
+
+2. 静态文件，flask会从static文件夹中开始寻找，所以不用写static
+
+3. 可以加载css、js、image文件
+
+   ```
+   # 加载css文件
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css' }}">
+
+   # 加载
+   <scrip src="stylesheet" href="{{ url_for('static', filename='css/index.css' }}"></scrip>
+
+   # 加载图片文件
+   <img src="stylesheet" href="{{ url_for('static', filename='css/index.css' }}" alt="">
+   ```
+
+## 6.7 SQLAlchemy数据库
+### 6.7.1 MySQL-python 中间件介绍与安装
+- 如果再类unix系统上，直接进入虚拟环境安装：`sudo pip install mysql-python`
+- 如果再window上
+  - 那么在这`http://www.lfd.uci.edu/~gohlke/pythonlibs#mysql-python` 下载 `MySQL_python‑1.2.5‑cp27‑none‑win_amd64.whl`
+  - 进入到 `MySQL_python‑1.2.5‑cp27‑none‑win_amd64.whl` 所在目录，进行安装
+    `pip install MySQL_python-1.2.5-cp27-none-win_amd64.whl`
+
+
+
+
+
+
+
+
 # 7. django
+
 - [django菜鸟教程](http://www.runoob.com/django/django-tutorial.html)
+
+
+
+
+# 8. pymysql
+
+```
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import pymysql
+
+conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='root', db='mysql', charset='utf8')
+cursor = conn.cursor()
+rowNums = cursor.execute('SELECT * FROM user')
+
+print('查询的行数为' + str(rowNums))
+
+selectResultList = cursor.fetchall()
+for i in range(len(selectResultList)):
+    print(selectResultList[i])
+conn.commit()
+cursor.close()
+conn.close()
+```
+
+
+
+
+
+
+
+
+
 
 
 # 资源地址
