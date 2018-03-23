@@ -261,6 +261,27 @@ result=( str_to_arr "ERROR,100,1" ",")
 echo ${result[0]}
 ```
 
+## 2.14 文件重命名
+Linux Shell 批量重命名的方法总览: http://blog.csdn.net/kwame211/article/details/76019823
+有些系统的rename好像不支持正则: https://bbs.csdn.net/topics/392089145?page=1
+修复Bulk Rename不能使用正则表达式的Bug : http://blog.chinaunix.net/uid-20579666-id-1920361.html
+rename 命令： http://man.linuxde.net/rename
+rename在centos6.7中正则好像无法使用
+
+`sed -i 's/aa/bb/g' file`
+
+```
+for i in `ls ./`
+do
+	if [[ $(echo $i | grep "t") != "" ]]
+	then
+			newName=`echo $i|sed s/t/boy/g`
+			echo $newName
+			mv $i $newName
+	fi
+done
+```
+
 # 3、服务安装
 ## 3.1、httpd
 ### 3.1.1、安装

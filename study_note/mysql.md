@@ -57,6 +57,7 @@ chown -R mysqladmin:dba /var/run/mysqld
     cp /etc/skel/.* /usr/local/mysql/
     cd /usr/local/mysql/
     
+    #配置环境变量
     # vim .bashrc
     
     MYSQL_BASE=/zz/app/mysql
@@ -80,14 +81,14 @@ chown -R mysqladmin:dba /var/run/mysqld
 
 ## 1.9 查看进程、启动mysql
     ps -ef|grep mysql
-
+    
     # mysqladmin执行
     mysqld_safe &
     netstat -nlp|grep 3306 #查看端口
 
 ## 1.10 更改密码、删除空账号
     #mysql安装之后，会创建root(密码是空,要修改)和一个空账号(密码是空，要删除)
-
+    
     #mysqladmin用户执行
     mysql -uroot -p #提示输入密码，直接回车回车
     
@@ -100,7 +101,7 @@ chown -R mysqladmin:dba /var/run/mysqld
     select user,password,host from user;
     flush privileges;
 
-
+## 1.11 开机自启动
 ## 1.11 开机自启动
 	#root用户执行
 	cp support-files/mysql.server /etc/rc.d/init.d/mysql
@@ -114,6 +115,7 @@ chown -R mysqladmin:dba /var/run/mysqld
 ## 1.12 允许远程连接myslq
 ```
 #使用mysqladmin执行
+su - mysqladmin
 mysql -uroot -p
 
 grant all on *.* TO 'root'@'%' IDENTIFIED BY 'root';

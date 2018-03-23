@@ -1,4 +1,21 @@
+朋友大数据面试集锦：http://www.daoke360.com/front/articleinfo/26.html
+
+
+
+零基础学习人工智能+大数据教程（2018年最新版）
+课程学习地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/229
+课程出自学途无忧网：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com
+
+本课程划分为两大部分，第一部分侧重于基于Python的数据分析：从最基础的Python基础语法开始讲起、Python科学计算及数据分析工具包+Python数据可视化工具包的学习，系统了介绍了数据收集、清洗、处理、展示的数据分析与挖掘的全过程
+
+第二部分为本课程的中高级部分：从最核心的机器学习的十大经典算法原理以及Python语言的实现开始。到机器学习、深度学习、大数据+机器学习，自然语言处理，相关机器学习/深度学习框架，项目实战等 。过程中涉及了大量的机器学习过程中常用的技巧、经验和方法，并配合经典机器学习项目实战训练，达到了解人工智能，机器学习、大数据生态圈的关系，并能够利用所学结合实际业务完成数据分析、人工智能的项目，并最终轻松 迈进人工智能的领域，实现高薪就业转型！
+
+5大阶段，20+ 课程，16+ 经典案例，4大商业项目实战，5层级能力训练模型（代码级、应用级、工程级、算法级、专家级），打造史上最实用的听得懂、学得会的最接地气 的人工智能（机器学习）高端培训课程 
+
+
+
 免费课程目录
+
 ```
 git的使用
 1-git介绍和使用
@@ -245,3 +262,13 @@ Spark全面精讲（基于Spark2版本+含Spark调优+超多案例）
 
 
 Hadoop从入门到上手企业开发视频下载[70集]：https://www.iteblog.com/archives/1273.html
+
+
+
+
+
+
+
+hadoop系列最全视频教程  定时删除赶紧下载 
+ 链接: http://pan.baidu.com/s/1bnGV8dT 密码: 7wna
+链接：http://pan.baidu.com/s/1bndG3kr 密码：x6d2

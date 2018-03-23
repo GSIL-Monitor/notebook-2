@@ -814,7 +814,7 @@ echo $month
 curl -XPUT "http://183.136.128.47:9200/_snapshot/my_hdfs_repository5/statsdata$month" -d '{"indices":"statsdata_*'$month'*"}'
 echo 'statsdata_*'$month'*  backup success' >> snapshot_es.log
 #echo curl -XPUT "http://183.136.128.47:9200/_snapshot/my_hdfs_repository5/statsdata$month" -d \'{\"indices\":\"statsdata_*$month*\"}\' >zrr.sh
-#echo 
+#echo
 #chmod +x zrr.sh
 #sh zrr.sh
 ```
