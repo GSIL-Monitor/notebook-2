@@ -62,8 +62,8 @@
 
 ### 1.2.2 查看集群节点列表
   ```curl -XGET 'http://master:9200/_cat/nodes?v'
-  #现在我们来看看我们的指数
-  curl -XGET 'http://master:9200/_cat/indices?v'
+#现在我们来看看我们的指数
+curl -XGET 'http://master:9200/_cat/indices?v'
   ```
 
 ### 1.2.3 创建索引
@@ -373,6 +373,45 @@ POST /_snapshot/my_hdfsbackup/snapshot_1/_restore
   "rename_pattern": "index_(.+)",
   "rename_replacement": "restored_index_$1"
 }
+```
+
+vim plugin-security.policy
+
+```
+grant {
+  // Hadoop UserGroupInformation, HdfsConstants, PipelineAck clinit
+  permission java.lang.RuntimePermission "getClassLoader";
+
+  // UserGroupInformation (UGI) Metrics clinit
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+
+  // org.apache.hadoop.util.StringUtils clinit
+  permission java.util.PropertyPermission "*", "read,write";
+
+  // org.apache.hadoop.util.ShutdownHookManager clinit
+  permission java.lang.RuntimePermission "shutdownHooks";
+
+  // JAAS is used always, we use a fake subject, hurts nobody
+  permission javax.security.auth.AuthPermission "getSubject";
+  permission javax.security.auth.AuthPermission "doAs";
+  permission javax.security.auth.AuthPermission "modifyPrivateCredentials";
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.RuntimePermission "getClassLoader";
+  permission java.lang.RuntimePermission "shutdownHooks";
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+  permission javax.security.auth.AuthPermission "doAs";
+  permission javax.security.auth.AuthPermission "getSubject";
+  permission javax.security.auth.AuthPermission "modifyPrivateCredentials";
+  permission java.security.AllPermission;
+  permission java.util.PropertyPermission "*", "read,write";
+  permission javax.security.auth.PrivateCredentialPermission "org.apache.hadoop.security.Credentials * \"*\"", "read";
+};
+
+作者：king_wang
+链接：https://www.jianshu.com/p/f14f0afed345
+來源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
 

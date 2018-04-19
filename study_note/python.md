@@ -252,6 +252,26 @@ print(r.content)
 cmd --》`pip install requests`
 在pycharm中：file-》setting-》project interpreter,点击+ ，安装requests
 
+## 4.4 下载
+
+### 4.4.1 下载图片、视频到本地
+
+```
+import urllib.request
+
+# url = "http://sc4.hao123img.com/data/5684bc23a81e0a8c74e872414e69dfc6_0"
+url = "http://vd3.bdstatic.com/mda-iamci8rkne0sbasv/mda-iamci8rkne0sbasv.mp4"
+data = urllib.request.urlopen(url).read()
+# 保存图片到本地
+# file = open('D:\study\code\python_workspace\hello_python\zz\com\download\dir_name/'+ 'n.png', 'wb')
+# 保存视频到本地
+file = open('D:\study\code\python_workspace\hello_python\zz\com\download\dir_name/'+ '1.mp4', 'wb')
+file.write(data)
+file.close()
+```
+
+
+
 # 5. 工作中的python
 ## 5.1 绑定本地出口IP
 - 背景：在三线服务器上上传文件到云服务，用其中联通的上传
@@ -1646,51 +1666,403 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
 
 
 # 9 爬虫
+## 9.1 安装
+### 9.1.1 参考地址
+- 参考租房网爬虫视屏：https://study.163.com/course/courseMain.htm?courseId=1003666043
+### 9.1.2 Mac环境安装
+- xcode-select --install
+- ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install)"
+- brew search python
+- brew install python3
+- pip3 installl scrapy
+检查scrapy版本：`scrapy version`
 
-#查看版本
-pip -V
-pip install -h
-#更新pip
-pip install --upgrade pip
+### 9.1.3 Linux环境安装
+- sudo apt-get install python3-pip python3-dev
+- sudo pip3 install --upgrade pip
+- sudo pip3 install scrapy
+检查scrapy版本：`scrapy version`
 
-pywin32（谷歌浏览器打开）
-https://sourceforge.net/projects/pywin32/files/pywin32/
+### 9.1.4 window环境安装
+- 先安装python3.5，官网下载
+- 安装Pywin32，网址：[https://sourceforge.net/projects/pywin32/files/pywin32/](https://sourceforge.net/projects/pywin32/files/pywin32/) ;如果安装后后面还是出现没有pywin32接口，可以在[https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml](https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml)下载pywin32，`pip install` 安装
+- pip3离线安装lxml，网址：[https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml](https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml)
+- pip3离线安装twisted，网址：[https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml](https://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml)
+- 最后 `pip3 install scrapy` ，检查下scrapy的版本号：`scrapy version`
+- python2.7 同理，找对应的文件下载安装 `Twisted-17.9.0-cp36-cp36m-win_amd64.whl` 
+
+### 9.1.5 conda创建的虚拟环境安装scrapy
+- 启动虚拟环境，安装scrapy
+  ```
+  activate python36
+  pip -V
+  pip install scrapy
+  ```
+- 当出现安装失败：缺少window上的vc相关的库时，先直接安装下 `Twisted-17.9.0-cp36-cp36m-win_amd64.whl` ，scrapy要用到它，它又依赖window的vc相关库
+- 解决
+  方法一：安装vc相关的库
+  方法二：直接下载 `Twisted-17.9.0-cp36-cp36m-win_amd64.whl` 然后 
+  ```
+  pip install D:\bigdata\source\python\scrapy\Twisted-17.9.0-cp36-cp36m-win_amd64.whl
+  pip install scrapy
+  ```
 
 
-https://www.lfd.uci.edu/~gohlke/pythonlibs/
-搜索lxml
-下载对应系统、python的（例如：lxml‑4.2.0‑cp35‑cp35m‑win_amd64.whl）
+## 9.2 scrapy
+
+### 9.2.1 scrapy命令
+
+```
+(python27) C:\Users\zhang>scrapy
+Scrapy 1.5.0 - no active project
+
+Usage:
+  scrapy <command> [options] [args]
+
+Available commands:
+  bench         Run quick benchmark test
+  fetch         Fetch a URL using the Scrapy downloader
+  genspider     Generate new spider using pre-defined templates
+  runspider     Run a self-contained spider (without creating a project)
+  settings      Get settings values
+  shell         Interactive scraping console
+  startproject  Create new project
+  version       Print Scrapy version
+  view          Open URL in browser, as seen by Scrapy
+
+  [ more ]      More commands available when run from project directory
+
+Use "scrapy <command> -h" to see more info about a command
+```
+- 命令参考地址：
+  https://www.cnblogs.com/lemonbit/p/7068091.html
+- bench: 测试性能
+- fetch：给个url地址，下载
+- genspider：创建一个爬虫
+- runspider：启动一个爬虫
+- shell：scrapy shell 环境
+  - 类似于ipython
+  - 启动后：
+    - print response.body
+    - print response.xpath('')
+- startproject：创建scrapy项目
+- version：版本
+- view：浏览器中查看
+#### 9.2.1.1 使用命令创建项目
+- 创建项目：`scrapy startproject zufangtest`
+
+  ```
+  (python36) C:\Users\zhang>scrapy startproject zufangtest
+  New Scrapy project 'zufangtest', using template directory 'c:\\users\\zhang\\anaconda3\\envs\\python36\\lib\\site-packages\\scrapy\\templates\\project', created in:
+      C:\Users\zhang\zufangtest
+
+  You can start your first spider with:
+      cd zufangtest
+      scrapy genspider example example.com
+
+  (python36) C:\Users\zhang>cd C:\Users\zhang\zufangtest
+  (python36) C:\Users\zhang\zufangtest>scrapy list
+  ```
 
 
-pip install lxml-4.2.0-cp35-cp35m-win_amd64.whl
-pip install Twisted-17.9.0-cp35-cp35m-win_amd64.whl
-pip install scrapy
-
-可能还需要：beautful
-
-https://study.163.com/course/courseMain.htm?courseId=1003666043
-http://study.163.com/course/courseMain.htm?courseId=1004236002
 
 
+## 9.2.2 scrapy shell
+- 赶集租房地址：http://bj.ganji.com/fang1/
+- 使用scrapy shell：
+- `scrapy shell http://bj.ganji.com/fang1/`
+  ```
+  [s]   fetch(req)                  Fetch a scrapy.Request and update local objects
+  [s]   shelp()           Shell help (print this help)
+  [s]   view(response)    View response in a browser
+  >>>
+  ```
+
+- 查看抓取下来的页面 `view(response)`
+
+- scrapy shell 中爬取赶集网租房信息 
+
+  ```
+  # 获取指定的（单个）title, path查找可以利用火狐浏览器的firbug 和 firpath来获取
+  response.xpath(".//div[@id='puid-2944994487']/dl/dd[1]/a/text()").extract()
+
+  # 获取价格（单个）
+  response.xpath(".//div[@id='puid-2944994487']/dl/dd[5]/div[1]/span[1]/text()").extract()
+
+  #获取所有的title和价格
+  response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[5]/div[1]/span[1]/text()").extract()
+  response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[1]/a/text()").extract()
+  ```
+
+## 9.3 爬取信息
+### 9.3.1 爬取赶集住房网住房信息
+- 代码下载链接：[百度网盘地址](https://pan.baidu.com/s/1qYPi2iK)
+
+- 创建scrapy项目 `scrapy startproject zufang`，命令下面会列出项目地址
+
+- pycharm打开这个项目，
+
+- 在spliders下创建python文件 zufang.py
+  ```
+  #encoding: utf-8
+  import scrapy
+
+  class GanjiSpider(scrapy.Spider):
+      name = "zufang" #爬虫的名字，scrapy list获取到的名字
+      start_urls = ['http://bj.ganji.com/fang1/chaoyang/']
+
+      def parse(self, response):
+          print(response)
+          title_list = response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[5]/div[1]/span[1]/text()").extract()
+          money_list = response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[1]/a/text()").extract()
+          for i,j in zip(title_list, money_list):
+              print(i + "-------------" + j)
+  ```
+
+- 在pycharm 的 cmd里命令：`scrapy list` 列出当前有多少个爬虫项目（例如：zufang）
+
+  - 或者在window的cmd命令端，进入项目的位置，输入：`scrapy list`
+  - 项目的名称是代码中的name值
+
+- 运行 `scrapy crawl zufang`
+
+- 问题：
+  ....
+  2018-03-23 21:35:18 [scrapy.downloadermiddlewares.redirect] DEBUG: Redirecting (302) to <GET http://www.ganji.com/404.htm> from <GET http://callback.ganji.com/robots.txt>
+  2018-03-23 21:35:18 [scrapy.downloadermiddlewares.redirect] DEBUG: Redirecting (meta refresh) to <GET http://www.ganji.com/> from <GET http://www.ganji.com/404.htm>
+  2018-03-23 21:35:18 [scrapy.downloadermiddlewares.redirect] DEBUG: Redirecting (302) to <GET http://bj.ganji.com/> from <GET http://www.ganji.com/>
+  2018-03-23 21:35:18 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://bj.ganji.com/> (referer: None)
+  2018-03-23 21:35:18 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://callback.ganji.com/firewall/valid/1898790186.do?namespace=ganji_zufang_list_pc&url=http%3A%2F%2Fbj.ganji.com%2Ffang1%2Fchaoyang%2F> (referer: None)
+  <200 http://callback.ganji.com/firewall/valid/1898790186.do?namespace=ganji_zufang_list_pc&url=http%3A%2F%2Fbj.ganji.com%2Ffang1%2Fchaoyang%2F>
+  2018-03-23 21:35:18 [scrapy.core.engine] INFO: Closing spider (finished)
+  ```
+  处理：
+  打开最后的url [https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/) 然后按照提示校验下，访问过去频繁导致
+  ```
+
+### 9.3.2 开始把数据写到sqlite
+- 在 `pycharm terminal` 里使用ipython命令`ipython`，创建sqlite库和表
+  ```
+  import sqlite3
+  zufangtest = sqlite3.connect('zufangtest.sqlite')
+  create_table = 'create table zufangtest (title varchar(512), money varchar(128))'
+  zufangtest.execute(create_table)
+  quit
+  ```
+  - 创建后就可以在项目中看到 `zufangtest.sqlite` 文件
+
+- 打开pycharm 右边的 `database` 把文件拖进来，刷新，打开，看到创建的表 `zufangtest` 则成功
+
+- 修改代码
+  - settings.py 放开下面的注释
+    ```
+     ITEM_PIPELINES = {
+        'zufangtest.pipelines.ZufangtestPipeline': 300,
+     }
+    ```
+  - pipelines.py 管道文件
+    ```
+    import sqlite3
+    
+    class ZufangtestPipeline(object):
+        def open_spider(self,spider):
+            self.con = sqlite3.connect("zufangtest.sqlite")
+            self.cu = self.con.cursor()
+    
+        def process_item(self, item, spider):
+            print(spider.name, 'pipelines')
+            # print("------------" + item['title'])
+            insert_sql = "insert into zufangtest (title, money) values('{}', '{}')".format(item['title'], item['money'])
+            # print("sql--------->" + insert_sql)
+            self.cu.execute(insert_sql)
+            self.con.commit()
+            return item
+    
+        def spider_close(self, spider):
+            self.con.close()
+    ```
+  - items.py
+    ```
+    import scrapy
+    
+    class ZufangtestItem(scrapy.Item):
+        # define the fields for your item here like:
+        # name = scrapy.Field()
+        title = scrapy.Field()
+        money = scrapy.Field()
+    ```
+    - zufang.py
+    ```
+    import scrapy
+    from zufangtest.items import ZufangtestItem
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+    
+    class GanjiSpider(scrapy.Spider):
+    
+        # 爬虫的名字，scrapy list获取到的名字
+        name = "zufangtest"
+        start_urls = ['http://bj.ganji.com/fang1/chaoyang/']
+    
+        def parse(self, response):
+            print(response)
+            zf = ZufangtestItem()
+            title_list = response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[1]/a/text()").extract()
+            money_list = response.xpath(".//div[@class='f-list-item ershoufang-list']/dl/dd[5]/div[1]/span[1]/text()").extract()
+            for i,j in zip(title_list, money_list):
+                # print(i + "-------------" + j)
+                zf['title'] = i
+                zf['money'] = j
+                yield zf
+    ```
+
+- pycharm terminal 中执行 `scrapy crawl zufangtest` 开始爬取数据
+
+- 查看表zufangtest中的数据
+
+- 问题：Exception in thread "main" java.lang.ClassNotFoundException: org.sqlite.JDBC
+
+  - 下载驱动http://mvnrepository.com/artifact/sqlitejdbc/sqlitejdbc/0.5.6
+  - pycharm右侧的database，点击`data source and drive`（数据库和扳手的图标）--》 点击test connection， 缺少驱动应该是faile
+  - 点击 `sqlite(xerial)` 或是左侧的`import data source`下面的创建的数据库 --> 点击driver file里的 +， 添加下载的驱动jar
+  - 添加jar后，点击左侧的`import data source`下面的创建的数据库 --》 再点击 `test connection`
+
+## 9.4 xpath
+### 9.4.1 火狐浏览器xpath使用
+- 火狐浏览器新版本的不再支持firbug 和 xpath
+- 可以在浏览器中`f12`打开调试，点位要选取的内容，然后右键copy，然后选择copy xpath，可以检索出xpath的路径，但不支持在debug 模式下使用xpath查询
+### 9.4.2 谷歌浏览器xpath
+- 在谷歌浏览器中的支持上面的xpath检索路径（在debug模式下copy xpath）
+
+- 也支持根据xpath路径检索对应的内容，获取到xpath后，`ctrl + f` 复制xpath路径，就可以检索到对应的内容
+
+### 9.4.3 QQ浏览器
+- 和谷歌浏览器类似，使用的是谷歌浏览器的内核
+
+### 9.4.4 手写xpath
+- 自动获取的xpath的路径是根据某个id或什么生成的，手写的可以有自己的思路，建议自己手写
+- xpath教程
+  - w3school 中的xpath
+  - www.spbeen.com 中的xpath教程，这是完全基于爬虫写的（小布老师博客-网易python爬虫）
 
 
 
 
+# 10. Anaconda
 
+## 10.1 介绍
+- python 管理python工具，python第三方软件管理，并不是python官方的
 
+- Anaconda 是一个用于科学计算的 Python 发行版，支持 Linux, Mac, Windows, 包含了众多流行的科学计算、数据分析的 Python 包。
+
+- Anaconda 官网的镜像源是在国外，比较慢，可以百度 [Anaconda 清华镜像源](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)
+
+- Anaconda、conda、pip、virtualenv的区别： [https://www.jianshu.com/p/62f155eb6ac5](https://www.jianshu.com/p/62f155eb6ac5)
+
+## 10.2 安装、使用
+### 10.2.1 安装
+- 下载： Anaconda 安装包可以到 https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/ 下载。
+
+- 安装后`cmd` 进入命令行，`conda` 如果报错，说明环境变量没配好
+
+  ```
+  usage: conda [-h] [-V] command ...
+
+  conda is a tool for managing and deploying applications, environments and packages.
+
+  Options:
+
+  positional arguments:
+    command
+      clean        Remove unused packages and caches.
+      config       Modify configuration values in .condarc. This is modeled
+                   after the git config command. Writes to the user .condarc
+                   file (C:\Users\zhang\.condarc) by default.
+      create       Create a new conda environment from a list of specified
+                   packages.
+      help         Displays a list of available conda commands and their help
+                   strings.
+      info         Display information about current conda install.
+      install      Installs a list of packages into a specified conda
+                   environment.
+      list         List linked packages in a conda environment.
+      package      Low-level conda package utility. (EXPERIMENTAL)
+      remove       Remove a list of packages from a specified conda environment.
+      uninstall    Alias for conda remove. See conda remove --help.
+      search       Search for packages and display associated information. The
+                   input is a MatchSpec, a query language for conda packages.
+                   See examples below.
+      update       Updates conda packages to the latest compatible version. This
+                   command accepts a list of package names and updates them to
+                   the latest versions that are compatible with all other
+                   packages in the environment. Conda attempts to install the
+                   newest versions of the requested packages. To accomplish
+                   this, it may update some packages that are already installed,
+                   or install additional packages. To prevent existing packages
+                   from updating, use the --no-update-deps option. This may
+                   force conda to install older versions of the requested
+                   packages, and it does not prevent additional dependency
+                   packages from being installed. If you wish to skip dependency
+                   checking altogether, use the '--force' option. This may
+                   result in an environment with incompatible packages, so this
+                   option must be used with great caution.
+      upgrade      Alias for conda update. See conda update --help.
+
+  optional arguments:
+    -h, --help     Show this help message and exit.
+    -V, --version  Show the conda version number and exit.
+
+  conda commands available from other packages:
+    build
+    convert
+    develop
+    env
+    index
+    inspect
+    metapackage
+    render
+    server
+    skeleton
+    verify
+
+  C:\Users\zhang>
+  ```
+- 查看conda的版本
+  ```
+  conda --version
+  ```
+
+### 10.2.2 安装scrapy
+- `conda install scrapy=1.4` , 会提示 是否更新
+
+### 10.2.3 python 的虚拟环境
+- 创建python虚拟环境
+  ```
+  #默认路径在 C:\Users\zhang\Anaconda3\envs	
+  create -n python36 python=3.6
+
+  #安装虚拟环境到指定路径的命令如下：
+  conda create --prefix=D:\bigdata\tools\python python=3.6
+  ```
+- 启动虚拟环境：
+  ```
+  activate.bat pythono36
+  
+  #如果安装指定了目录，启动时也要指定目录
+  activate D:\bigdata\tools\python\python36
+  ```
+- 再查看下pip的版本，看下路径
+  ```
+  pip -V
+  ```
+- 然后就可以直接使用 `pip install` 安装其它依赖
+- 想要删除指定路径下的虚拟环境，使用如下的命令
+  ```
+  conda remove --prefix=D:\bigdata\tools\python\python36 --all
+  ```
 
 
 
 # 资源地址
 Python爱好者社区历史文章列表（每周append更新一次）: http://mp.weixin.qq.com/s/-j4u6Q4KpAfTQZnlaO0vgw
-  ```
-
-  ```
-
-  ```
-
-  ```
-
-  ```
-
-  ```

@@ -1,7 +1,6 @@
 朋友大数据面试集锦：http://www.daoke360.com/front/articleinfo/26.html
 
 
-
 零基础学习人工智能+大数据教程（2018年最新版）
 课程学习地址：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com/course/229
 课程出自学途无忧网：![img](file:///C:\Users\zhang\AppData\Local\Temp\%W@GJ$ACOF(TYDYECOKVDYB.png)http://www.xuetuwuyou.com
@@ -272,3 +271,50 @@ Hadoop从入门到上手企业开发视频下载[70集]：https://www.iteblog.co
 hadoop系列最全视频教程  定时删除赶紧下载 
  链接: http://pan.baidu.com/s/1bnGV8dT 密码: 7wna
 链接：http://pan.baidu.com/s/1bndG3kr 密码：x6d2
+
+# 7 万门大学 人工智能
+万门大学：https://www.wanmen.org/
+```
+人工智能专业学习课程
+领取步骤：1.点击优惠券链接兑换课程  2.点击课程链接上课
+第一阶段:数学
+《高等数学特训班》
+优惠券链接:https://st.h5.xiaoe-tech.com/st/9AQlwNiBD
+课程链接:https://st.h5.xiaoe-tech.com/st/9lQXf9gXL
+
+《线性代数两日特训班》
+优惠券链接:https://st.h5.xiaoe-tech.com/st/6jF7M4Jra
+课程链接:https://st.h5.xiaoe-tech.com/st/9JuhENZq5      
+
+《考研概率论》
+优惠券链接：https://st.h5.xiaoe-tech.com/st/8Y6XjN09F 
+课程链接：https://st.h5.xiaoe-tech.com/st/1uWUJA1ZP
+
+第二阶段:编程:
+《python编程入门》
+优惠券链接：https://st.h5.xiaoe-tech.com/st/2zb5qczoi
+课程链接：https://st.h5.xiaoe-tech.com/st/6VBafa7mM
+
+第三阶段:机器学习
+《机器学习Machine Learning》
+优惠券链接：https://st.h5.xiaoe-tech.com/st/0IEsjrVnS
+课程链接https://st.h5.xiaoe-tech.com/st/14pRWJEM9
+
+《机器学习理解与实战》
+优惠券链接：https://st.h5.xiaoe-tech.com/st/7ATW2L9ke
+课程链接:https://st.h5.xiaoe-tech.com/st/93i61IA7p
+
+第四阶段:数据挖掘实战
+《大数据与贝叶斯课程》
+课程链接：https://st.h5.xiaoe-tech.com/st/8dLINpGZE
+
+《数据挖掘课程》
+课程链接：https://st.h5.xiaoe-tech.com/st/2sv9GdDrM
+
+第五阶段:深度学习
+《深度学习和神经网络》
+优惠券链接：https://st.h5.xiaoe-tech.com/st/41pjtxsiP
+课程链接：https://st.h5.xiaoe-tech.com/st/3wHOBWtwO
+
+《10G AI资料包》链接:https://pan.baidu.com/s/1YtNft-KjcMD-atbLiXI-EQ  密码:pui5
+```

@@ -1,5 +1,8 @@
 # 1. Kafka
 ## 1.1 安装
+
+### 1.1.1 安装启动
+
 - 下载
   ```
   wget https://archive.apache.org/dist/kafka/0.10.2.0/kafka_2.11-0.10.2.0.tgz
@@ -70,11 +73,15 @@
   ```
 
 
-## 1.2 配置文件
-  > [kafka-server-start.sh](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kafka/kafka-server-start.sh)
-  > [server.properties](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kafka/server.properties)
+### 1.1.2 配置文件
+- [kafka-server-start.sh](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kafka/kafka-server-start.sh)
+- [server.properties](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/kafka/server.properties)
 
-## 1.3 服务器是多线-配置
+### 1.1.3 kafka配置
+replica.log.time.max.ms: 指定了副本在复制消息时可被允许的最大延迟时间
+
+
+## 1.2 服务器是多线-配置
 - 如果是多线（多运营商）的，修改：`listener.security.protocol.map` `listeners` `advertised.listeners`,其中ip1234分别是对应的移动、联通、电信、内网ip
   ```
   listener.security.protocol.map=PLAINTEXT:PLAINTEXT,PLAINTEXT1:PLAINTEXT,PLAINTEXT2:PLAINTEXT,PLAINTEXT3:PLAINTEXT
@@ -82,7 +89,7 @@
   advertised.listeners=PLAINTEXT://ip1:9092,PLAINTEXT1://ip2:9093,PLAINTEXT2://ip3:9094,PLAINTEXT3://ip4:9095
   ```
 
-## 1.4 kafka相关命令
+## 1.3 kafka相关命令
 ```
 #创建主题
 /zz/app/kafka/bin/kafka-topics.sh --create --topic test --replication-factor 1 --partitions 6 --zookeeper master:2181,work1:2181,work2:2181
@@ -227,7 +234,7 @@ mv quasiquotes_2.10-2.0.1.jar /root/.ivy2/cache/org.scalamacros/quasiquotes_2.10
           --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
           --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
 
-
+> [Kafka三款监控工具比较(转) ](http://www.cnblogs.com/zdfjf/p/5717993.html)  
 > [Kafka三款监控工具比较(转) ](http://www.cnblogs.com/zdfjf/p/5717993.html)  
 > [Confluent介绍（一）](http://www.cnblogs.com/zdfjf/p/5646525.html)  
 > [Confluent介绍（二）](http://www.cnblogs.com/zdfjf/p/5696921.html)  
