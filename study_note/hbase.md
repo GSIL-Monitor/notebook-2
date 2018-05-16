@@ -6,24 +6,44 @@
 wget http://mirror.bit.edu.cn/apache/hbase/1.2.6/hbase-1.2.6-bin.tar.gz
 
 ## 1.3 修改配置
-- vim conf/hbase-site.xml
-  <property>
-  <name>hbase.rootdir</name>
-  <value>hdfs://master:9000/hbase</value>
-  </property>
-  <property>
-  <name>hbase.cluster.distributed</name>
-  <value>true</value>
-  </property>
+- hbase-env.sh
+```
+export JAVA_HOME=/zz/app/jdk
+export HBASE_MANAGES_ZK=false
+```
 
-<property>
-	<name>hbase.zookeeper.quorum</name>
-	<value>master,work1,work2</value>
-</property>
-<property>
-	<name>hbase.zookeeper.property.dataDir</name>
-	<value>/servers/hbase/zookeeper</value>
-</property>
+- hbase-site.xml
+```
+<configuration>
+	<property>
+		<name>hbase.master</name>
+		<value>master:60000</value>
+	</property>
+	<!-- 主备间隔时间 -->
+	<property>
+		<name>hbase.master.maxclockskew</name> 
+		<value>180000</value>
+	</property>
+	
+	<property>
+		<name>hbase.rootdir</name>
+		<value>hdfs://master:9000/hbase</value>
+	</property>
+	<property>
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+	</property>
+	
+	<property>
+		<name>hbase.zookeeper.quorum</name>
+		<value>master,work1,work2</value>
+	</property>
+	<property>
+		<name>hbase.zookeeper.property.dataDir</name>
+		<value>/servers/hbase/zookeeper</value>
+	</property>
+</configuration>
+```
 
 - vim conf/regionservers
 ```
@@ -98,3 +118,20 @@ You must set `JAVA_HOME` on each node of your cluster. *hbase-env.sh* provides a
 | Hadoop-2.8.1       | X           | X           | X           | X           |
 | Hadoop-3.0.0       | NT          | NT          | NT          | NT          |
 
+
+# 2. 
+主HMaster：不存任何信息，只管理HReginServer挂掉后数据迁移和表的信息，不管理数据信息；
+集群运行起来，表创建完了，HMaster挂了照样跑
+
+从HReginServer：缓存数据
+
+![hbase架构图](D:\study\mygit\notebook\study_note_access\hbase\hbase架构图.png)
+- hbase是写快，读慢（慢是相对于写来说的）
+- 写数据
+  - 来了一条数据通过zookeeper定位写到哪台HReginServer上
+  - 
+- 读数据
+
+# 3. 
+
+hbase shell

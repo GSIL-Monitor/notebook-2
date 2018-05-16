@@ -23,25 +23,39 @@
 - hdfs-site.xml
 ```
 <configuration>
-	<property>
-		<name>dfs.namenode.secondary.http-address</name>
-		<value>master:50090</value>
-	</property>
+	<!-- 设置hdfs副本数量 -->
 	<property>
 		<name>dfs.replication</name>
 		<value>2</value>
 	</property>
+	
+	<!-- 设置namenode的http通讯地址 -->
+	<property>
+		<name>dfs.namenode.http-address</name>
+		<value>master:50070</value>
+	</property>
+
+	<!-- 设置secondarynamenode的http通讯地址 -->
+	<property>
+		<name>dfs.namenode.secondary.http-address</name>
+		<value>slave1:50090</value>
+	</property>
+	
+	<!-- 设置namenode存放的路径 -->
 	<property>
 		<name>dfs.namenode.name.dir</name>
-		<value>file:/zz/data/hadoop/tmp/dfs/name</value>
+		<value>/usr/local/software/hadoop/dfs/name</value>
 	</property>
+	
+	<!-- 设置datanode存放的路径 -->
 	<property>
 		<name>dfs.datanode.data.dir</name>
-		<value>file:/zz/data/hadoop/tmp/dfs/data</value>
+		<value>/usr/local/software/hadoop/dfs/data</value>
 	</property>
+	
 	<property>
 		<name>dfs.namenode.checkpoint.dir</name>
-		<value>file:/zz/data/hadoop/tmp/dfs/namesecondary</value>
+		<value>file:///usr/local/software/hadoop/dfs/namesecondary</value>
 		<description>Determines where on the local filesystem the DFSsecondary name node should store the temporary images to merge. If this is acomma-delimited list of directories then the image is replicated in all of thedirectories for redundancy.</description>
 	</property>
 </configuration>
@@ -135,11 +149,11 @@ ssh-copy-id work1 #复制公匙到work1上
 ```
 
 ## 1.6 启动
-- 格式化namenode（主节点和分节点都格式化）
+- haoop用户格式化namenode（主节点和分节点都格式化）
 ```
 ./bin/hdfs namenode -format
 ```
-- 启动：
+- haoop用户启动：
 ```
 stop-dfs.sh
 stop-yarn.sh
@@ -147,12 +161,15 @@ stop-yarn.sh
 
 - 进程
   - master
-  > NameNode
-  > SecondaryNameNode
-  > ResourceManager
+    NameNode
+    SecondaryNameNode
+    ResourceManager
   - work1
-  > DataNode
-  > NodeManager
+    DataNode
+    NodeManager
+  - work2
+    DataNode
+    NodeManager
 
 ## 1.7 run 自带wordcount
 ```

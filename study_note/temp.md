@@ -1,4 +1,28 @@
-朋友大数据面试集锦：http://www.daoke360.com/front/articleinfo/26.html
+# 1. 学院
+## 1.1 尚学堂
+1. 账号
+  - 官网账号密码：18911831867 / 19910605abc
+  - 百战程序员：18911831867
+    邮箱：zhangzhengstrive@163.com
+    19910605abc
+2. 官网：http://www.bjsxt.com/
+3. 尚学堂百战程序员视屏地址：http://www.sxt.cn/#4
+
+## 1.2 小象学院
+1. 官网：http://www.chinahadoop.cn/
+
+
+
+# 2. 资源地址
+## 2.1 kylin
+1. kylin公开课视屏（小象学院）：https://v.qq.com/x/page/j0153igsfyk.html
+2. 小象学院kylin视屏：http://www.chinahadoop.cn/search?q=kylin
+3. ​
+
+## 2.2 面试资源
+1. 同学大数据面试集锦：http://www.daoke360.com/front/articleinfo/26.html
+2. 若则数据面试题（github）：https://github.com/ruozedata/BigData/blob/master/interview/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98.md
+
 
 
 零基础学习人工智能+大数据教程（2018年最新版）
@@ -272,7 +296,7 @@ hadoop系列最全视频教程  定时删除赶紧下载
  链接: http://pan.baidu.com/s/1bnGV8dT 密码: 7wna
 链接：http://pan.baidu.com/s/1bndG3kr 密码：x6d2
 
-# 7 万门大学 人工智能
+# 7. 万门大学 人工智能
 万门大学：https://www.wanmen.org/
 ```
 人工智能专业学习课程
@@ -318,3 +342,14 @@ hadoop系列最全视频教程  定时删除赶紧下载
 
 《10G AI资料包》链接:https://pan.baidu.com/s/1YtNft-KjcMD-atbLiXI-EQ  密码:pui5
 ```
+# 8. DT大数据
+
+30个商业案例（AI）：
+​	http://mp.weixin.qq.com/s?__biz=MzIwMDI0NzYxMQ==&mid=2649672117&idx=1&sn=f0798528f66c36997a98645700c46302&chksm=8e9a79e1b9edf0f708cea90b48264b0f70682485d948b8bc977a001ddc2aa3a21298beb668f7&mpshare=1&scene=1&srcid=0419q8ujcy3x4SMjnSrhf6Pn#rd
+
+# 9. 若则大数据
+
+github：
+​	https://github.com/ruozedata/BigData/blob/master/blog/BigDataBlogOverview.md
+
+小象学院

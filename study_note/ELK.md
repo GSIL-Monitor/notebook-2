@@ -1375,7 +1375,14 @@ this.base_uri = this.config.base_uri || this.prefs.get("app-base_uri") || "http:
 
 # 4. cerebro
 ## 4.1 安装
+- kopf已停止维护，改用cerebro（kopf的替代品）
+
+- github地址：
+
+  - https://github.com/lmenezes/cerebro
+
 - 下载、解压、启动
+
   ```
   wget https://github.com/lmenezes/cerebro/releases/download/v0.7.2/cerebro-0.7.2.zip
   unzip cerebro-0.7.2.zip

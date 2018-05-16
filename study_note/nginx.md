@@ -183,8 +183,7 @@ kill -HUP 3514	#平滑重启
 
 ## 1.7 启动
 确保系统的 80 端口没被其他程序占用，运行`/zz/app/nginx/nginx/nginx` 命令来启动 Nginx  
-`netstat -ano|grep 80`
-如果查不到结果后执行，有结果则忽略此步骤（ubuntu下必须用sudo启动，不然只能在前台运行）
+`netstat -ano|grep 80` 如果查不到结果后执行，有结果则忽略此步骤（ubuntu下必须用sudo启动，不然只能在前台运行）
 `sudo /zz/app/nginx/nginx/nginx/nginx`
 
 ## 1.8 验证

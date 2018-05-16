@@ -3929,3 +3929,108 @@ if __name__ == '__main__':
     args = parser.parse_args()
     send_msg(args.message.replace("\\n","\n"))
 ```
+
+# 带宽统计
+
+## 自建带宽统计
+
+```
+#!/bin/sh
+PID_FILE=/var/run/runjxbandstatis.pid
+error_file=/bbd/sata09/bigdata/sinobbd/task/weixin/runjxbandstatis.error
+wx_basepath=/bbd/sata09/bigdata/sinobbd/task/weixin
+datevalue=`date +"%Y/%m/%d %H:%M:%S"`
+
+if ([ -f $PID_FILE ]&&[ -f $error_file ]); then
+       # if grep -q $SELF_NAME /proc/`cat $PID_FILE 2>/dev/null`/cmdline; then
+                 echo "$SELF_NAME already is running... "
+		 rm -f $error_file
+                 error_message="[INFO]$datevalue sparkStreaming自建CDN带宽统计任务:已恢复正常"
+                 python $wx_basepath/wx.py "$error_message" # 调用python脚本发送信息
+                
+                exit 9
+       # fi
+elif ([ ! -f $PID_FILE ]) ; then
+    touch $error_file
+    error_message="[WARN]$datevalue sparkStreaming自建CDN带宽统计任务:异常中断"
+    python $wx_basepath/wx.py "$error_message" # 调用python脚本发送信息
+    sh /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/runjxbandstatis > /dev/null 2>&1 
+fi
+```
+
+```
+# start
+SELF_NAME=`basename $0`
+PID_FILE=/var/run/$SELF_NAME.pid
+# running lock 
+if ([ -f $PID_FILE ] && kill -0 `cat $PID_FILE` 2>/dev/null); then
+       # if grep -q $SELF_NAME /proc/`cat $PID_FILE 2>/dev/null`/cmdline; then
+                echo "$SELF_NAME already is running... "
+                exit 9
+       # fi
+fi
+echo $$ >$PID_FILE
+trap "rm -f $PID_FILE; exit 1" 2
+
+# body
+su - hdfs -s /bin/bash -c "spark-submit --class org.apache.spark.streaming.kafka.startJXBandStatis --conf spark.yarn.queue="es" --master yarn --deploy-mode cluster --driver-memory 2g --num-executors 66 --executor-memory 1G --executor-cores 1 --total-executor-cores 61  --jars /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/snakeyaml-1.15.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/spark-streaming-kafka_2.10-1.6.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/kafka_2.11-0.8.2.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/kafka-clients-0.8.2.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/metrics-core-2.2.0.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/lz4-1.2.0.jar /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/fusionCDNStream.jar"
+echo start running...
+sleep 10
+
+# end
+rm -f $PID_FILE; exit 0
+
+```
+
+
+
+## 融合带宽统计
+
+```
+#!/bin/sh
+PID_FILE=/var/run/runfusionbandstatis.pid
+error_file=/bbd/sata09/bigdata/sinobbd/task/weixin/runfusionbandstatis.error
+wx_basepath=/bbd/sata09/bigdata/sinobbd/task/weixin
+datevalue=`date +"%Y/%m/%d %H:%M:%S"`
+if ([ -f $PID_FILE ]&&[ -f $error_file ]); then
+       # if grep -q $SELF_NAME /proc/`cat $PID_FILE 2>/dev/null`/cmdline; then
+                 echo "$SELF_NAME already is running... "
+		 rm -f $error_file
+                 error_message="[INFO]$datevalue sparkStreaming融合厂商带宽统计任务:已恢复正常"
+                 python $wx_basepath/wx.py "$error_message" # 调用python脚本发送信息
+                
+                exit 9
+       # fi
+elif ([ ! -f $PID_FILE ]) ; then
+    touch $error_file
+    error_message="[WARN]$datevalue sparkStreaming融合厂商带宽统计任务:异常中断"
+    python $wx_basepath/wx.py "$error_message" # 调用python脚本发送信息
+    sh /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/runfusionbandstatis > /dev/null 2>&1 
+fi
+
+```
+
+```
+# start
+SELF_NAME=`basename $0`
+PID_FILE=/var/run/$SELF_NAME.pid
+# running lock 
+if ([ -f $PID_FILE ] && kill -0 `cat $PID_FILE` 2>/dev/null); then
+       # if grep -q $SELF_NAME /proc/`cat $PID_FILE 2>/dev/null`/cmdline; then
+                echo "$SELF_NAME already is running... "
+                exit 9
+       # fi
+fi
+echo $$ >$PID_FILE
+trap "rm -f $PID_FILE; exit 1" 2
+
+# body
+su - hdfs -s /bin/bash -c "spark-submit --class org.apache.spark.streaming.kafka.StartFusionCDNStream --conf spark.yarn.queue="es" --master yarn --deploy-mode cluster --driver-memory 2g --num-executors 66 --executor-memory 1g --executor-cores 1 --total-executor-cores 61  --jars /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/elasticsearch-spark-20_2.11-5.2.0.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/snakeyaml-1.15.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/spark-streaming-kafka_2.10-1.6.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/kafka_2.11-0.8.2.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/kafka-clients-0.8.2.1.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/metrics-core-2.2.0.jar,/bbd/sata09/bigdata/sinobbd/task/sparkstreaming/lz4-1.2.0.jar /bbd/sata09/bigdata/sinobbd/task/sparkstreaming/fusionCDNStream.jar"
+echo start running...
+sleep 10
+
+# end
+rm -f $PID_FILE; exit 0
+
+```
+
