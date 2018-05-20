@@ -224,7 +224,26 @@ Container exited with a non-zero exit code 143
 #加大mr的内存
 conf.set("mapreduce.map.memory.mb", "2048");
 ```
+### 2.2.3 mr window本地运行异常
+- 参考地址：
+  https://blog.csdn.net/congcong68/article/details/42043093
+  https://blog.csdn.net/cor_twi/article/details/40891393
 
+  ```
+  //设置hadoop的家目录
+  System.setProperty("hadoop.home.dir", "D:\\bigdata\\tools-free\\hadoop\\hadoop-2.6.0");
+  System.setProperty("HADOOP_MAPRED_HOME", "D:\\bigdata\\tools-free\\hadoop\\hadoop-2.6.0");
+
+  //强制加载hadoop.dll; https://blog.csdn.net/cor_twi/article/details/40891393
+  System.load("D:\\bigdata\\tools-free\\hadoop\\hadoop-2.6.0\\bin\\hadoop.dll");
+  ```
+
+- 异常处理
+  1. hadoop.dll、winutils.exe 放到hadoop的bin目录，hadoop.dll放到window/system32下面；
+  2. 配置hadoop环境变量
+  3. 修改 src/org/apache/hadoop/io/nativeio/NativeIO.java 中的557 行，返回true
+  - 如果本地运行mr还是异常，考虑强行加载hadoop.dll 和 hadoop家目录
+  - 还有一种可能异常：hadoop.dll 是32位，jdk是64位，那么就要换hadoop.dll（如果有这个问题，会在强行加载hadoop.dll时报位数异常）
 
 # 3. map、reduce
 ## 3.1 向map、reduce传递参数

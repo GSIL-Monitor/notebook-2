@@ -686,9 +686,9 @@ return render_template('index.html', books = books)
 - 设置配置信息：在‘config.py'文件中添加以下配置。
   ```
   #encoding: utf-8
-  
+
   DEBUG = True
-  
+
   #dialect+driver://username:password@host:port/database
   DIALECT='mysql'
   DRIVER='mysqldb'
@@ -698,7 +698,7 @@ return render_template('index.html', books = books)
   PORT='3306'
   DATABASE='mytest'
   SQLALCHEMY_DATABASE_URI="{}+{}://{}:{}@{}:{}/{}?charset=utf8".format(DIALECT,DRIVER,USERNAME,PASSWORD,HOST,PORT,DATABASE)
-  
+
   SQLALCHEMY_TRACK_MODIFICATIONS=False
   ```
 
@@ -916,87 +916,77 @@ return render_template('index.html', books = books)
 - 中间表，不能通过‘class’的方式实现，只能通过‘db.Table'的方式实现。
 - 设置关联：`tags=db.relationship('Tag',secondary=article_tag,backref=db.backref('articles'))`
 - 需要使用一个关键字参数“secondary=中间表来进行关联
-  ```
-  #encoding: utf-8
+```
+#encoding: utf-
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import confi
+app = Flask(__name__)
+app.config.from_object(config)
+db = SQLAlchemy(app)
+
+# 多表关联
+# 中间表, 需要使用一个关键字参数“secondary=中间表来进行关联
+article_tag = db.Table('article_tag',
+                       db.Column('article_id', db.Integer, db.ForeignKey('article.id'), primary_key=True),
+                       db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+                       )
+# 文章模型
+class Article(db.Model):
+    __tablename__ = 'article'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    tags = db.relationship('Tag', secondary=article_tag, backref=db.backref('article')
+# tag模型
+class Tag(db.Model):
+    __tablename__ = 'tag'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False
+db.create_all(
+@app.route('/')
+def index():
+# create table article(
+#     id int primary key autoincrement,
+#     title varchar(100) not null,
+# )
+# create table tag(
+#     id int primary key autoincrement,
+#     name varchar(100) not null,
+# )
+# create table article_tag(
+#     article_id int,
+#     tag_id int,
+#     primary key('article_id', 'tag_id'),
+#     foreign key 'article_id' refernces 'article.id',
+#     foreign key 'tag_id' refernces 'tag.id',
+# 
+	#插入数据
+    article1=Article(title='aaa')
+    article2=Article(title='bbb')
   
-  from flask import Flask
-  from flask_sqlalchemy import SQLAlchemy
-  import config
+    tag1=Tag(name='111')
+    tag2=Tag(name='222')
   
-  app = Flask(__name__)
-  app.config.from_object(config)
-  db = SQLAlchemy(app)
+    article1.tags.append(tag1)
+    article1.tags.append(tag2)
+    article2.tags.append(tag1)
+    article2.tags.append(tag2)
   
+    db.session.add(article1)
+    db.session.add(article2)
+    db.session.add(tag1)
+    db.session.add(tag2)
   
-  # 多表关联
-  # 中间表, 需要使用一个关键字参数“secondary=中间表来进行关联
-  article_tag = db.Table('article_tag',
-                         db.Column('article_id', db.Integer, db.ForeignKey('article.id'), primary_key=True),
-                         db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)
-                         )
-  # 文章模型
-  class Article(db.Model):
-      __tablename__ = 'article'
-      id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-      title = db.Column(db.String(100), nullable=False)
-      tags = db.relationship('Tag', secondary=article_tag, backref=db.backref('article'))
+    db.session.commit(
+	#数据查询
+    artcle = Article.query.filter(Article.title == 'aaa').first()
+    for tag in artcle.tags:
+        print("tag is %s" % tag.name)
   
-  # tag模型
-  class Tag(db.Model):
-      __tablename__ = 'tag'
-      id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-      name = db.Column(db.String(100), nullable=False)
-  
-  db.create_all()
-  
-  
-  @app.route('/')
-  def index():
-  # create table article(
-  #     id int primary key autoincrement,
-  #     title varchar(100) not null,
-  # )
-  # create table tag(
-  #     id int primary key autoincrement,
-  #     name varchar(100) not null,
-  # )
-  # create table article_tag(
-  #     article_id int,
-  #     tag_id int,
-  #     primary key('article_id', 'tag_id'),
-  #     foreign key 'article_id' refernces 'article.id',
-  #     foreign key 'tag_id' refernces 'tag.id',
-  # )
-  
-  	#插入数据
-      article1=Article(title='aaa')
-      article2=Article(title='bbb')
-  
-      tag1=Tag(name='111')
-      tag2=Tag(name='222')
-  
-      article1.tags.append(tag1)
-      article1.tags.append(tag2)
-      article2.tags.append(tag1)
-      article2.tags.append(tag2)
-  
-      db.session.add(article1)
-      db.session.add(article2)
-      db.session.add(tag1)
-      db.session.add(tag2)
-  
-      db.session.commit()
-  
-  	#数据查询
-      artcle = Article.query.filter(Article.title == 'aaa').first()
-      for tag in artcle.tags:
-          print("tag is %s" % tag.name)
-  
-      return 'HelloWorld!'
-  
-  if __name__ == '__main__':
-      app.run()
-  ```
+    return 'HelloWorld!
+if __name__ == '__main__':
+    app.run()
+```
 
 ## 6.4 flask_Script
 
@@ -1010,15 +1000,15 @@ return render_template('index.html', books = books)
 - flask_script_demo.py
   ```
   #encoding: utf-8
-  
+
   from flask import Flask
-  
+
   app = Flask(__name__)
-  
+
   @app.route('/')
   def hello_world():
       return 'hello world'
-  
+
   if(__name__ == '__main__'):
       app.run()
   ```
@@ -1026,22 +1016,22 @@ return render_template('index.html', books = books)
 - manage.py
   ```
   #encoding: utf-8
-  
+
   from flask_script import Manager
   from flask_script_demo import app
   from db_script import DBmanager
-  
+
   #需要引入一个app
   manager = Manager(app)
-  
+
   @manager.command
   def runserver():
       print('server start ...')
       # print('服务器开始运行...')
-  
+
   #db为数据库脚本文件的前缀。DBmanager为从数据库脚本中导入的命令行
   manager.add_command('db',DBmanager)
-  
+
   if(__name__ == '__main__'):
       manager.run()
   ```
@@ -1049,16 +1039,16 @@ return render_template('index.html', books = books)
 - db_script.py
   ```
   #encoding: utf-8
-  
+
   from flask_script import Manager
-  
+
   #已有Manager,不需要再引入app
   DBmanager = Manager()
-  
+
   @DBmanager.command
   def init():
       print('db init ...')
-  
+
   @DBmanager.command
   def migrate():
       print('db migrate ...')
@@ -1070,7 +1060,7 @@ return render_template('index.html', books = books)
   ```
   #命令 python manage.py runserver
   D:\study\code\python_workspace\environment_python2.7.14\Scripts>python.exe D:\study\code\python_workspace\hello_flask\manage.py runserver
-  
+
   #结果
   fwq...
   ```
@@ -1079,7 +1069,7 @@ return render_template('index.html', books = books)
   ```
   # 命令 python manager.py db init
   D:\study\code\python_workspace\environment_python2.7.14\Scripts>python.exe D:\study\code\python_workspace\hello_flask\manage.py db init
-  
+
   # 结果
   db init ...
   ```
@@ -1136,18 +1126,18 @@ return render_template('index.html', books = books)
 - exts.py
   ```
   #encoding: utf-8
-  
+
   from flask_sqlalchemy import SQLAlchemy
-  
+
   db = SQLAlchemy()
   ```
 
 - models.py
   ```
   #encoding: utf-8
-  
+
   from exts import db
-  
+
   class Article(db.Model):
       __tablename__ = 'article'
       id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -1197,11 +1187,11 @@ return render_template('index.html', books = books)
 
 - `flask_migrate` 相关命令：
   - 初始化一个迁移脚本的环境，只需要执行一次。 
-    ```
+  ```
     python manage.py db init
-    ```
+    ​```
   - 将模型生成迁移文件，只要模型更改了，就需要执行一遍这个命令。 
-    ``` 
+  ```
     python manage.py db migrate
     ```
   - 将迁移文件真正的映射到数据库中，每次运行了’ migrate‘命令后，就记得要运
@@ -1210,15 +1200,17 @@ return render_template('index.html', books = books)
     python manage.py db upgrade
     ```
 
+    ```
+
 - 注意点：需要将你想要的映射到数据库中模型，都导入到’ manage.py‘文件中，如果没有导入进去，就不会映射到数据库中。
 
 - 代码
   - models.py
     ```
     #encoding: utf-8
-    
+
     from exts import db
-    
+
     class Article(db.Model):
         __tablename__ = 'article'
         id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -1228,55 +1220,56 @@ return render_template('index.html', books = books)
   - exts.py
     ```
     #encoding: utf-8
-    
+
     from flask_sqlalchemy import SQLAlchemy
-    
+
     db = SQLAlchemy()
     ```
   - manage.py
     ```
     #encoding: utf-8
-    
+
     from flask_script import Manager
     from migrate_demo import app
     from flask_migrate import Migrate,MigrateCommand # MigrateCommand真正做数据库迁移的
     from exts import db
     from models import Article #要导入模型
-    
+
     #需要引入一个app
     manager = Manager(app)
-    
+
     # 1. 要使用flask_migrate 必须要绑定app和db
     migrate = Migrate(app, db)
     # 2. 把MigrateCommand命令添加到Manager中
     manager.add_command('db', MigrateCommand)
-    
+
     @manager.command
     def runserver():
         print('server start ...')
         # print('服务器开始运行...')
-    
-    
+    ```
+
+
     if(__name__ == '__main__'):
         manager.run()
-    ```
+    ​```
   - migrate_demo.py
     ```
     #encoding: utf-8
-    
+
     from flask import Flask
     from models import Article
     from exts import db
     import config
-    
+
     app = Flask(__name__)
     app.config.from_object(config)
     db.init_app(app)
-    
+
     @app.route('/')
     def hello_world():
         return 'hello world'
-    
+
     if(__name__ == '__main__'):
         app.run()
     ```
@@ -1359,17 +1352,17 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
 - session_demo.py
   ```
   #encoding: utf-8
-  
+
   from flask import Flask, session
   import os
   from datetime import timedelta
-  
+
   app = Flask(__name__)
   app.config['SECRET_KEY'] = os.urandom(24)
   app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7) # sessiion过期时间
-  
+
   # 操作session和操作字典一样
-  
+
   @app.route('/')
   def hello_world():
       #如果没有指定session时间，默认是浏览器关闭自动结束
@@ -1378,35 +1371,35 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
       # 如果设置 PERMANENT_SESSION_LIFETIME 则会到这个配置里去找对应的 session 过期时间
       session.permanent = True
       return 'hello world'
-  
+
   @app.route('/get/')
   def get():
       # session['username']
       # session.get('username')
       print(session.get('username'))
       return 'success'
-  
+
   @app.route('/delete/')
   def delete():
       print(session.get('username'))
       session.pop('username')
       print(session.get('username'))
       return 'success'
-  
+
   @app.route('/clear/')
   def clear():
       print(session.get('username'))
       session.clear()
       print(session.get('username'))
       return 'success'
-  
+
   if __name__ == '__main__':
       app.run()
   ```
 
 ## 6.8 get和post
 - 请求和参数获取
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/python/flask_get_post.png?raw=true)
+  ![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/python/flask_get_post.png?raw=true)
 - 代码
   - login.html
     ```
@@ -1439,21 +1432,21 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
   - get_post_demo.py
     ```
     #encoding: utf-8
-    
+
     from flask import Flask,render_template,request
-    
+
     app = Flask(__name__)
-    
+
     @app.route('/')
     def hello_world():
         return 'hello world'
-    
+
     @app.route('/search')
     def search():
         # get方式获取参数
         q = request.args.get('q')
         return 'user param is : %s' % q
-    
+
     @app.route('/login/', methods=['GET', 'POST'])
     def login():
         if request.method == 'GET':
@@ -1520,16 +1513,16 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
   - hook_demo.py
     ```
     #encoding: utf-8
-    
+
     from flask import Flask,render_template,session
-    
+
     app = Flask(__name__)
-    
+
     @app.route('/')
     def hello_world():
         print 'hello world'
         return 'success'
-    
+
     # before_request : 在视图函数执行之前执行的， 可以把钩子代码放到视图函数之前执行
     @app.before_request
     def my_before_request():
@@ -1591,7 +1584,7 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
     ```
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    
+
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     ```
@@ -1675,13 +1668,13 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
 - brew search python
 - brew install python3
 - pip3 installl scrapy
-检查scrapy版本：`scrapy version`
+  检查scrapy版本：`scrapy version`
 
 ### 9.1.3 Linux环境安装
 - sudo apt-get install python3-pip python3-dev
 - sudo pip3 install --upgrade pip
 - sudo pip3 install scrapy
-检查scrapy版本：`scrapy version`
+  检查scrapy版本：`scrapy version`
 
 ### 9.1.4 window环境安装
 - 先安装python3.5，官网下载
@@ -1863,12 +1856,12 @@ Use "scrapy <command> -h" to see more info about a command
   - pipelines.py 管道文件
     ```
     import sqlite3
-    
+
     class ZufangtestPipeline(object):
         def open_spider(self,spider):
             self.con = sqlite3.connect("zufangtest.sqlite")
             self.cu = self.con.cursor()
-    
+
         def process_item(self, item, spider):
             print(spider.name, 'pipelines')
             # print("------------" + item['title'])
@@ -1877,14 +1870,14 @@ Use "scrapy <command> -h" to see more info about a command
             self.cu.execute(insert_sql)
             self.con.commit()
             return item
-    
+
         def spider_close(self, spider):
             self.con.close()
     ```
   - items.py
     ```
     import scrapy
-    
+
     class ZufangtestItem(scrapy.Item):
         # define the fields for your item here like:
         # name = scrapy.Field()
@@ -1898,13 +1891,13 @@ Use "scrapy <command> -h" to see more info about a command
     import sys
     reload(sys)
     sys.setdefaultencoding("utf-8")
-    
+
     class GanjiSpider(scrapy.Spider):
-    
+
         # 爬虫的名字，scrapy list获取到的名字
         name = "zufangtest"
         start_urls = ['http://bj.ganji.com/fang1/chaoyang/']
-    
+
         def parse(self, response):
             print(response)
             zf = ZufangtestItem()
@@ -1964,70 +1957,66 @@ Use "scrapy <command> -h" to see more info about a command
 ### 10.2.1 安装
 - 下载： Anaconda 安装包可以到 https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/ 下载。
 
+- 安装时注意把path加入
+
 - 安装后`cmd` 进入命令行，`conda` 如果报错，说明环境变量没配好
+```
+usage: conda [-h] [-V] command ..
+conda is a tool for managing and deploying applications, environments and packages
+Options
+positional arguments:
+  command
+    clean        Remove unused packages and caches.
+    config       Modify configuration values in .condarc. This is modeled
+                 after the git config command. Writes to the user .condarc
+                 file (C:\Users\zhang\.condarc) by default.
+    create       Create a new conda environment from a list of specified
+                 packages.
+    help         Displays a list of available conda commands and their help
+                 strings.
+    info         Display information about current conda install.
+    install      Installs a list of packages into a specified conda
+                 environment.
+    list         List linked packages in a conda environment.
+    package      Low-level conda package utility. (EXPERIMENTAL)
+    remove       Remove a list of packages from a specified conda environment.
+    uninstall    Alias for conda remove. See conda remove --help.
+    search       Search for packages and display associated information. The
+                 input is a MatchSpec, a query language for conda packages.
+                 See examples below.
+    update       Updates conda packages to the latest compatible version. This
+                 command accepts a list of package names and updates them to
+                 the latest versions that are compatible with all other
+                 packages in the environment. Conda attempts to install the
+                 newest versions of the requested packages. To accomplish
+                 this, it may update some packages that are already installed,
+                 or install additional packages. To prevent existing packages
+                 from updating, use the --no-update-deps option. This may
+                 force conda to install older versions of the requested
+                 packages, and it does not prevent additional dependency
+                 packages from being installed. If you wish to skip dependency
+                 checking altogether, use the '--force' option. This may
+                 result in an environment with incompatible packages, so this
+                 option must be used with great caution.
+    upgrade      Alias for conda update. See conda update --help
+optional arguments:
+  -h, --help     Show this help message and exit.
+  -V, --version  Show the conda version number and exit
+conda commands available from other packages:
+  build
+  convert
+  develop
+  env
+  index
+  inspect
+  metapackage
+  render
+  server
+  skeleton
+  verif
+C:\Users\zhang>
+```
 
-  ```
-  usage: conda [-h] [-V] command ...
-
-  conda is a tool for managing and deploying applications, environments and packages.
-
-  Options:
-
-  positional arguments:
-    command
-      clean        Remove unused packages and caches.
-      config       Modify configuration values in .condarc. This is modeled
-                   after the git config command. Writes to the user .condarc
-                   file (C:\Users\zhang\.condarc) by default.
-      create       Create a new conda environment from a list of specified
-                   packages.
-      help         Displays a list of available conda commands and their help
-                   strings.
-      info         Display information about current conda install.
-      install      Installs a list of packages into a specified conda
-                   environment.
-      list         List linked packages in a conda environment.
-      package      Low-level conda package utility. (EXPERIMENTAL)
-      remove       Remove a list of packages from a specified conda environment.
-      uninstall    Alias for conda remove. See conda remove --help.
-      search       Search for packages and display associated information. The
-                   input is a MatchSpec, a query language for conda packages.
-                   See examples below.
-      update       Updates conda packages to the latest compatible version. This
-                   command accepts a list of package names and updates them to
-                   the latest versions that are compatible with all other
-                   packages in the environment. Conda attempts to install the
-                   newest versions of the requested packages. To accomplish
-                   this, it may update some packages that are already installed,
-                   or install additional packages. To prevent existing packages
-                   from updating, use the --no-update-deps option. This may
-                   force conda to install older versions of the requested
-                   packages, and it does not prevent additional dependency
-                   packages from being installed. If you wish to skip dependency
-                   checking altogether, use the '--force' option. This may
-                   result in an environment with incompatible packages, so this
-                   option must be used with great caution.
-      upgrade      Alias for conda update. See conda update --help.
-
-  optional arguments:
-    -h, --help     Show this help message and exit.
-    -V, --version  Show the conda version number and exit.
-
-  conda commands available from other packages:
-    build
-    convert
-    develop
-    env
-    index
-    inspect
-    metapackage
-    render
-    server
-    skeleton
-    verify
-
-  C:\Users\zhang>
-  ```
 - 查看conda的版本
   ```
   conda --version
@@ -2043,25 +2032,44 @@ Use "scrapy <command> -h" to see more info about a command
   create -n python36 python=3.6
 
   #安装虚拟环境到指定路径的命令如下：
-  conda create --prefix=D:\bigdata\tools\python python=3.6
+  conda create --prefix=D:\bigdata\tools-free\python\python3.6 python=3.6
   ```
+
 - 启动虚拟环境：
   ```
   activate.bat pythono36
-  
+
   #如果安装指定了目录，启动时也要指定目录
-  activate D:\bigdata\tools\python\python36
+  activate D:\bigdata\tools-free\python\python3.6
+
+  #删除
+  conda remove --help
+  conda remove --prefix D:\bigdata\tools-free\python\python3.6 --all
   ```
+
+- 查看python版本
+
+  ```
+  #大V
+  python -V
+  ```
+
 - 再查看下pip的版本，看下路径
+
   ```
+  #大V
   pip -V
   ```
+
 - 然后就可以直接使用 `pip install` 安装其它依赖
+
 - 想要删除指定路径下的虚拟环境，使用如下的命令
   ```
   conda remove --prefix=D:\bigdata\tools\python\python36 --all
   ```
-
+## 10.3 命令
+- 参考地址：
+  https://blog.csdn.net/menc15/article/details/71477949
 
 
 # 资源地址

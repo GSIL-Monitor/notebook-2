@@ -297,6 +297,7 @@ hadoop系列最全视频教程  定时删除赶紧下载
 链接：http://pan.baidu.com/s/1bndG3kr 密码：x6d2
 
 # 7. 万门大学 人工智能
+
 万门大学：https://www.wanmen.org/
 ```
 人工智能专业学习课程
@@ -348,8 +349,4 @@ hadoop系列最全视频教程  定时删除赶紧下载
 ​	http://mp.weixin.qq.com/s?__biz=MzIwMDI0NzYxMQ==&mid=2649672117&idx=1&sn=f0798528f66c36997a98645700c46302&chksm=8e9a79e1b9edf0f708cea90b48264b0f70682485d948b8bc977a001ddc2aa3a21298beb668f7&mpshare=1&scene=1&srcid=0419q8ujcy3x4SMjnSrhf6Pn#rd
 
 # 9. 若则大数据
-
-github：
-​	https://github.com/ruozedata/BigData/blob/master/blog/BigDataBlogOverview.md
-
-小象学院
+- github：https://github.com/ruozedata/BigData/blob/master/blog/BigDataBlogOverview.md
