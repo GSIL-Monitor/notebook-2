@@ -44,13 +44,13 @@
 	<!-- 设置namenode存放的路径 -->
 	<property>
 		<name>dfs.namenode.name.dir</name>
-		<value>/usr/local/software/hadoop/dfs/name</value>
+		<value>/zz/data/hadoop/dfs/namenode</value>
 	</property>
 	
 	<!-- 设置datanode存放的路径 -->
 	<property>
 		<name>dfs.datanode.data.dir</name>
-		<value>/usr/local/software/hadoop/dfs/data</value>
+		<value>/zz/data/hadoop/dfs/datanode</value>
 	</property>
 	
 	<property>
@@ -124,9 +124,10 @@ passwd hadoop
 ```
 - 修改权限
 ```
-mkdir -p /zz/data/hadoop/tmp/dfs/name
-mkdir -p /zz/data/hadoop/tmp/dfs/data
-mkdir -p /zz/data/hadoop/tmp/dfs/namesecondary
+mkdir -p /zz/data/hadoop/tmp
+mkdir -p /zz/data/hadoop/dfs/namenode
+mkdir -p /zz/data/hadoop/dfs/datanode
+mkdir -p /zz/data/hadoop/dfs/namesecondary
 chown -R hadoop:hadoop /zz/data/hadoop
 chown -R hadoop:hadoop /zz/app/hadoop
 chown -R hadoop:hadoop /zz/app/hadoop-2.6.5

@@ -56,6 +56,7 @@ work2
 /zz/shell/scp.sh /etc/profile /etc/
 /zz/shell/scp.sh hbase/conf/hbase-site.xml /zz/app/hbase/conf/
 /zz/shell/scp.sh hbase/conf/hbase-env.sh /zz/app/hbase/conf/
+/zz/shell/scp.sh hbase/conf/regionservers /zz/app/hbase/conf/															 
 
 chown -R hadoop:hadoop /zz/app/hbase
 chown -R hadoop:hadoop /zz/app/hbase-1.2.6
