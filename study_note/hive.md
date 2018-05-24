@@ -362,3 +362,87 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
 ```
 select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') as rate  from rat_json limit 10;
 ```
+
+## 4.5 导入数据到hive中
+```
+create table temp(id string, name string, age string, sex string, birthday string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile location '/data/data';
+
+create table temp(id string, name string, age string, sex string, birthday string) row format DELIMITED FIELDS TERMINATED BY '\t' ;
+#加载数据
+load data local inpath '/home/hadoop/usertest' into table temp;
+```
+
+# 5. hive关联Hbase
+## 5.1 关联配置
+- 环境：
+  hadoop-2.7.6
+  hbase-1.4.4
+  apache-hive-2.3.3-bin
+- 在使用过程中发现
+  hive2.x 不建议使用mr引擎，建议使用spark引擎；如果使用mr请使用hive1.x版本
+- jar包
+  复制hbase中lib目录下的 `hbase*` `zookeeper*` 到hive的lib目录下，用的hive和hbase这个版本的，hbae的包hive都有了
+- 修改配置文件
+  ```
+  <property>  
+  	<name>hive.aux.jars.path</name>  
+  	<value>file:///zz/app/hive/lib/hbase-annotations-1.4.4.jar,file:///zz/app/hive/lib/hbase-annotations-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-client-1.4.4.jar,file:///zz/app/hive/lib/hbase-common-1.4.4.jar,file:///zz/app/hive/lib/hbase-common-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-examples-1.4.4.jar,file:///zz/app/hive/lib/hbase-external-blockcache-1.4.4.jar,file:///zz/app/hive/lib/hbase-hadoop2-compat-1.4.4.jar,file:///zz/app/hive/lib/hbase-hadoop-compat-1.4.4.jar,file:///zz/app/hive/lib/hbase-it-1.4.4.jar,file:///zz/app/hive/lib/hbase-it-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-metrics-1.4.4.jar,file:///zz/app/hive/lib/hbase-metrics-api-1.4.4.jar,file:///zz/app/hive/lib/hbase-prefix-tree-1.4.4.jar,file:///zz/app/hive/lib/hbase-procedure-1.4.4.jar,file:///zz/app/hive/lib/hbase-protocol-1.4.4.jar,file:///zz/app/hive/lib/hbase-resource-bundle-1.4.4.jar,file:///zz/app/hive/lib/hbase-rest-1.4.4.jar,file:///zz/app/hive/lib/hbase-rsgroup-1.4.4.jar,file:///zz/app/hive/lib/hbase-server-1.4.4.jar,file:///zz/app/hive/lib/hbase-server-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-shell-1.4.4.jar,file:///zz/app/hive/lib/hbase-thrift-1.4.4.jar</value>
+  </property>
+  <property>
+    <name>hive.zookeeper.quorum</name>  
+    <value>master,work1,work2</value>  
+  </property>
+  ```
+- 重启hive
+  ```
+  nohup /zz/app/hive/bin/hiveserver2 1 > /zz/app/hive/logs/hiveserver2.log 2>/zz/app/hive/logs/hiveserver2.error.log &
+  ```
+## 5.2 表关联
+- 连接hive，一定要是hive，不是beeline（会有问题）
+  ```
+  ./bin/hive
+  ```
+- hbase中已经存在的表，hive去关联
+  ```
+  #全部字段
+  CREATE EXTERNAL TABLE person_hbase(key string, name string, age int, birthday string) STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key, cf1:name, cf1:age, cf1:birthday") TBLPROPERTIES("hbase.table.name" = "person");
+  
+  #只有部分字段
+  CREATE EXTERNAL TABLE person_hbase(key string, name string, age int) STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key, cf1:name, cf1:age") TBLPROPERTIES("hbase.table.name" = "person");
+  ```
+- hbase中没有的表，在hive中创建
+  ```
+  #创建表
+  create table hive_hbase(id string,name string, age int, sex string) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' with serdeproperties ("hbase.columns.mapping" = ":key,cf1:name,cf1:age, cf1:sex") tblproperties ("hbase.table.name" = "hive");
+  
+  #导入数据
+  insert into hive_hbase select * from temp;
+  ```
+- 导入玩,就可以在hbase\hive 中查到了
+
+## 5.3 在使用中遇到的问题
+- 现象
+![1526984750362](../study_note_access/hive/hive关联hbase表异常.png)
+
+- 原因：
+使用beeline客户端去连接hive，然后去关联表；换用 `./bin/hive` 去关联表
+
+## 5.4 更改hive版本是，元数据异常
+- 异常信息：
+  ```
+  Caused by: MetaException(message:Hive Schema version 2.1.0 does not match metastore's schema version 1.2.0 Metastore is not upgraded or corrupt)
+  ```
+- 处理：
+  参考地址：https://www.cnblogs.com/liupuLearning/p/6610307.html
+  ```
+  #(1)删除HDFS上的hive数据与hive数据库
+  hadoop fs -rm -r -f /tmp/hive
+  hadoop fs -rm -r -f /user/hive
+  
+  #(2)删除MySQL上的hive的元数据信息
+  mysql -uroot -p 
+  drop database hive
+  
+  #(3)初始化hive, 将mysql作为hive的元数据库
+  schematool -dbType mysql -initSchema 
+  ```

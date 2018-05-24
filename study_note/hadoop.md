@@ -38,7 +38,7 @@
 	<!-- 设置secondarynamenode的http通讯地址 -->
 	<property>
 		<name>dfs.namenode.secondary.http-address</name>
-		<value>slave1:50090</value>
+		<value>work1:50090</value>
 	</property>
 	
 	<!-- 设置namenode存放的路径 -->
@@ -156,8 +156,8 @@ ssh-copy-id work1 #复制公匙到work1上
 ```
 - haoop用户启动：
 ```
-stop-dfs.sh
-stop-yarn.sh
+./sbin/start-dfs.sh
+./sbin/start-yarn.sh
 ```
 
 - 进程
@@ -174,7 +174,7 @@ stop-yarn.sh
 
 ## 1.7 run 自带wordcount
 ```
-./bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.5.jar wordcount /input/wordCount /output/wordCount
+./bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.5.jar wordcount /input/wordcount /output/wordCount
 ```
 ## 1.8 web ui
 - 查看hdfs

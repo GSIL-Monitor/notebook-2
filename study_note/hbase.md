@@ -3,6 +3,7 @@
 - 已安装 hadoop、zookeep
 
 ## 1.1 下载：
+下载地址（个版本列表）：http://archive.apache.org/dist/hbase/
 wget http://mirror.bit.edu.cn/apache/hbase/1.2.6/hbase-1.2.6-bin.tar.gz
 
 ## 1.3 修改配置
@@ -56,7 +57,7 @@ work2
 /zz/shell/scp.sh /etc/profile /etc/
 /zz/shell/scp.sh hbase/conf/hbase-site.xml /zz/app/hbase/conf/
 /zz/shell/scp.sh hbase/conf/hbase-env.sh /zz/app/hbase/conf/
-/zz/shell/scp.sh hbase/conf/regionservers /zz/app/hbase/conf/															 
+/zz/shell/scp.sh hbase/conf/regionservers /zz/app/hbase/conf/			 
 
 chown -R hadoop:hadoop /zz/app/hbase
 chown -R hadoop:hadoop /zz/app/hbase-1.2.6
@@ -84,7 +85,8 @@ chown -R hadoop:hadoop /zz/app/hbase-1.2.6
 
 ## 1.7 jdk、hadoop支持
 
-### 1.7.1 This section lists required services and some required system configuration.
+### 1.7.1 jdk
+This section lists required services and some required system configuration.
 
 | HBase Version | JDK 7                                    | JDK 8                                    |
 | ------------- | ---------------------------------------- | ---------------------------------------- |
@@ -97,7 +99,8 @@ HBase will neither build nor compile with Java 6.
 You must set `JAVA_HOME` on each node of your cluster. *hbase-env.sh* provides a handy mechanism to do this.
 
 
-### 1.7.2 Hadoop version support matrix
+### 1.7.2 hadoop
+Hadoop version support matrix
 
 - "S" = supported
 - "X" = not supported
@@ -120,7 +123,20 @@ You must set `JAVA_HOME` on each node of your cluster. *hbase-env.sh* provides a
 | Hadoop-3.0.0       | NT          | NT          | NT          | NT          |
 
 
-# 2. 
+# 2. hbase shell
+- 进入hbase shell：
+`./bin/hbase shell`
+- 创建表hbase_1102有两个列族CF1和CF2
+`create 'person',  {NAME=>'cf1'}, {NAME=>'cf2'}`
+- 向表中添加数据，在想HBase的表中添加数据的时候，只能一列一列的添加，不能同时添加多列。
+```
+hbase(main):042:0> put 'person', '001','cf1:name','Tom'
+hbase(main):043:0> put 'person', '001','cf1:age','18'
+hbase(main):044:0> put 'person', '001','cf1:sex','男'
+hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
+```
+
+# 3. 
 主HMaster：不存任何信息，只管理HReginServer挂掉后数据迁移和表的信息，不管理数据信息；
 集群运行起来，表创建完了，HMaster挂了照样跑
 
@@ -133,6 +149,3 @@ You must set `JAVA_HOME` on each node of your cluster. *hbase-env.sh* provides a
   - 
 - 读数据
 
-# 3. 
-
-hbase shell

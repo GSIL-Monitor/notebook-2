@@ -61,6 +61,9 @@ service ntpd restart
 
 #work节点如上配置时区
 ntpdate -u master
+
+#crontab
+29 * * * * /usr/sbin/ntpdate -u master
 ```
 - ntp客户端配置：
 ```
