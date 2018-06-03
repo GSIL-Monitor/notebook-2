@@ -83,7 +83,7 @@ chown -R mysqladmin:dba /var/run/mysqld
     ps -ef|grep mysql
     
     # mysqladmin执行
-    mysqld_safe &
+    bin/mysqld_safe &
     netstat -nlp|grep 3306 #查看端口
 
 ## 1.10 更改密码、删除空账号
@@ -121,6 +121,17 @@ mysql -uroot -p
 grant all on *.* TO 'root'@'%' IDENTIFIED BY 'root';
 flush privileges;
 ```
+
+## 1.13 mysql启动异常
+- 异常信息：
+  ```
+  Starting MySQL. ERROR! The server quit without updating PID file (/var/run/mysqld/mysqld.pid).
+  ```
+- 处理：
+  mysql工作目录权限问题，更改为 `mysqladmin:dba`
+  ```
+  chown -R mysqladmin:dba /usr/local/mysql
+  ```
 
 # 2. window 绿色版mysql安装
 ## 2.1 下载绿色版mysql

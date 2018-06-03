@@ -203,6 +203,27 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
   sparkAssemblyPath=`ls ${SPARK_HOME}/jars/*.jar`
   ```
 
+## 2.2 改hive版本时, 元数据异常
+- 异常信息：
+  ```
+  Caused by: MetaException(message:Hive Schema version 2.1.0 does not match metastore's schema version 1.2.0 Metastore is not upgraded or corrupt)
+  ```
+- 处理：
+  参考地址：https://www.cnblogs.com/liupuLearning/p/6610307.html
+  ```
+  #(1)删除HDFS上的hive数据与hive数据库
+  hadoop fs -rm -r -f /tmp/hive
+  hadoop fs -rm -r -f /user/hive
+  
+  #(2)删除MySQL上的hive的元数据信息
+  mysql -uroot -p 
+  drop database hive
+  
+  #(3)初始化hive, 将mysql作为hive的元数据库
+  schematool -dbType mysql -initSchema 
+  ```
+
+
 # 3 Hive架构
 
 ## 3.1
@@ -364,13 +385,199 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
 ```
 
 ## 4.5 导入数据到hive中
-```
-create table temp(id string, name string, age string, sex string, birthday string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile location '/data/data';
+  ```
+  create table temp(id string, name string, age string, sex string, birthday string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile location '/data/data';
+  
+  create table temp(id string, name string, age string, sex string, birthday string) row format DELIMITED FIELDS TERMINATED BY '\t' ;
+  #加载数据
+  load data local inpath '/home/hadoop/usertest' into table temp;
+  ```
 
-create table temp(id string, name string, age string, sex string, birthday string) row format DELIMITED FIELDS TERMINATED BY '\t' ;
-#加载数据
-load data local inpath '/home/hadoop/usertest' into table temp;
+## 4.6 java jdbc 连接hive
+### 4.6.1 资源地址
+- 参考地址
+  - https://blog.csdn.net/lovelovelovelovelo/article/details/71203605
+  - https://blog.csdn.net/fightxxl55/article/details/52972312
+  
+- 官网：
+  - https://hive.apache.org/
+  - 配置：https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-JDBC
+  - hive老版本的事例：https://cwiki.apache.org/confluence/display/Hive/HiveClient#HiveClient-JDBCClientSetupforaSecureCluster
+  - HiveServer 2：https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Overview#HiveServer2Overview-JDBCClient
+
+### 4.6.2 实现
+- 配置，修改 `conf/hive-site.xml` 文件，添加下面内容
+  ```
+  <property>
+          <name>hive.server2.thrift.port</name>
+          <value>10000</value>
+  </property>
+  <property>
+          <name>hive.server2.thrift.bind.host</name>
+          <value>work2</value>
+  </property>
+  ```
+
+- 代码，JDBCConnectHive.java
+  ```
+  /**
+   * 使用jdbc连接hive2
+   */
+  public class JDBCConnectHive {
+  
+  	private static String driverName = "org.apache.hive.jdbc.HiveDriver";
+  
+  	public static void main(String[] args) throws Exception{
+  		try {
+  			Class.forName(driverName);
+  		} catch (ClassNotFoundException e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  			System.exit(1);
+  		}
+  
+  		Connection con = DriverManager.getConnection("jdbc:hive2://192.168.23.132:10000/default", "hadoop", "hadoop");
+  		Statement stmt = con.createStatement();
+  		stmt.execute("use default");
+  		ResultSet res = null;
+  		String sql = null;
+  
+  		String tableName = "testHiveDriverTable";
+  		// DLL语句（如，create 、 alter 、drop、add jar 等）应该调用stmt.execute()，这类操作不会返回查询结果集。
+  		// DML语句（如， select）应该调用stmt.executeQuery()，这类操作会返回结果集。
+  		// 否则会有异常： java.sql.SQLException: The query did not generate a result set!
+  		stmt.execute("drop table " + tableName);
+  		stmt.execute("create table " + tableName + " (key int, value string) row format DELIMITED FIELDS TERMINATED BY '\\t'");
+  
+  		// show tables
+  //		sql = "show tables '" + tableName + "'";
+  		sql = "show tables";
+  		System.out.println("Running: " + sql);
+  		res = stmt.executeQuery(sql);
+  		while (res.next()){
+  			System.out.println(res.getString(1));
+  		}
+  		/*if (res.next()) {
+  			System.out.println(res.getString(1));
+  		}*/
+  
+  		// describe table
+  		sql = "describe " + tableName;
+  		System.out.println("Running: " + sql);
+  		res = stmt.executeQuery(sql);
+  		while (res.next()) {
+  			System.out.println(res.getString(1) + "\t" + res.getString(2));
+  		}
+  
+  		// load data into table
+  		// NOTE: filepath has to be local to the hive server
+  		// NOTE: /tmp/a.txt is a ctrl-A separated file with two fields per line
+  		String filepath = "/home/hadoop/usertest2";
+  		sql = "load data local inpath '" + filepath + "' into table " + tableName;
+  		System.out.println("Running: " + sql);
+  		stmt.execute(sql);
+  
+  		/**
+  		 * hive_hbase	hive创建的关联hbase的表，连接失败
+  		 person_hbase	hbase的表，hive去关联的，连接失败
+  		 temp			hive创建的独立的表，连接成功
+  		 testhivedrivertable
+  		 */
+  		List<String> listTable = new ArrayList<String>();
+  //		listTable.add("hive_hbase");
+  //		listTable.add("person_hbase");
+  		listTable.add("temp");
+  		for (String table: listTable) {
+  			// select * query
+  			sql = "select * from " + table;
+  			System.out.println("Running: " + sql);
+  			res = stmt.executeQuery(sql);
+  			while (res.next()) {
+  				System.out.println(String.valueOf(res.getInt(1)) + "\t" + res.getString(2));
+  			}
+  			System.out.println("--------------------------------");
+  		}
+  
+  //System.exit(0);
+  
+  		// select * query
+  		sql = "select * from " + tableName;
+  		System.out.println("Running: " + sql);
+  		res = stmt.executeQuery(sql);
+  		while (res.next()) {
+  			System.out.println(String.valueOf(res.getInt(1)) + "\t" + res.getString(2));
+  		}
+  
+  		// regular hive query
+  		sql = "select count(1) from " + tableName;
+  		System.out.println("Running: " + sql);
+  		res = stmt.executeQuery(sql);
+  		while (res.next()) {
+  			System.out.println(res.getString(1));
+  		}
+  	}
+  }
+  ```
+
+### 4.6.3 出现的异常
+#### 4.6.3.1 连接hive2服务异常
+- 异常信息：
 ```
+Exception in thread "main" java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2://work2:10000/default: java.net.ConnectException: Connection refused: connect
+```
+- 处理：
+  - 配置文件中 `hive-site.xml` 添加下面内容
+    ```
+    <property>
+            <name>hive.server2.thrift.port</name>
+            <value>10000</value>
+    </property>
+    <property>
+            <name>hive.server2.thrift.bind.host</name>
+            <value>work2</value>
+    </property>
+    ```
+  - 连接处理
+    ```
+    #连接中使用ip（使用主机名出问题了，host已配置）
+    jdbc:hive2://192.168.23.132:10000/default
+    ```
+
+#### 4.6.3.2 权限问题
+- 异常信息：
+  ```
+  Exception in thread "main" java.sql.SQLException: Could not open client transport with JDBC Uri: jdbc:hive2://192.168.23.132:10000/default: Failed to open new session: java.lang.RuntimeException: org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.security.authorize.AuthorizationException): User: hadoop is not allowed to impersonate hive
+  ```
+- 处理：
+  ```
+  #连接时使用hadoop用户
+  Connection con = DriverManager.getConnection("jdbc:hive2://192.168.23.132:10000/default", "hadoop", "hadoop");
+  ```
+
+#### 4.6.3.3 sql 执行异常
+- 异常信息：
+  ```
+  java.sql.SQLException: The query did not generate a result set!
+  ```
+- 处理：
+  参考：https://zhidao.baidu.com/question/1112416146552145459.html
+  - DLL语句（如，create 、 alter 、drop、add jar 等）应该调用stmt.execute()，这类操作不会返回查询结果集。
+  - DML语句（如， select）应该调用stmt.executeQuery()，这类操作会返回结果集。
+
+#### 4.6.3.4 连接hive关联hbase的表异常
+- 异常信息：
+  ```
+  Exception in thread "main" org.apache.hive.service.cli.HiveSQLException: java.io.IOException: org.apache.hadoop.hbase.client.RetriesExhaustedException: Failed after attempts=36, exceptions:
+  Thu May 24 13:46:34 CST 2018, null, java.net.SocketTimeoutException: callTimeout=60000, callDuration=68651: Call to work1/192.168.23.131:16020 failed on connection exception: java.net.ConnectException: Connection refused row 'person,,00000000000000' on table 'hbase:meta' at region=hbase:meta,,1.1588230740, hostname=work1,16020,1527087798324, seqNum=0
+  ```
+- 暂时没找到处理方法
+  beeline 好像暂时还不支持这种
+
+##4.7 hive中递增
+- 按年龄递增的编号做 `person_hbase` 的id 并插入数据
+  ```
+  insert into person_hbase select row_number() over(order by age),name,age,sex as birthday from usertest;
+  ```
 
 # 5. hive关联Hbase
 ## 5.1 关联配置
@@ -378,10 +585,23 @@ load data local inpath '/home/hadoop/usertest' into table temp;
   hadoop-2.7.6
   hbase-1.4.4
   apache-hive-2.3.3-bin
+
 - 在使用过程中发现
   hive2.x 不建议使用mr引擎，建议使用spark引擎；如果使用mr请使用hive1.x版本
+
+- 参考地址：
+  https://blog.csdn.net/xiaoshunzi111/article/details/51803719
+  https://www.cnblogs.com/bujunpeng/p/4788279.html
+  https://blog.csdn.net/lr131425/article/details/72722932
+  https://blog.csdn.net/liuxiao723846/article/details/69808450
+  https://www.cnblogs.com/tgzhu/p/5764035.html
+  https://blog.csdn.net/a2011480169/article/details/51588253
+  https://blog.csdn.net/scutshuxue/article/details/6988348
+  https://www.cnblogs.com/DamianZhou/p/4049281.html
+
 - jar包
   复制hbase中lib目录下的 `hbase*` `zookeeper*` 到hive的lib目录下，用的hive和hbase这个版本的，hbae的包hive都有了
+
 - 修改配置文件
   ```
   <property>  
@@ -393,6 +613,7 @@ load data local inpath '/home/hadoop/usertest' into table temp;
     <value>master,work1,work2</value>  
   </property>
   ```
+
 - 重启hive
   ```
   nohup /zz/app/hive/bin/hiveserver2 1 > /zz/app/hive/logs/hiveserver2.log 2>/zz/app/hive/logs/hiveserver2.error.log &
@@ -427,22 +648,3 @@ load data local inpath '/home/hadoop/usertest' into table temp;
 - 原因：
 使用beeline客户端去连接hive，然后去关联表；换用 `./bin/hive` 去关联表
 
-## 5.4 更改hive版本是，元数据异常
-- 异常信息：
-  ```
-  Caused by: MetaException(message:Hive Schema version 2.1.0 does not match metastore's schema version 1.2.0 Metastore is not upgraded or corrupt)
-  ```
-- 处理：
-  参考地址：https://www.cnblogs.com/liupuLearning/p/6610307.html
-  ```
-  #(1)删除HDFS上的hive数据与hive数据库
-  hadoop fs -rm -r -f /tmp/hive
-  hadoop fs -rm -r -f /user/hive
-  
-  #(2)删除MySQL上的hive的元数据信息
-  mysql -uroot -p 
-  drop database hive
-  
-  #(3)初始化hive, 将mysql作为hive的元数据库
-  schematool -dbType mysql -initSchema 
-  ```

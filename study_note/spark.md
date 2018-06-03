@@ -21,8 +21,8 @@
   ```
   ```
   #vim slaves
-  worke1
-  worke2
+  work1
+  worke
   ```
 
 - spark-env.sh
