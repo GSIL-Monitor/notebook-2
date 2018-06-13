@@ -229,8 +229,6 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
 ## 3.1
 ![hive](../study_note_access/hive/hive架构图.png)
 
-![1526984750362](../study_note_access/hive/hive关联hbase表异常.png)
-
 - 解析sql，得到语法树，根据语法树找对应的mapreduce模版，然后把它组装起来
 - 它有内部的优化机制：
   - 例如join操作: 以join的条件作为key，把2个表的数据发到reduce，然后在reduce端做聚合
