@@ -1,4 +1,4 @@
-# 1. 安装
+1. 安装
 
 - 已安装 hadoop、zookeep
 
@@ -34,7 +34,7 @@ export HBASE_MANAGES_ZK=false
 		<name>hbase.cluster.distributed</name>
 		<value>true</value>
 	</property>
-	
+
 	<property>
 		<name>hbase.zookeeper.quorum</name>
 		<value>master,work1,work2</value>
@@ -168,7 +168,7 @@ hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
 
 从HReginServer：缓存数据
 
-![hbase架构图](D:\study\mygit\notebook\study_note_access\hbase\hbase架构图.png)
+![hbase架构图](../study_note_access/hbase/hbase架构图.png)
 - hbase是写快，读慢（慢是相对于写来说的）
 - 写数据
   - 来了一条数据通过zookeeper定位写到哪台HReginServer上
@@ -391,6 +391,14 @@ limit 限制取回来列数  offset 偏移位就是开始位置 byte[] 字符串
   Result result = table.get(get);
   ```
 
+### 5.5.7 列限定符过滤器
+- QualifierFilter：列名过滤器，结合比较器使用
+```
+//列名过滤器
+Filter filter3=new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+        new RegexStringComparator("age"));
+filters.add(filter3);
+```
 
 ## 5.6 列值过滤器
 ### 5.6.1 ValueFilter
@@ -509,7 +517,7 @@ put 'test1', 'user2|ts6', 'sf:s1', 'sku222'
 scan 'test1', FILTER=>"ValueFilter(=,'binary:sku188')"
 
 ROW                          COLUMN+CELL                    
- user1|ts2                   column=sf:c1, timestamp=1409122354918, value=sku188
+user1|ts2                   column=sf:c1, timestamp=1409122354918, value=sku188
  
 谁的值包含88
  
