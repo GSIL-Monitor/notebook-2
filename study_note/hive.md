@@ -227,7 +227,7 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
 # 3 Hive架构
 
 ## 3.1
-![hive架构图](D:\study\mygit\notebook\study_note_access\hive\hive架构图.png)
+![hive架构图](..\study_note_access\hive\hive架构图.png)
 
 - 解析sql，得到语法树，根据语法树找对应的mapreduce模版，然后把它组装起来
 - 它有内部的优化机制：
