@@ -4,17 +4,17 @@
 - 使用NumPy，就可以很自然地使用数组和矩阵。 NumPy包含很多实用的数学函数，涵盖线性代数运算、傅里叶变换和随机数生成等功能。
 - NumPy能够直接对数组和矩阵进行操作，可以省略很多循环语句，其众多的数学函数也会让编写代码的工作轻松许多。
 - NumPy的大部分代码都是用C语言写成的，这使得NumPy比纯Python代码高效得多。 
-- 在 Windows 上安装 NumPy、 Matplotlib、SciPy 和 IPython
-  - (1) 从SourceForge网站下载NumPy的Windows安装程序：
-    http://sourceforge.net/projects/numpy/files/
-    请选择合适的版本。在上图中，我们选择了numpy-1.7.0-win32-superpack-python2.7.exe。
-  - (2) 下载完成后，双击运行安装程序。
-    SciPy和Matplotlib可以通过Enthough安装，地址为www.enthought.com/products/epd.php。
-    在安装过程中，你可能需要将一个文件msvcp71.dll放到目录C:\Windows\system32下。
-    你可以从这里下载这个文件： www.dll-files.com/dllindex/dll-files.shtml?msvcp71。 
-    Windows下的IPython安装程序可以通过访问IPython的官网下载： http://ipython.scipy.org/Wiki/IpythonOnWindows。
+- 在 Windows 上安装 NumPy、 Matplotlib、SciPy 和 IPython  
+  - (1) 从SourceForge网站下载NumPy的Windows安装程序：  
+    http://sourceforge.net/projects/numpy/files/  
+    请选择合适的版本。在上图中，我们选择了numpy-1.7.0-win32-superpack-python2.7.exe。  
+  - (2) 下载完成后，双击运行安装程序。  
+    SciPy和Matplotlib可以通过Enthough安装，地址为www.enthought.com/products/epd.php。  
+    在安装过程中，你可能需要将一个文件msvcp71.dll放到目录C:\Windows\system32下。  
+    你可以从这里下载这个文件： www.dll-files.com/dllindex/dll-files.shtml?msvcp71。   
+    Windows下的IPython安装程序可以通过访问IPython的官网下载： http://ipython.scipy.org/Wiki/IpythonOnWindows。  
 - 在 Linux 上安装 NumPy、 Matplotlib、 SciPy和 IPython
-  - (1) 要在Red Hat上安装NumPy，请在命令行中执行如下命令：
+  - (1) 要在Red Hat上安装NumPy，请在命令行中执行如下命令：  
     `yum install python-numpy`
 - numpy简单使用
   ```python
@@ -310,7 +310,7 @@ Out: array([8, 7, 6, 5, 4, 3, 2, 1, 0])
   b.dtype.str # '<c16'
   ```
 10. flat属性将返回一个numpy.flatiter对象， 
-- 这是获得flatiter对象的唯一方式——我们无法访问flatiter的构造函数。
+- 这是获得flatiter对象的唯一方式——我们无法访问flatiter的构造函数。  
   这个所谓的“扁平迭代器”可以让我们像遍历一维数组一样去遍历任意的多维数组，如下所示：
   ```python
   b = arange(4).reshape(2,2) # array([[0, 1],[2, 3]])
