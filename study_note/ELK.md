@@ -325,8 +325,8 @@ curl -XPUT 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test -d '
 curl -XPOST 183.136.128.47:9200/_snapshot/my_hdfs_repository5/kshttplog-test/_restore
 ```
 
-安装repository-hdfs插件
-bin/elasticsearch-plugin install repository-hdfs
+安装repository-hdfs插件  
+bin/elasticsearch-plugin install repository-hdfs  
 
 ```
 hdfs dfs -mkdir /elasticsearch
@@ -519,23 +519,23 @@ org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [SERVICE_UNAV
 ## 1.5 备份
 
 ### 1.5.1 参考地址
-[http://blog.csdn.net/u014431852/article/details/52905821](http://blog.csdn.net/u014431852/article/details/52905821)
-[中文官网文档](https://www.elastic.co/guide/cn/elasticsearch/guide/current/backing-up-your-cluster.html)
-[使用sshfs挂载远程服务器目录](https://www.jianshu.com/p/cdf5652a88d3)
-[umount命令](http://man.linuxde.net/umount)
+[http://blog.csdn.net/u014431852/article/details/52905821  
+[中文官网文档](https://www.elastic.co/guide/cn/elasticsearch/guide/current/backing-up-your-cluster.html)  
+[使用sshfs挂载远程服务器目录](https://www.jianshu.com/p/cdf5652a88d3)  
+[umount命令](http://man.linuxde.net/umount)  
 
-要备份你的集群，你可以使用 snapshot API。这个会拿到你集群里当前的状态和数据然后保存到一个共享仓库里。这个备份过程是"智能"的,即增量备份，所有后续的快照会保留的是已存快照和新数据之间的差异。随着你不时的对数据进行快照，备份也在增量的添加和删除。这意味着后续备份会相当快速
-有多个仓库类型可以供你选择
+要备份你的集群，你可以使用 snapshot API。这个会拿到你集群里当前的状态和数据然后保存到一个共享仓库里。这个备份过程是"智能"的,即增量备份，所有后续的快照会保留的是已存快照和新数据之间的差异。随着你不时的对数据进行快照，备份也在增量的添加和删除。这意味着后续备份会相当快速  
+有多个仓库类型可以供你选择  
 - 共享文件系统，比如 NAS
 - Amazon S3
 - HDFS (Hadoop 分布式文件系统)
 - Azure Cloud
 
 ### 1.5.2 安装sshfs
-- 安装epel扩展源
+- 安装epel扩展源  
   ```rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm```
 
-- 在 Linux 系统上安装 SSHFS
+- 在 Linux 系统上安装 SSHFS  
   ```yum -y install sshfs```
 
 ### 1.5.3 创建共享目录
@@ -559,7 +559,7 @@ mount -l
 df -h
 ```
 
-- 测试运行ES的用户是否有对共享目录的写权限
+- 测试运行ES的用户是否有对共享目录的写权限  
   ```sudo -u elasticsearch echo "a" >> /zz/data/es/es_backup/a```
 
 ### 1.5.4 修改es配置文件
@@ -579,13 +579,13 @@ PUT _snapshot/my_backup
 ```
 - my_backup : 给我们的仓库取一个名字，在本例它叫 my_backup 。
 - fs: 我们指定仓库的类型应该是一个共享文件系统。
-- /zz/data/es/es_backup：一个已挂载的设备作为目的地址。
-  注意：共享文件系统路径必须确保集群所有节点都可以访问到。
-  这步会在挂载点创建仓库和所需的元数据。还有一些其他的配置你可能想要配置的，这些取决于你的节点、网络的性能状况和仓库位置：
-- max_snapshot_bytes_per_sec
-  当快照数据进入仓库时，这个参数控制这个过程的限流情况。默认是每秒 20mb 。
-- max_restore_bytes_per_sec
-  当从仓库恢复数据时，这个参数控制什么时候恢复过程会被限流以保障你的网络不会被占满。默认是每秒 `20mb`。
+- /zz/data/es/es_backup：一个已挂载的设备作为目的地址。  
+  注意：共享文件系统路径必须确保集群所有节点都可以访问到。  
+  这步会在挂载点创建仓库和所需的元数据。还有一些其他的配置你可能想要配置的，这些取决于你的节点、网络的性能状况和仓库位置：  
+- max_snapshot_bytes_per_sec  
+  当快照数据进入仓库时，这个参数控制这个过程的限流情况。默认是每秒 20mb 。  
+- max_restore_bytes_per_sec  
+  当从仓库恢复数据时，这个参数控制什么时候恢复过程会被限流以保障你的网络不会被占满。默认是每秒 `20mb`。  
 - 假设我们有一个非常快的网络，而且对额外的流量也很 OK，那我们可以增加这些默认值
 ```
 POST _snapshot/my_backup/ 
@@ -606,8 +606,8 @@ POST _snapshot/my_backup/
 PUT _snapshot/my_backup/snapshot_name
 ```
 - 这个会备份所有打开的索引到 my_backup 仓库下一个命名为 snapshot_name 的快照里。这个调用会立刻返回，然后快照会在后台运行。
-- 通常你会希望你的快照作为后台进程运行，不过有时候你会希望在你的脚本中一直等待到完成。这可以通过添加一个 wait_for_completion 标记实现
-  `PUT _snapshot/my_backup/snapshot_1?wait_for_completion=true`
+- 通常你会希望你的快照作为后台进程运行，不过有时候你会希望在你的脚本中一直等待到完成。这可以通过添加一个 wait_for_completion 标记实现  
+  `PUT _snapshot/my_backup/snapshot_1?wait_for_completion=true`  
   - 这个会阻塞调用直到快照完成。注意大型快照会花很长时间才返回
 
 ### 1.5.7 备份指定索引的数据
@@ -621,9 +621,9 @@ PUT _snapshot/my_backup/snapshot_2
 - 这个快照命令现在只会备份 index_1 和 index_2 了。
 
 ### 1.5.8 列出快照相关的信息
-- 一旦你开始在你的仓库里积攒起快照了，你可能就慢慢忘记里面各自的细节了 ——特别是快照按照时间划分命名的时候（比如， backup_2014_10_28 ）。
-  要获得单个快照的信息，直接对仓库和快照名发起一个 GET 请求：
-  `GET _snapshot/my_backup/snapshot_2`
+- 一旦你开始在你的仓库里积攒起快照了，你可能就慢慢忘记里面各自的细节了 ——特别是快照按照时间划分命名的时候（比如， backup_2014_10_28 ）。  
+  要获得单个快照的信息，直接对仓库和快照名发起一个 GET 请求：  
+  `GET _snapshot/my_backup/snapshot_2`  
   这个会返回一个小响应，包括快照相关的各种信息：
   ```
   {
@@ -651,14 +651,14 @@ PUT _snapshot/my_backup/snapshot_2
      ]
   }
   ```
-- 要获取一个仓库中所有快照的完整列表，使用 _all 占位符替换掉具体的快照名称：
+- 要获取一个仓库中所有快照的完整列表，使用 _all 占位符替换掉具体的快照名称：  
     `GET _snapshot/my_backup/_all`
 
 ### 1.5.9 监控快照进度
 `GET _snapshot/my_backup/snapshot_3/_status`
-- INITIALIZING
+- INITIALIZING  
   分片在检查集群状态看看自己是否可以被快照。这个一般是非常快的。
-- STARTED
+- STARTED  
   数据正在被传输到仓库。
 - FINALIZING
   数据传输完成；分片现在在发送快照元数据。
@@ -704,9 +704,9 @@ POST /_snapshot/my_backup/snapshot_1/_restore
 
 如果你想监控恢复的进度，你可以使用 recovery API。这是一个通用目的的 API，用来展示你集群中移动着的分片状态。
 
-这个 API 可以为你在恢复的指定索引单独调用
-`GET restored_index_3/_recovery`
-或者查看你集群里所有索引，可能包括跟你的恢复进程无关的其他分片移动
+这个 API 可以为你在恢复的指定索引单独调用  
+`GET restored_index_3/_recovery`  
+或者查看你集群里所有索引，可能包括跟你的恢复进程无关的其他分片移动  
 `GET /_recovery/`
 - 输出会跟这个类似（注意，根据你集群的活跃度，输出可能会变得非常啰嗦！）：
 ```
@@ -766,7 +766,7 @@ POST /_snapshot/my_backup/snapshot_1/_restore
 
 
 ### 1.5.14 取消一个恢复
-- 要取消一个恢复，你需要删除正在恢复的索引。 因为恢复进程其实就是分片恢复，发送一个 删除索引 API 修改集群状态，就可以停止恢复进程。比如
+- 要取消一个恢复，你需要删除正在恢复的索引。 因为恢复进程其实就是分片恢复，发送一个 删除索引 API 修改集群状态，就可以停止恢复进程。比如  
   `DELETE /restored_index_3`
 - 如果 restored_index_3 正在恢复中，这个删除命令会停止恢复，同时删除所有已经恢复到集群里的数据
 
@@ -968,15 +968,15 @@ service elasticsearch-5 stop
 
 ## 1.9 概念
 ### 1.9.1 master、client、datanode
-- master节点
+- master节点  
 
 主要功能是维护元数据，管理集群各个节点的状态，数据的导入和查询都不会走master节点，所以master节点的压力相对较小，因此master节点的内存分配也可以相对少些；但是master节点是最重要的，如果master节点挂了或者发生脑裂了，你的元数据就会发生混乱，那样你集群里的全部数据可能会发生丢失，所以一定要保证master节点的稳定性。
 
-- data node
+- data node  
 
 是负责数据的查询和导入的，它的压力会比较大，它需要分配多点的内存，选择服务器的时候最好选择配置较高的机器（大内存，双路CPU，SSD... 土豪~）；data node要是坏了，可能会丢失一小份数据。
 
-- client node
+- client node  
 
 是作为任务分发用的，它里面也会存元数据，但是它不会对元数据做任何修改。client node存在的好处是可以分担下data node的一部分压力；为什么client node能分担data node的一部分压力？因为es的查询是两层汇聚的结果，第一层是在data node上做查询结果汇聚，然后把结果发给client node，client node接收到data node发来的结果后再做第二次的汇聚，然后把最终的查询结果返回给用户；所以我们看到，client node帮忙把第二层的汇聚工作处理了，自然分担了data node的压力。
 这里，我们可以举个例子，当你有个大数据查询的任务（比如上亿条查询任务量）丢给了es集群，要是没有client node，那么压力直接全丢给了data node，如果data node机器配置不足以接受这么大的查询，那么就很有可能挂掉，一旦挂掉，data node就要重新recover，重新reblance，这是一个异常恢复的过程，这个过程的结果就是导致es集群服务停止... 但是如果你有client node，任务会先丢给client node，client node要是处理不来，顶多就是client node停止了，不会影响到data node，es集群也不会走异常恢复。
@@ -994,9 +994,9 @@ service elasticsearch-5 stop
   node.name
   path.data
   ```
-- 多master，
-  discovery.zen.ping.unicast.hosts #master节点
-  discovery.zen.minimum_master_nodes #发现至少master节点个数才能组成集群
+- 多master，  
+  discovery.zen.ping.unicast.hosts #master节点  
+  discovery.zen.minimum_master_nodes #发现至少master节点个数才能组成集群  
 
 ## 1.12 es supervisor监控
 /etc/supervisord.conf
@@ -1223,7 +1223,7 @@ if __name__ == '__main__':
 - 启动  
   `nohup elasticsearch-head/node_modules/grunt/bin/grunt server &`
 
-- 访问
+- 访问  
   > http://master:9100/
 
 - 附：  
@@ -1563,8 +1563,8 @@ bin/kibana-plugin remove x-pack
     方法二使用java -jar运行：[http://blog.csdn.net/k2514091675/article/details/76254729](http://blog.csdn.net/k2514091675/article/details/76254729)
 
 ### 6.7.3 反编译
-- 找到es安装x-pack插件后的x-pack jar包，反编译类 LicenseVerifier
-  包：elasticsearch-5.2.0/plugins/x-pack/x-pack-5.2.0.jar
+- 找到es安装x-pack插件后的x-pack jar包，反编译类 LicenseVerifier  
+  包：elasticsearch-5.2.0/plugins/x-pack/x-pack-5.2.0.jar  
   类：org.elasticsearch/license/LicenseVerifier.class
 
 - 这个类是检查license完整性的类，我们使其始终返回true，就可以任意修改license并导入。将其改为：
@@ -1582,7 +1582,7 @@ bin/kibana-plugin remove x-pack
   }
   ```
 
-- 重新编译class文件。注意这里我们无需编译整个工程，将原来的x-pack-5.2.0.jar和依赖包加入CLASSPATH，即可完成单个文件的编译。实际上只用到了3个依赖包
+- 重新编译class文件。注意这里我们无需编译整个工程，将原来的x-pack-5.2.0.jar和依赖包加入CLASSPATH，即可完成单个文件的编译。实际上只用到了3个依赖包  
   jar包下载maven仓库：[http://mvnrepository.com/artifact/org.elasticsearch/elasticsearch/5.2.0](http://mvnrepository.com/artifact/org.elasticsearch/elasticsearch/5.2.0)
   ```
   javac -cp "/usr/share/elasticsearch/lib/elasticsearch-5.2.0.jar:/usr/share/elasticsearch/lib/lucene-core-6.4.0.jar:/usr/share/elasticsearch/plugins/x-pack/x-pack-5.2.0.jar" LicenseVerifier.java
@@ -1609,9 +1609,9 @@ https://www.elastic.co/guide/en/elasticsearch/client/curator/5.2/index.html
 
 
 # 资源链接
-https://www.cnblogs.com/bonelee/p/6617612.html
-es的forcemerge——按照天分割：http://www.bubuko.com/infodetail-1995847.html
+https://www.cnblogs.com/bonelee/p/6617612.html  
+es的forcemerge——按照天分割：http://www.bubuko.com/infodetail-1995847.html  
 
-Elasticsearch 5.x 源码分析（5）segments merge 流程分析
+Elasticsearch 5.x 源码分析（5）segments merge 流程分析  
 
 在ElasticSearch中，集群(Cluster),节点(Node),分片(Shard),Indices(索引),replicas(备份)之间是什么关系？：https://www.zhihu.com/question/26446020?sort=created
