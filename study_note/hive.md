@@ -214,11 +214,11 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
   #(1)删除HDFS上的hive数据与hive数据库
   hadoop fs -rm -r -f /tmp/hive
   hadoop fs -rm -r -f /user/hive
-  
+
   #(2)删除MySQL上的hive的元数据信息
   mysql -uroot -p 
   drop database hive
-  
+
   #(3)初始化hive, 将mysql作为hive的元数据库
   schematool -dbType mysql -initSchema 
   ```
@@ -386,11 +386,12 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
 
 ## 4.5 导入数据到hive中
   ```
-  create table temp(id string, name string, age string, sex string, birthday string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile location '/data/data';
+create table temp(id string, name string, age string, sex string, birthday string) row format delimited fields terminated by '\t' lines terminated by '\n' stored as textfile location '/data/data';
   
-  create table temp(id string, name string, age string, sex string, birthday string) row format DELIMITED FIELDS TERMINATED BY '\t' ;
-  #加载数据
-  load data local inpath '/home/hadoop/usertest' into table temp;
+create table temp(id string, name string, age string, sex string, birthday string) row format DELIMITED FIELDS TERMINATED BY '\t' ;
+
+#加载数据
+load data local inpath '/home/hadoop/usertest' into table temp;
   ```
 
 ## 4.6 java jdbc 连接hive
@@ -398,7 +399,7 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
 - 参考地址
   - https://blog.csdn.net/lovelovelovelovelo/article/details/71203605
   - https://blog.csdn.net/fightxxl55/article/details/52972312
-  
+
 - 官网：
   - https://hive.apache.org/
   - 配置：https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients#HiveServer2Clients-JDBC
@@ -424,9 +425,9 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
    * 使用jdbc连接hive2
    */
   public class JDBCConnectHive {
-  
+
   	private static String driverName = "org.apache.hive.jdbc.HiveDriver";
-  
+
   	public static void main(String[] args) throws Exception{
   		try {
   			Class.forName(driverName);
@@ -435,20 +436,20 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   			e.printStackTrace();
   			System.exit(1);
   		}
-  
+
   		Connection con = DriverManager.getConnection("jdbc:hive2://192.168.23.132:10000/default", "hadoop", "hadoop");
   		Statement stmt = con.createStatement();
   		stmt.execute("use default");
   		ResultSet res = null;
   		String sql = null;
-  
+
   		String tableName = "testHiveDriverTable";
   		// DLL语句（如，create 、 alter 、drop、add jar 等）应该调用stmt.execute()，这类操作不会返回查询结果集。
   		// DML语句（如， select）应该调用stmt.executeQuery()，这类操作会返回结果集。
   		// 否则会有异常： java.sql.SQLException: The query did not generate a result set!
   		stmt.execute("drop table " + tableName);
   		stmt.execute("create table " + tableName + " (key int, value string) row format DELIMITED FIELDS TERMINATED BY '\\t'");
-  
+
   		// show tables
   //		sql = "show tables '" + tableName + "'";
   		sql = "show tables";
@@ -460,7 +461,7 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   		/*if (res.next()) {
   			System.out.println(res.getString(1));
   		}*/
-  
+
   		// describe table
   		sql = "describe " + tableName;
   		System.out.println("Running: " + sql);
@@ -468,7 +469,7 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   		while (res.next()) {
   			System.out.println(res.getString(1) + "\t" + res.getString(2));
   		}
-  
+
   		// load data into table
   		// NOTE: filepath has to be local to the hive server
   		// NOTE: /tmp/a.txt is a ctrl-A separated file with two fields per line
@@ -476,7 +477,7 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   		sql = "load data local inpath '" + filepath + "' into table " + tableName;
   		System.out.println("Running: " + sql);
   		stmt.execute(sql);
-  
+
   		/**
   		 * hive_hbase	hive创建的关联hbase的表，连接失败
   		 person_hbase	hbase的表，hive去关联的，连接失败
@@ -497,9 +498,9 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   			}
   			System.out.println("--------------------------------");
   		}
-  
+
   //System.exit(0);
-  
+
   		// select * query
   		sql = "select * from " + tableName;
   		System.out.println("Running: " + sql);
@@ -507,7 +508,7 @@ select get_json_object(line,'$.movie') as moive,get_json_object(line,'$.rate') a
   		while (res.next()) {
   			System.out.println(String.valueOf(res.getInt(1)) + "\t" + res.getString(2));
   		}
-  
+
   		// regular hive query
   		sql = "select count(1) from " + tableName;
   		System.out.println("Running: " + sql);
@@ -609,8 +610,8 @@ Exception in thread "main" java.sql.SQLException: Could not open client transpor
   	<value>file:///zz/app/hive/lib/hbase-annotations-1.4.4.jar,file:///zz/app/hive/lib/hbase-annotations-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-client-1.4.4.jar,file:///zz/app/hive/lib/hbase-common-1.4.4.jar,file:///zz/app/hive/lib/hbase-common-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-examples-1.4.4.jar,file:///zz/app/hive/lib/hbase-external-blockcache-1.4.4.jar,file:///zz/app/hive/lib/hbase-hadoop2-compat-1.4.4.jar,file:///zz/app/hive/lib/hbase-hadoop-compat-1.4.4.jar,file:///zz/app/hive/lib/hbase-it-1.4.4.jar,file:///zz/app/hive/lib/hbase-it-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-metrics-1.4.4.jar,file:///zz/app/hive/lib/hbase-metrics-api-1.4.4.jar,file:///zz/app/hive/lib/hbase-prefix-tree-1.4.4.jar,file:///zz/app/hive/lib/hbase-procedure-1.4.4.jar,file:///zz/app/hive/lib/hbase-protocol-1.4.4.jar,file:///zz/app/hive/lib/hbase-resource-bundle-1.4.4.jar,file:///zz/app/hive/lib/hbase-rest-1.4.4.jar,file:///zz/app/hive/lib/hbase-rsgroup-1.4.4.jar,file:///zz/app/hive/lib/hbase-server-1.4.4.jar,file:///zz/app/hive/lib/hbase-server-1.4.4-tests.jar,file:///zz/app/hive/lib/hbase-shell-1.4.4.jar,file:///zz/app/hive/lib/hbase-thrift-1.4.4.jar</value>
   </property>
   <property>
-    <name>hive.zookeeper.quorum</name>  
-    <value>master,work1,work2</value>  
+    <name>hive.zookeeper.quorum</name>
+    <value>master,work1,work2</value>
   </property>
   ```
 
@@ -627,7 +628,7 @@ Exception in thread "main" java.sql.SQLException: Could not open client transpor
   ```
   #全部字段
   CREATE EXTERNAL TABLE person_hbase(key string, name string, age int, birthday string) STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key, cf1:name, cf1:age, cf1:birthday") TBLPROPERTIES("hbase.table.name" = "person");
-  
+
   #只有部分字段
   CREATE EXTERNAL TABLE person_hbase(key string, name string, age int) STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES ("hbase.columns.mapping" = ":key, cf1:name, cf1:age") TBLPROPERTIES("hbase.table.name" = "person");
   ```
@@ -635,7 +636,7 @@ Exception in thread "main" java.sql.SQLException: Could not open client transpor
   ```
   #创建表
   create table hive_hbase(id string,name string, age int, sex string) stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' with serdeproperties ("hbase.columns.mapping" = ":key,cf1:name,cf1:age, cf1:sex") tblproperties ("hbase.table.name" = "hive");
-  
+
   #导入数据
   insert into hive_hbase select * from temp;
   ```
@@ -643,8 +644,8 @@ Exception in thread "main" java.sql.SQLException: Could not open client transpor
 
 ## 5.3 在使用中遇到的问题
 - 现象
-![1526984750362](../study_note_access/hive/hive关联hbase表异常.png)
+  ![1526984750362](../study_note_access/hive/hive关联hbase表异常.png)
 
 - 原因：
-使用beeline客户端去连接hive，然后去关联表；换用 `./bin/hive` 去关联表
+  使用beeline客户端去连接hive，然后去关联表；换用 `./bin/hive` 去关联表
 

@@ -130,36 +130,36 @@ Hadoop version support matrix
 # 2. hbase shell
 ## 2.1 基本语法
 
-| 名称                       | 命令表达式                                                   |
-| -------------------------- | ------------------------------------------------------------ |
-| 创建表                     | create '表名', '列族名1','列族名2','列族名N'                 |
-| 查看所有表                 | list                                                         |
-| 描述表                     | describe  ‘表名’                                             |
-| 判断表存在                 | exists  '表名'                                               |
-| 判断是否禁用启用表         | is_enabled '表名'is_disabled ‘表名’                          |
-| 添加记录                   | put  ‘表名’, ‘rowKey’, ‘列族 : 列‘  ,  '值'                  |
-| 查看记录rowkey下的所有数据 | get  '表名' , 'rowKey'                                       |
-| 查看表中的记录总数         | count  '表名'                                                |
-| 获取某个列族               | get '表名','rowkey','列族'                                   |
-| 获取某个列族的某个列       | get '表名','rowkey','列族：列’                               |
-| 删除记录                   | delete  ‘表名’ ,‘行名’ , ‘列族：列'                          |
-| 删除整行                   | deleteall '表名','rowkey'                                    |
-| 删除一张表                 | 先要屏蔽该表，才能对该表进行删除第一步 disable ‘表名’ ，第二步  drop '表名' |
-| 清空表                     | truncate '表名'                                              |
-| 查看所有记录               | scan "表名"                                                  |
-| 查看某个表某个列中所有数据 | scan "表名" , {COLUMNS=>'列族名:列名'}                       |
-| 更新记录                   | 就是重写一遍，进行覆盖，hbase没有修改，都是追加              |
+| 名称               | 命令表达式                                    |
+| ---------------- | ---------------------------------------- |
+| 创建表              | create '表名', '列族名1','列族名2','列族名N'        |
+| 查看所有表            | list                                     |
+| 描述表              | describe  ‘表名’                           |
+| 判断表存在            | exists  '表名'                             |
+| 判断是否禁用启用表        | is_enabled '表名'is_disabled ‘表名’          |
+| 添加记录             | put  ‘表名’, ‘rowKey’, ‘列族 : 列‘  ,  '值'    |
+| 查看记录rowkey下的所有数据 | get  '表名' , 'rowKey'                     |
+| 查看表中的记录总数        | count  '表名'                              |
+| 获取某个列族           | get '表名','rowkey','列族'                   |
+| 获取某个列族的某个列       | get '表名','rowkey','列族：列’                 |
+| 删除记录             | delete  ‘表名’ ,‘行名’ , ‘列族：列'              |
+| 删除整行             | deleteall '表名','rowkey'                  |
+| 删除一张表            | 先要屏蔽该表，才能对该表进行删除第一步 disable ‘表名’ ，第二步  drop '表名' |
+| 清空表              | truncate '表名'                            |
+| 查看所有记录           | scan "表名"                                |
+| 查看某个表某个列中所有数据    | scan "表名" , {COLUMNS=>'列族名:列名'}          |
+| 更新记录             | 就是重写一遍，进行覆盖，hbase没有修改，都是追加               |
 
 - 进入hbase shell：
-`./bin/hbase shell`
+  `./bin/hbase shell`
 - 创建表hbase_1102有两个列族CF1和CF2
-`create 'person',  {NAME=>'cf1'}, {NAME=>'cf2'}`
+  `create 'person',  {NAME=>'cf1'}, {NAME=>'cf2'}`
 - 向表中添加数据，在想HBase的表中添加数据的时候，只能一列一列的添加，不能同时添加多列。
 ```
-hbase(main):042:0> put 'person', '001','cf1:name','Tom'
-hbase(main):043:0> put 'person', '001','cf1:age','18'
-hbase(main):044:0> put 'person', '001','cf1:sex','男'
-hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
+put 'person', '001','cf1:name','Tom'
+put 'person', '001','cf1:age','18'
+put 'person', '001','cf1:sex','男'
+put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
 ```
 
 # 3. 
@@ -172,7 +172,7 @@ hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
 - hbase是写快，读慢（慢是相对于写来说的）
 - 写数据
   - 来了一条数据通过zookeeper定位写到哪台HReginServer上
-  - 
+  - ​
 - 读数据
 
 # 4
@@ -195,36 +195,36 @@ hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
 
 ## 5.1 参考地址：
 - hbase过滤器：
-	https://www.cnblogs.com/similarface/p/5805973.html
-	http://blog.chinaunix.net/uid-77311-id-4617954.html
-	http://www.aboutyun.com/thread-8895-1-1.html
-	https://blog.csdn.net/lr131425/article/details/72676254
+  https://www.cnblogs.com/similarface/p/5805973.html
+  http://blog.chinaunix.net/uid-77311-id-4617954.html
+  http://www.aboutyun.com/thread-8895-1-1.html
+  https://blog.csdn.net/lr131425/article/details/72676254
 - hbase shell 过滤器：
-	https://www.cnblogs.com/mayidudu/p/6056772.html
+  https://www.cnblogs.com/mayidudu/p/6056772.html
 
 ## 5.2 hbase过滤器中的比较
 - 比较符如下:
 
 | Operator         | Description |
 | ---------------- | ----------- |
-| LESS             | 小于        |
-| LESS_OR_EQUAL    | 小于等于    |
-| EQUAL            | 等于        |
-| NOT_EQUAL        | 不等于      |
-| GREATER_OR_EQUAL | 大于等于    |
-| GREATER          | 大于        |
-| NO_OP            | 排除所有    |
+| LESS             | 小于          |
+| LESS_OR_EQUAL    | 小于等于        |
+| EQUAL            | 等于          |
+| NOT_EQUAL        | 不等于         |
+| GREATER_OR_EQUAL | 大于等于        |
+| GREATER          | 大于          |
+| NO_OP            | 排除所有        |
 
 - 比较器
 
-| Comparator             | Description                                                  |
-| ---------------------- | ------------------------------------------------------------ |
-| BinaryComparator       | 使用Bytes.compareTo()比较                                    |
-| BinaryPrefixComparator | 和BinaryComparator差不多，从前面开始比较                     |
+| Comparator             | Description                              |
+| ---------------------- | ---------------------------------------- |
+| BinaryComparator       | 使用Bytes.compareTo()比较                    |
+| BinaryPrefixComparator | 和BinaryComparator差不多，从前面开始比较             |
 | NullComparator         | Does not compare against an actual value but whether a given one is null, or not  null. |
 | BitComparator          | Performs a bitwise comparison, providing a BitwiseOp class with OR, and XORoperators. |
-| RegexStringComparator  | 正则表达式                                                   |
-| SubstringComparator    | 把数据当成字符串，用contains()来判断                         |
+| RegexStringComparator  | 正则表达式                                    |
+| SubstringComparator    | 把数据当成字符串，用contains()来判断                  |
 
 - 在RowFilter中使用实例:
   - 提取rowkey值为 rowkeyvalue 的
@@ -240,7 +240,7 @@ hbase(main):045:0> put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
     ```
       Filter filter = new RowFilter(CompareFilter.CompareOp.EQUAL,new SubstringComparator("201407"));
     ```
-  
+
   - 提取rowkey以123开头的数据
     ```
     Filter filter = new RowFilter(CompareFilter.CompareOp.EQUAL,new BinaryPrefixComparator("123".getBytes()));
@@ -353,9 +353,9 @@ public static void main(String[] args) throws IOException {
 ### 5.5.3 列分页过滤
 - ColumnPaginationFilter：列分页过滤， HBase 的列可以很多，所以出现了列分页，该过滤器可以对一行的所有列进行分页
 - 构造函数：
-ColumnPaginationFilter(int limit, int offset)
-ColumnPaginationFilter(int limit, byte[] columnOffset)
-limit 限制取回来列数  offset 偏移位就是开始位置 byte[] 字符串/书签偏移从哪里开始分页。
+  ColumnPaginationFilter(int limit, int offset)
+  ColumnPaginationFilter(int limit, byte[] columnOffset)
+  limit 限制取回来列数  offset 偏移位就是开始位置 byte[] 字符串/书签偏移从哪里开始分页。
   ```
   //限制返回的列数 从第4列开始取 取3列数据
   ColumnPaginationFilter columnPaginationFilter = new ColumnPaginationFilter(3,4);
@@ -457,7 +457,7 @@ filters.add(filter3);
   Scan scan1 = new Scan();
   scan1.setFilter(filter);
   scanner1.close();
-  
+
   Scan scan2 = new Scan();
   scan2.setFilter(filter);
   //加了时间范围 故意多加了1s 1472196212480+1=1472196212481
