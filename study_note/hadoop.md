@@ -245,6 +245,12 @@ conf.set("mapreduce.map.memory.mb", "2048");
   3. 修改 src/org/apache/hadoop/io/nativeio/NativeIO.java 中的557 行，返回true
   - 如果本地运行mr还是异常，考虑强行加载hadoop.dll 和 hadoop家目录
   - 还有一种可能异常：hadoop.dll 是32位，jdk是64位，那么就要换hadoop.dll（如果有这个问题，会在强行加载hadoop.dll时报位数异常）
+------
+- 异常信息
+本地运行报：nativeio.NativeIO$Windows.createDirectoryWithMode0(Ljava/lang/String;I)
+- 处理
+参考：https://www.cnblogs.com/pu20065226/p/8583267.html  
+删除`c:\windows\system32下放hadoop.dll`
 
 # 3. map、reduce
 ## 3.1 向map、reduce传递参数

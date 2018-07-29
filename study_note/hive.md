@@ -203,7 +203,83 @@ java.lang.IncompatibleClassChangeError: Found class jline.Terminal, but interfac
   sparkAssemblyPath=`ls ${SPARK_HOME}/jars/*.jar`
   ```
 
+### 2.1.6 启动权限问题
+- 异常信息
+```
+Caused by: java.lang.RuntimeException: org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.security.authorize.AuthorizationException): User: hadoop is not allowed to impersonate hadoop
+        at org.apache.hadoop.hive.ql.session.SessionState.start(SessionState.java:606) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hadoop.hive.ql.session.SessionState.start(SessionState.java:544) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionImpl.open(HiveSessionImpl.java:164) ~[hive-service-2.3.3.jar:2.3.3]
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_121]
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_121]
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_121]
+        at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_121]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.invoke(HiveSessionProxy.java:78) ~[hive-service-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.access$000(HiveSessionProxy.java:36) ~[hive-service-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionProxy$1.run(HiveSessionProxy.java:63) ~[hive-service-2.3.3.jar:2.3.3]
+        at java.security.AccessController.doPrivileged(Native Method) ~[?:1.8.0_121]
+        at javax.security.auth.Subject.doAs(Subject.java:422) ~[?:1.8.0_121]
+        at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1692) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.invoke(HiveSessionProxy.java:59) ~[hive-service-2.3.3.jar:2.3.3]
+        at com.sun.proxy.$Proxy37.open(Unknown Source) ~[?:?]
+        at org.apache.hive.service.cli.session.SessionManager.createSession(SessionManager.java:410) ~[hive-service-2.3.3.jar:2.3.3]
+        ... 13 more
+Caused by: org.apache.hadoop.ipc.RemoteException: User: hadoop is not allowed to impersonate hadoop
+        at org.apache.hadoop.ipc.Client.call(Client.java:1470) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hadoop.ipc.Client.call(Client.java:1401) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hadoop.ipc.ProtobufRpcEngine$Invoker.invoke(ProtobufRpcEngine.java:232) ~[hadoop-common-2.6.5.jar:?]
+        at com.sun.proxy.$Proxy29.getFileInfo(Unknown Source) ~[?:?]
+        at org.apache.hadoop.hdfs.protocolPB.ClientNamenodeProtocolTranslatorPB.getFileInfo(ClientNamenodeProtocolTranslatorPB.java:752) ~[hadoop-hdfs-2.6.5.jar:?]
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_121]
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_121]
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_121]
+        at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_121]
+        at org.apache.hadoop.io.retry.RetryInvocationHandler.invokeMethod(RetryInvocationHandler.java:187) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hadoop.io.retry.RetryInvocationHandler.invoke(RetryInvocationHandler.java:102) ~[hadoop-common-2.6.5.jar:?]
+        at com.sun.proxy.$Proxy30.getFileInfo(Unknown Source) ~[?:?]
+        at org.apache.hadoop.hdfs.DFSClient.getFileInfo(DFSClient.java:1977) ~[hadoop-hdfs-2.6.5.jar:?]
+        at org.apache.hadoop.hdfs.DistributedFileSystem$18.doCall(DistributedFileSystem.java:1118) ~[hadoop-hdfs-2.6.5.jar:?]
+        at org.apache.hadoop.hdfs.DistributedFileSystem$18.doCall(DistributedFileSystem.java:1114) ~[hadoop-hdfs-2.6.5.jar:?]
+        at org.apache.hadoop.fs.FileSystemLinkResolver.resolve(FileSystemLinkResolver.java:81) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hadoop.hdfs.DistributedFileSystem.getFileStatus(DistributedFileSystem.java:1114) ~[hadoop-hdfs-2.6.5.jar:?]
+        at org.apache.hadoop.fs.FileSystem.exists(FileSystem.java:1400) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hadoop.hive.ql.session.SessionState.createRootHDFSDir(SessionState.java:704) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hadoop.hive.ql.session.SessionState.createSessionDirs(SessionState.java:650) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hadoop.hive.ql.session.SessionState.start(SessionState.java:582) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hadoop.hive.ql.session.SessionState.start(SessionState.java:544) ~[hive-exec-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionImpl.open(HiveSessionImpl.java:164) ~[hive-service-2.3.3.jar:2.3.3]
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_121]
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_121]
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_121]
+        at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_121]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.invoke(HiveSessionProxy.java:78) ~[hive-service-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.access$000(HiveSessionProxy.java:36) ~[hive-service-2.3.3.jar:2.3.3]
+        at org.apache.hive.service.cli.session.HiveSessionProxy$1.run(HiveSessionProxy.java:63) ~[hive-service-2.3.3.jar:2.3.3]
+        at java.security.AccessController.doPrivileged(Native Method) ~[?:1.8.0_121]
+        at javax.security.auth.Subject.doAs(Subject.java:422) ~[?:1.8.0_121]
+        at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1692) ~[hadoop-common-2.6.5.jar:?]
+        at org.apache.hive.service.cli.session.HiveSessionProxy.invoke(HiveSessionProxy.java:59) ~[hive-service-2.3.3.jar:2.3.3]
+        at com.sun.proxy.$Proxy37.open(Unknown Source) ~[?:?]
+        at org.apache.hive.service.cli.session.SessionManager.createSession(SessionManager.java:410) ~[hive-service-2.3.3.jar:2.3.3]
+        ... 13 more
+```
+- 处理
+  - 参考地址：[https://my.oschina.net/gently/blog/683604](https://my.oschina.net/gently/blog/683604)
+  - core-site.xml 文件添加下面配置
+```
+<property>
+	<name>hadoop.proxyuser.hadoop.hosts</name>                                               
+    	<value>*</value>
+</property>
+
+<property>
+    	<name>hadoop.proxyuser.hadoop.groups</name>
+    	<value>*</value>
+</property>
+```
+
 ## 2.2 改hive版本时, 元数据异常
+
 - 异常信息：
   ```
   Caused by: MetaException(message:Hive Schema version 2.1.0 does not match metastore's schema version 1.2.0 Metastore is not upgraded or corrupt)

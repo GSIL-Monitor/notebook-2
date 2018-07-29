@@ -351,6 +351,90 @@ hadoop系列最全视频教程  定时删除赶紧下载
 # 9. 若则大数据
 - github：https://github.com/ruozedata/BigData/blob/master/blog/BigDataBlogOverview.md
 
+# 10 spark
+## 10.1 spark2.2快速入门到精通
+（大数据学习资料分享群-232840209）
+《spark2.2从入门到精通》有更新了
+	下载链接:https://pan.baidu.com/s/1sm2Jdmt 密码:rdea
+	更新日期：2018-07-15
+
+# 11. QQ中的资源
+## 11.1 大杂烩
+	QQ中的资源：（大数据学习资料分享群-232840209）
+	首席互联网架构师高级研修班课程(高端)
+	链接: https://pan.baidu.com/s/1uW_z2emTlZS9Qx1g-k0jmw 密码: caaw
+	
+	北风网 AI
+	链接: https://pan.baidu.com/s/1U14FQirGgrbHhD02DWAomQ 密码: 1d63
+	
+	蚂蚁
+	链接：https://pan.baidu.com/s/1WfvsmQkMG8qSmWhIPCpr7A 密码：21wy
+	
+	沽泡学院
+	链接: https://pan.baidu.com/s/1UMEbTvhlnOnvVzzzZgTI4Q 密码: p9q5
+	
+	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
+	联系微信:17549206263    QQ:1121219793
+	
+	大数据跳槽班课程
+	链接：https://pan.baidu.com/s/1zy40-wT8RE1jc2Fn1hfnLA 密码：i64w
+	
+	Spring源码解读与设计详析
+	链接: https://pan.baidu.com/s/1a5nFu_kVZcM-BRnotvnkhQ 密码: p4vj
+	
+	产品经理从基础到全能
+	链接: https://pan.baidu.com/s/1VCTY8ZpWJqhVblMLYapjog 密码: qvbt
+	
+	深入理解jvm虚拟机
+	链接: https://pan.baidu.com/s/1WZb-K-o39i1GvsVwYKLvDg 密码: ednw
+	
+	CM+CDH集群管理课程
+	链接: https://pan.baidu.com/s/1uqY5VpdbRGFBESgw_afJuA 密码: 7p5a
+	
+	龙果课程
+	链接: https://pan.baidu.com/s/1h8j0gPzI38vI7BKnbceKKg 密码: qpw2
+	
+	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
+	联系微信:17549206263    QQ:1121219793
+	
+	十大互联网电商项目
+	链接: https://pan.baidu.com/s/148BfkxIlB5weT61o0GuHfQ 密码: kr3c
+	
+	Oracle从入门到DBA之路
+	链接：https://pan.baidu.com/s/1YGHPJwCGqepGambm0Q_sIw 密码：k8s2
+	
+	netty源码分析
+	链接：https://pan.baidu.com/s/1oGBrcATGkk-HUXHQuZpxZQ 密码：x53v
+	
+	Hadoo实战课程 Hadoop云计算综合实战项目视频教程
+	链接：https://pan.baidu.com/s/1ExNkaSNe9EKk8GW20QT1rA 密码：4a3s
+	
+	Spring Boot技术栈博客企业前后端
+	链接：https://pan.baidu.com/s/1-8Sij9En3KpmpCU3t4L46w 密码：4951
+	
+	精通JFinal完整
+	链接: https://pan.baidu.com/s/1mTyl5bPzutT8OC4tVWFVWQ 密码: wsns
+	
+	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
+	联系微信:17549206263    QQ:1121219793
+	
+	【全6套视频】软件测试
+	链接：https://pan.baidu.com/s/1yMOyu_534eDLUuDGkhwWtw 密码：96i6
+	
+	基于Spring Boot框架企业级应用系统开发全面实战
+	链接：https://pan.baidu.com/s/16CfIDZJ6tWkndM8ORLYvwQ 密码：ebao
+	
+	数据分析北风课程
+	链接：https://pan.baidu.com/s/13pFgBwg-ugAff_RBOAIC-Q 密码：c6k7
+	
+	世上最全Java高薪面试题视频完整
+	链接：https://pan.baidu.com/s/11Skf2nAppOL85Jroz-qNtw 密码：j10n
+	
+	王文君 多线程编程实战教程一、二、三阶段
+	链接: https://pan.baidu.com/s/1tFvuA8SmJRv1WfWHOAOFkg 密码: 6kqf
 
 
+​	
+	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
+	联系微信:17549206263    QQ:1121219793
 
