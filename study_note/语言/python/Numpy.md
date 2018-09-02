@@ -335,7 +335,7 @@ Out: array([8, 7, 6, 5, 4, 3, 2, 1, 0])
   b.flat[[1,3]] = 1 # array([[7, 1],[7, 1]])
   ```
 
-![1529479644334](../../study_note_access/python/Numpy/Numpy属性.png)
+![1529479644334](../../..//study_note_access/python/Numpy/Numpy属性.png)
 
 
 ### 1.2.9 数组转list

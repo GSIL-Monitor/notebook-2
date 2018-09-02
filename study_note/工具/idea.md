@@ -2,6 +2,14 @@
 
 # 2. 破解
 
+## 2.1 idea-2018.2破解：
+[破解教程](https://blog.csdn.net/halen001/article/details/81137092)
+
+[注册码](http://idea.lanyus.com/)
+
+[插件下载地址](https://pan.baidu.com/s/1qgXrr8yHBhAI9gcqRsxrbA)
+
+
 # 3. 配置
 
 ## 3.1 注释模版

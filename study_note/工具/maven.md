@@ -1,4 +1,22 @@
-# 一. maven打包
+# 一. maven 安装、配置
+
+## 1.1 maven安装
+
+## 1.2 maven镜像
+
+```
+<!-- 阿里提供的镜像 -->
+<mirror>
+    <id>alimaven</id>
+	<name>aliyun maven</name>
+	<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+	<mirrorOf>central</mirrorOf>        
+</mirror>
+```
+
+
+
+# 二. maven打包
 
 ## 1.1 打包指定module
 - Maven多个mudule只编译、打包指定module
@@ -9,7 +27,7 @@
   mvn install -pl A
   ```
 
-# 二. maven 打包
+# 三. maven 打包异常
 
 ## 1.1 maven打包项目异常
 
@@ -50,3 +68,6 @@
  </build>
 ```
 - 添加后不行，有可能是版本的问题，之前使用2.19.1不行换成2.12.4可以了（没加这个插件是提示的是）
+
+
+

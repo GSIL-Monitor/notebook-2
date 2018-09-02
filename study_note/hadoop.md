@@ -274,3 +274,35 @@ conf.set("mapreduce.map.memory.mb", "2048");
 ![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/secondarynamenode%E5%85%83%E6%95%B0%E6%8D%AEcheckpoint%E6%9C%BA%E5%88%B6.png?raw=true)
 
 
+# 五、hadoop 命令
+## 1.1 hadoop job相关命令
+- 参考地址：  
+[hadoop命令 -- job相关](https://www.cnblogs.com/zyzloner/p/6405290.html)
+1. 查看 Job 信息：
+  ```
+  hadoop job -list 
+  ```
+2. 杀掉 Job： 
+  ```
+  hadoop  job –kill  job_id
+  ```
+3. 指定路径下查看历史日志汇总：
+  ```
+  hadoop job -history output-dir 
+  ```
+4. 作业的更多细节： 
+  ```
+  hadoop job -history all output-dir 
+  ```
+5. 打印map和reduce完成百分比和所有计数器：
+  ```
+  hadoop job –status job_id 
+  ```
+6. 杀死任务。被杀死的任务不会不利于失败尝试：
+  ```
+  hadoop jab -kill-task <task-id> 
+  ```
+7. 使任务失败。被失败的任务会对失败尝试不利：
+  ```
+  hadoop job  -fail-task <task-id>
+  ```

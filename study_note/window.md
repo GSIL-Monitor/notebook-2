@@ -12,3 +12,9 @@
   RD /S /Q \\?\%1
   ```
 - 参考地址：https://jingyan.baidu.com/article/a3aad71aafb0edb1fa009646.html
+
+# 3. 双网卡使用
+
+同时使用无线和有线：
+
+![1533113441550](../study_note_access/window/window上双网卡同时使用.png)
