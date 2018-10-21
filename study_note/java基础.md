@@ -1080,3 +1080,38 @@ jvm内存模型
 程序计数器：程序执行到哪一行啦
 Native Stack：调本地方法的，在window上调用window的，在linux中调用linux本地方法
 
+# 8. 单例
+## 8.1 饿汉式
+```java
+//饿汉式，提前new 对象
+public class Singleton1 {
+
+	private static Singleton1 singleton1 = new Singleton1();
+	private Singleton1(){}	//私有化构造，不让new
+
+	//提供静态方法获取变量
+	public static Singleton1 getInstance(){
+		return singleton1;
+	}
+}
+```
+
+## 8.2 懒汉式
+```java
+public class Singleton2 {
+	private static Singleton2 singleton2 = null;
+	private Singleton2(){}
+	public static Singleton2 getInstance(){
+		if (singleton2 == null){	//为了解决效率问题。
+			synchronized (Singleton2.class){	//加入同步为了解决多线程安全问题。
+				//为了解决安全问题，如果2个线程同时走到了synchronized,一个进去new了
+				// 这个线程走后，另一个线程进来，还认为是null又会new
+				if (singleton2 == null){
+					singleton2 = new Singleton2();
+				}
+			}
+		}
+		return singleton2;
+	}
+}
+```

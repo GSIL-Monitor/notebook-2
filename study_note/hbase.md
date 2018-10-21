@@ -654,12 +654,7 @@ dataLength = 31
 numChildren = 0
 ```
 
-
-
-
-
-
-
-
+# 6. hbase shell 统计行数
+hbase org.apache.hadoop.hbase.mapreduce.RowCounter 'tablename'
 
 
