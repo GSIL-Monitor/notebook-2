@@ -1,4 +1,193 @@
+# 一. jar包压缩解压:
+
+## 1. jar命令
+
+> 用法: jar {ctxui}[vfmn0PMe][jar-file] [manifest-file][entry-point] [-C dir] files ...  
+> 选项:  
+> ​    -c  创建新档案  
+> ​    -t  列出档案目录  
+> ​    -x  从档案中提取指定的 (或所有) 文件  
+> ​    -u  更新现有档案  
+> ​    -v  在标准输出中生成详细输出  
+> ​    -f  指定档案文件名  
+> ​    -m  包含指定清单文件中的清单信息  
+> ​    -n  创建新档案后执行 Pack200 规范化  
+> ​    -e  为捆绑到可执行 jar 文件的独立应用程序  
+> ​        指定应用程序入口点  
+> ​    -0  仅存储; 不使用任何 ZIP 压缩  
+> ​    -P  保留文件名中的前导 '/' (绝对路径) 和 ".." (父目录) 组件  
+> ​    -M  不创建条目的清单文件  
+> ​    -i  为指定的 jar 文件生成索引信息  
+> ​    -C  更改为指定的目录并包含以下文件  
+> 如果任何文件为目录, 则对其进行递归处理。  
+> 清单文件名, 档案文件名和入口点名称的指定顺序  
+> 与 'm', 'f' 和 'e' 标记的指定顺序相同。  
+>
+> 示例 1: 将两个类文件归档到一个名为 classes.jar 的档案中:  
+> ​       jar cvf classes.jar Foo.class Bar.class  
+> 示例 2: 使用现有的清单文件 'mymanifest' 并  
+> ​           将 foo/ 目录中的所有文件归档到 'classes.jar' 中:  
+> ​       jar cvfm classes.jar mymanifest -C foo/ .  
+
+
+
+## 2. jar命令详解
+
+> jar 命令详解
+>
+> 使用不带任何的 jar 命令我们可以看到 jar 命令的用法如下：
+>
+> jar {ctxu}[vfm0M] [jar-文件] [manifest-文件] [-C 目录] 文件名 ...
+>
+> 其中 {ctxu} 是 jar 命令的子命令，每次 jar 命令只能包含 ctxu 中的一个，它们分别表示：
+>
+> -c　创建新的 JAR 文件包
+>
+> -t　列出 JAR 文件包的内容列表
+>
+> -x　展开 JAR 文件包的指定文件或者所有文件
+>
+> -u　更新已存在的 JAR 文件包 (添加文件到 JAR 文件包中)
+>
+> 特别注意，在参数的下达中， c/x/t/u 仅能存在一个！不可同时存在！
+>
+> 因为不可能同时压缩与解压缩。
+>
+> -z ：是否同时具有 gzip 的属性？亦即是否需要用 gzip 压缩？
+>
+> -j ：是否同时具有 bzip2 的属性？亦即是否需要用 bzip2 压缩？
+>
+> -v ：压缩的过程中显示文件！这个常用，但不建议用在背景执行过程！
+>
+> -f　指定 JAR 文件名，通常这个参数是必须的
+>
+> 请留意，在 f 之后要立即接档名喔！不要再加参数！
+>
+> 　　　例如使用『 tar -zcvfP tfile sfile』就是错误的写法，要写成
+>
+> 　　　『 tar -zcvPf tfile sfile』才对喔！
+>
+> -p ：使用原文件的原来属性（属性不会依据使用者而变）
+>
+> -P ：可以使用绝对路径来压缩！
+>
+> -N ：比后面接的日期(yyyy/mm/dd)还要新的才会被打包进新建的文件中！
+>
+> –exclude FILE：在压缩的过程中，不要将 FILE 打包！
+>
+> -m　指定需要包含的 MANIFEST 清单文件
+>
+> -0　只存储，不压缩，这样产生的 JAR 文件包会比不用该参数产生的体积大，但速度更快
+>
+> -M　不产生所有项的清单（MANIFEST〕文件，此参数会忽略 -m 参数
+>
+> [jar-文件] 即需要生成、查看、更新或者解开的 JAR 文件包，它是 -f 参数的附属参数
+>
+> [manifest-文件] 即 MANIFEST 清单文件，它是 -m 参数的附属参数
+>
+> [-C 目录] 表示转到指定目录下去执行这个 jar 命令的操作。它相当于先使用 cd 命令转该目录下再执行不带 -C 参数的 jar 命令，它只能在创建和更新 JAR 文件包的时候可用。　　
+>
+> 文件名 ... 指定一个文件/目录列表，这些文件/目录就是要添加到 JAR 文件包中的文件/目录。如果指定了目录，那么 jar 命令打包的时候会自动把该目录中的所有文件和子目录打入包中。
+
+
+
+## 3. 压缩
+
+```shell
+# 把2个test文件归档到test.jar中
+jar -cvf test.jar test1.txt test2.txt
+```
+
+## 4. 解压
+
+```shell
+jar -xvf test.jar
+```
+
+## 5. 添加文件到jar中
+
+```shell
+jar -uvf $jar_file $file
+```
+
+
+
+# 二. shell&properties文件
+
+- [参考地址](https://blog.csdn.net/qq_36684665/article/details/81134179)
+
+- 配置文件config.properties
+
+  ```properties
+  #以下是配置文件内容，配置文件文件名为config.properties
+  username=jack
+  password=33281
+  ```
+
+- shell脚本
+
+  ```shell
+  #!/bin/bash
+  source ./config.properties
+  echo ${username}
+  ```
+
+# 三. shell获取绝对路径
+
+- [参考地址](https://www.cnblogs.com/xuxm2007/p/7554543.html)
+
+- shell
+
+  ```shell
+  SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
+  SHELL_FOLDER=$(dirname $(readlink -f "$0"))
+  ```
+
+# 四. java读写properties文件
+
+- 读取a.properties属性列表，与生成属性文件b.properties
+
+  ```
+  import java.io.BufferedInputStream;
+  import java.io.FileInputStream;
+  import java.io.FileOutputStream;
+  import java.io.InputStream; 
+  import java.util.Iterator;
+  import java.util.Properties; 
+  
+  public class PropertyTest {
+      public static void main(String[] args) { 
+          Properties prop = new Properties();     
+          try{
+              //读取属性文件a.properties
+              InputStream in = new BufferedInputStream (new FileInputStream("a.properties"));
+              prop.load(in);     ///加载属性列表
+              Iterator<String> it=prop.stringPropertyNames().iterator();
+              while(it.hasNext()){
+                  String key=it.next();
+                  System.out.println(key+":"+prop.getProperty(key));
+              }
+              in.close();
+              
+              ///保存属性到b.properties文件
+              FileOutputStream oFile = new FileOutputStream("b.properties", true);//true表示追加打开
+              prop.setProperty("phone", "10086");
+              prop.store(oFile, "The New properties file");
+              oFile.close();
+          }
+          catch(Exception e){
+              System.out.println(e);
+          }
+      } 
+  }
+  ```
+
+
+
+
+
 # 1. 学院
+
 ## 1.1 尚学堂
 1. 账号
   - 官网账号密码：18911831867 / 19910605abc
@@ -355,8 +544,8 @@ hadoop系列最全视频教程  定时删除赶紧下载
 ## 10.1 spark2.2快速入门到精通
 （大数据学习资料分享群-232840209）
 《spark2.2从入门到精通》有更新了
-	下载链接:https://pan.baidu.com/s/1sm2Jdmt 密码:rdea
-	更新日期：2018-07-15
+​	下载链接:https://pan.baidu.com/s/1sm2Jdmt 密码:rdea
+​	更新日期：2018-07-15
 
 # 11. QQ中的资源
 ## 11.1 大杂烩
@@ -435,6 +624,6 @@ hadoop系列最全视频教程  定时删除赶紧下载
 
 
 ​	
-	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
-	联系微信:17549206263    QQ:1121219793
+​	如果视频失效，请联系QQ重新进行发布。更多视频,更多行业内最新资讯。
+​	联系微信:17549206263    QQ:1121219793
 
