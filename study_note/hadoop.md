@@ -306,3 +306,29 @@ conf.set("mapreduce.map.memory.mb", "2048");
   ```
   hadoop job  -fail-task <task-id>
   ```
+
+# 六. hdfs写数据
+
+```java
+// https://blog.csdn.net/qq_28767763/article/details/65444975
+Configurationconf = new Configuration();
+ 
+conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+conf.set("fs.file.impl",org.apache.hadoop.fs.LocalFileSystem.class.getName());
+conf.setBoolean("dfs.support.append",true);    
+ 
+hdfs = FileSystem.get(conf);
+ 
+String hdfs ="hdfs://10.20.30.91:8020/kafka/a.log";
+filePath = new Path(hdfs);
+ 
+FSDataOutputStream outputStream = hdfs.create(filePath);
+ 
+outputStream.write(“hello”)
+ 
+outputStream.flush();
+ 
+outputStream.close();
+hdfs.close();
+```
+

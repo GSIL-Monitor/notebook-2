@@ -360,10 +360,13 @@ Caused by: org.apache.hadoop.ipc.RemoteException: User: hadoop is not allowed to
   ```
 - 打成jar包上传到服务器
 - 将jar包添加到hive的classpath
+
   - `hive>add JAR /home/hadoop/udf.jar;`
 - 创建临时函数与开发好的java class关联
+
   - `Hive>create temporary function toprovince as 'cn.itcast.bigdata.udf.ToProvince';`
 - 即可在hql中使用自定义的函数
+
   - `Select toprovince (name),age from t_test;`
 
 ## 4.4 UDF案例
@@ -470,7 +473,73 @@ create table temp(id string, name string, age string, sex string, birthday strin
 load data local inpath '/home/hadoop/usertest' into table temp;
   ```
 
+### 4.5.1 导数据到hive的几种方式
+
+#### 4.5.1.1 参考地址:
+
+https://blog.csdn.net/qq_35022142/article/details/79801888
+
+#### 4.5.1.1 3种方式
+
+- load加载
+  LOAD DATA [LOCAL] INPATH 'filepath' [OVERWRITE] INTO TABLE tablename [PARTITION (partcol1=val1, partcol2=val2 ...)]  
+  
+  解释：
+  local:可选，表示从本地文件系统中加载，而非hdfs
+  overwrite:可选，先删除原来数据，然后再加载
+  
+  partition:这里是指将inpath中的所有数据加载到那个分区，并不会判断源数据中每一条记录属于哪个分区。
+  
+  注意：load完了之后，会自动把INPATH下面的源数据删掉，其实就是将INPATH下面的数据移动到/usr/hive/warehouse目录下了。
+  
+  分区加载：load data inpath '/tmp/score.txt' into table score partition (school="school1",class="class1") 
+  
+  select * from score查询出来的六条记录，两个分区字段都变成了school1和class1
+
+- insert插入
+  hive不支持INSERT INTO, UPDATE, DELETE操作，这样的话，就不要很复杂的锁机制来读写数据。
+  INSERT INTO syntax is only available starting in version 0.8。INSERT INTO就是在表或分区中追加数据，并不是经典数据库中的insert into操作，只是insert into单词一样。
+  
+  基本模式
+  INSERT INTO|OVERWRITE TABLE tablename1 [PARTITION (partcol1=val1, partcol2=val2 ...)] select_statement1
+  多插入模式
+  FROM frometable1,fromtable2....
+  INSERT INTO|OVERWRITE TABLE desttable1 [PARTITION (partcol1=val1, partcol2=val2 ...)] select_statement1
+  [INSERT INTO|OVERWRITE TABLE desttable2 [PARTITION ...] select_statement2] ...
+  动态分区模式
+  
+  INSERT INTO|OVERWRITE TABLE tablename PARTITION (partcol1[=val1], partcol2[=val2] ...) select_statement FROM from_statement
+  
+  将score1中的某个分区数据insert到score中：
+  insert overwrite table score partition (school="school1",class="class1") select id,name,Chinese,English,math from score1 where school="school1" and class="class1";
+  insert overwrite table score partition (school="school2",class="class1") select id,name,Chinese,English,math from score1 where school="school2" and class="class1";
+  
+  insert overwrite table score partition (school="school3",class="class1") select id,name,Chinese,English,math from score1 where school="school3" and class="class1";
+  
+  查询表文件数据：
+  [root@xxx tmp]#  hdfs dfs -cat  /user/hive/warehouse/jira.db/score/school=school1/class=class1/000000_0
+  0001,zhangsan,99.0,98.0,100.0
+  
+  0004,zhangsan2,99.0,98.0,100.0
+  
+  分区数据并没有存在表文件中，仅存在目录上，因此，这下hive的分区本质摸清楚了。那么问题来了，假如分区数很多，每条一个分区岂不累死，hive提出了动态分区的功能，上面的语句是静态分区，需要手动指定。动态分区和静态分区并不在我们这章博客的讨论范围。
+  
+- create ... as操作
+  这个相对简单
+  create table score2 as select * from score
+  建完的score2表没有分区，因此，create ... as 不能复制分区表。
+  
+  分区表的复制:
+  1.需要先用create table score3 like score来复制表结构，然后将原表的数据复制到 新表（score3）
+  1. 创建新表: create table score3 like score;
+  2. 将HDFS的数据文件复制一份到新表目录，hive cmd模式下： 
+  dfs -cp -f /user/hive/warehouse/score/* /user/hive/warehouse/score3/
+  3. 修复分区元数据信息，hive cmd模式下： MSCK REPAIR TABLE score3;
+
+
+
 ## 4.6 java jdbc 连接hive
+
 ### 4.6.1 资源地址
 - 参考地址
   - https://blog.csdn.net/lovelovelovelovelo/article/details/71203605

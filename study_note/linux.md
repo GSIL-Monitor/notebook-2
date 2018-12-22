@@ -257,9 +257,10 @@ function str_to_arr(){
 
 	echo "${arr[@]}"
 }
-
-result=( str_to_arr "ERROR,100,1" ",")
+result=(`str_to_arr "ERROR,100,1" ","`)
 echo ${result[0]}
+echo ${result[1]}
+for s in ${result[@]} ;do echo "--> $s"; done
 ```
 
 ## 2.14 文件重命名
