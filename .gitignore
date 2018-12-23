@@ -1,5 +1,5 @@
 ﻿#忽略配置文件
-.gitignore
+*.gitignore
 
 #我的笔记
 my_document/账号.md
