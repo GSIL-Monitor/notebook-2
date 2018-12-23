@@ -17,7 +17,7 @@
 
 同时使用无线和有线：
 
-![1533113441550](../study_note_access/window/window上双网卡同时使用.png)
+![1533113441550](../../study_note_access/window/window上双网卡同时使用.png)
 
 # 4.window远程连接：
 

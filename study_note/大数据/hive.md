@@ -303,7 +303,7 @@ Caused by: org.apache.hadoop.ipc.RemoteException: User: hadoop is not allowed to
 # 3 Hive架构
 
 ## 3.1
-![hive](../study_note_access/hive/hive架构图.png)
+![hive](../../study_note_access/hive/hive架构图.png)
 
 - 解析sql，得到语法树，根据语法树找对应的mapreduce模版，然后把它组装起来
 - 它有内部的优化机制：
@@ -789,7 +789,7 @@ Exception in thread "main" java.sql.SQLException: Could not open client transpor
 
 ## 5.3 在使用中遇到的问题
 - 现象
-  ![1526984750362](../study_note_access/hive/hive关联hbase表异常.png)
+  ![1526984750362](../../study_note_access/hive/hive关联hbase表异常.png)
 
 - 原因：
   使用beeline客户端去连接hive，然后去关联表；换用 `./bin/hive` 去关联表

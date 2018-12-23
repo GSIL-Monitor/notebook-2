@@ -612,7 +612,7 @@ return render_template('index.html', books = books)
 <p>评论数：{{ books|length }}</p>
   ```
 
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/python/flask%E8%BF%87%E6%BB%A4%E5%99%A8.png?raw=true)
+![](../../../study_note_access/python/flask过滤器.png)
 
 ### 2.2.5 继承 和 block 
 
@@ -1399,7 +1399,7 @@ web开发发展至今, cookie和 session的使用已经出现了一些非常成�
 
 ## 6.8 get和post
 - 请求和参数获取
-  ![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/python/flask_get_post.png?raw=true)
+  ![](../../../study_note_access/python/flask_get_post.png?raw=true)
 - 代码
   - login.html
     ```

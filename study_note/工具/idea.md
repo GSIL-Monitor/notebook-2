@@ -122,6 +122,9 @@ idea中点击File --> project structure（快捷键：ctrl + alt + shift + s）-
 
   ![1532171433862](../../study_note_access/工具/idea-jdk配置5.png)
 
+### 3.2.5 修改编译版本
+  http://blog.csdn.net/fenghuibian/article/details/52704057
+
 ## 3.3 maven配置
 
 > 项目中已经自带maven包，存在了项目文件夹HSATMS下的developEnv/maven/路径下。

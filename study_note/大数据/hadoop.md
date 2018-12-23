@@ -259,19 +259,19 @@ conf.set("mapreduce.map.memory.mb", "2048");
 
 # 4. it-hadoop
 ## 4.1 本地mr用户问题
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hadoop%E6%9C%AC%E5%9C%B0%E6%93%8D%E4%BD%9C%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E7%9A%84hdfs%E7%94%A8%E6%88%B7%E9%97%AE%E9%A2%98.png?raw=true)
+![](../../study_note_access/hadoop/hadoop本地操作虚拟机中的hdfs用户问题.png)
 
 
 ## 4.2 hdfs写文件
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hdfs%E5%86%99%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+![](../../study_note_access/hadoop/hdfs写数据流程示意图.png)
 
 
 ## 4.2 hdfs读文件
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/hdfs%E8%AF%BB%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE.png?raw=true)
+![](../../study_note_access/hadoop/hdfs读数据流程示意图.png)
 
 
 ## 4.3 namenode和secondarynamenode的元数据管理机制
-![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/hadoop/secondarynamenode%E5%85%83%E6%95%B0%E6%8D%AEcheckpoint%E6%9C%BA%E5%88%B6.png?raw=true)
+![](../../study_note_access/hadoop/secondarynamenode元数据checkpoint机制.png)
 
 
 # 五、hadoop 命令

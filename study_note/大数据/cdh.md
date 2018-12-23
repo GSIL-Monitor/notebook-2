@@ -35,9 +35,9 @@ SELINUX=disabledf
 ```
 
 4. 检查python  
-  cdh4.x系列 系统默认使用python2.6.6（2.7.5 hdfs ha时会出问题）  
-  建议python2.6.6  
-  cdh5.x系列可以使用python2.6. 或 python2.7.  
+    cdh4.x系列 系统默认使用python2.6.6（2.7.5 hdfs ha时会出问题）  
+    建议python2.6.6  
+    cdh5.x系列可以使用python2.6. 或 python2.7.  
 
 5. 安装jdk
 
@@ -189,7 +189,11 @@ total 1759072
 
 
 
-![image](https://note.youdao.com/yws/public/resource/175dab10600ed87fe2f7f8b3f788eb77/xmlnote/303D7736A974425F967A0C04D676EC98/26273)
+![image](../../study_note_access/cdh/cdh集群安装-选择存储.png)
+
+
+
+![image](../../study_note_access/cdh/cdh安装-集群角色分配.png)
 
 
 
@@ -206,7 +210,7 @@ http://archive-primary.cloudera.com/cdh5/redhat/6/x86_64/cdh/5.13.0/repodata/
 > [root@work1 app]# rpm -ivh cloudera-manager-agent-5.13.0-1.cm5130.p0.55.el6.x86_64.rpm 
 > warning: cloudera-manager-agent-5.13.0-1.cm5130.p0.55.el6.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID e8f86acd: NOKEY
 > error: Failed dependencies:
-        /lib/lsb/init-functions is needed by cloudera-manager-agent-5.13.0-1.cm5130.p0.55.el6.x86_64
+  ​      /lib/lsb/init-functions is needed by cloudera-manager-agent-5.13.0-1.cm5130.p0.55.el6.x86_64
 
 处理：
 
@@ -287,13 +291,13 @@ mv cm cm5/redhat/6/x86_64/
 
 mv cloudera-manager.repo /etc/yum.repos.d
 vim /etc/yum.repos.d/cloudera-manager.repo
-	[cloudera-manager]
-	# Packages for Cloudera Manager, Version 5, on RedHat or CentOS 6 x86_64                  
-	name=Cloudera Manager
-	#基于httpd的本地yum源使用的是http
-	baseurl=http://master/cm5/redhat/6/x86_64/cm/5/
-	#gpgkey =https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera    
-	gpgcheck = 0
+​	[cloudera-manager]
+​	# Packages for Cloudera Manager, Version 5, on RedHat or CentOS 6 x86_64                  
+​	name=Cloudera Manager
+​	#基于httpd的本地yum源使用的是http
+​	baseurl=http://master/cm5/redhat/6/x86_64/cm/5/
+​	#gpgkey =https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera    
+​	gpgcheck = 0
 
 yum clearn all
 yum repolist
@@ -305,7 +309,6 @@ scp /etc/yum.repos.d/cloudera-manager.repo work2:/etc/yum.repos.d/
 master机器
 yum install cloudera-manager-daemons
 yum install cloudera-manager-server
-
 
 vim /etc/cloudera-scm-server/db.properties
 com.cloudera.cmf.db.type=mysql

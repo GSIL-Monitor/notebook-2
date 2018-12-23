@@ -178,7 +178,7 @@ local0.err action(type="omelasticsearch"
 # 3. rsyslog异常
 ## 3.1 版本过高异常
 - rsyslog版本过高异常
-  ![](https://github.com/zhangzhengstrive/notebook/blob/master/study_note_access/rsyslog/rsyslog%E7%89%88%E6%9C%AC%E8%BF%87%E9%AB%98%E5%BC%82%E5%B8%B8.png?raw=true)
+  ![](../../study_note_access/rsyslog/rsyslog版本过高异常.png)
 - 处理：改为较低版本的rsyslog
 
 ## 3.2 权限问题

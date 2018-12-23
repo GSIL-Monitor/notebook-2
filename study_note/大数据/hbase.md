@@ -168,7 +168,7 @@ put 'person', '001','cf1:birthday','2018/01/02 22:10:00'
 
 从HReginServer：缓存数据
 
-![hbase架构图](../study_note_access/hbase/hbase架构图.png)
+![hbase架构图](../../study_note_access/hbase/hbase架构图.png)
 - hbase是写快，读慢（慢是相对于写来说的）
 - 写数据
   - 来了一条数据通过zookeeper定位写到哪台HReginServer上
