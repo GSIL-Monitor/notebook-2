@@ -1,6 +1,27 @@
 # 一. maven 安装、配置
 
 ## 1.1 maven安装
+- 环境变量
+  ```
+  MAVEN_HOME
+  E:\java\apache-maven-3.3.9
+  path
+  %MAVEN_HOME%\bin;
+  ```
+- 执行命令：
+  ```
+  mvn --version
+  ```
+- 修改maven的默认仓库：
+  1. maven的仓库默认是在`C:\Users\用户名\.m2` 才配置后没有这个文件夹，可以执行下这个命令：`mvn help:system` 
+  命令然后回车，等其执行完后就可以在 `C:\Users\root\.m2\repository` 看到 Maven 下载的一些文件
+  2. setting.xml文件配置：
+  把文件setting.xml文件复制到C:\Users\root\.m2下，修改下文件中的它来指定仓库的地址：
+  ```xml
+  <localRepository>D:\bigdata\mavenRepository</localRepository>
+  ```
+
+
 
 ## 1.2 maven镜像
 

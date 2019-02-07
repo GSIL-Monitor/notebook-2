@@ -1,21 +1,195 @@
-[1、linux](#1linux)  
-&emsp;[1.1、文件过多导致不能写入](#11文件过多导致不能写入)
-&emsp;[1.2 SELinux](#12SELinux)
-&emsp;&emsp;[1.2.1 查看SELinux状态](#查看SELinux状态)
-&emsp;&emsp;[1.2.2 关闭SELinux](#关闭SELinux)
+# 一、vmware linux 配置大数据环境
 
-[2、shell](#2shell)  
-&emsp;[2.1、时间](#21时间)  
-&emsp;[2.2、字符串截取](#22字符串截取)  
-&emsp;[2.3、执行的脚本获取当前文件名](23执行的脚本获取当前文件名)
-[3、服务安装](#3服务安装)  
-&emsp; [3.1、httpd](#31httpd)  
-&emsp; [3.2、](#32)    
-[4、网址](#4网址)
+## 1. 基本修改
+### 1.1 图形界面
+
+  ```shell
+  vim /etc/inittab
+  # 3为黑窗口，5为图形界面
+  id:3:initdefault:
+  
+  #立即生效（临时）
+  init 3   #关闭图形界面
+  init 5   #打开图形界面
+  ```
+
+### 1.2 修改主机名
+
+  ```shell
+  # 修改
+  vim /etc/sysconfig/network
+  
+  #查看本机名字
+  hostname
+  ```
+
+### 1.3 开机等待时间
+
+```shell
+vim /boot/grub/menu.lst
+```
+
+> 开机等待时间默认为5秒，将之设置为0秒后，保存后重新启动服务器，就会迅速跳过开机选项进入系统，不过建议设置为1秒，这样忘记密码时，可以及时按下重新设置密码的选项
+
+### 1.4 系统时间
+
+- 修改系统时间
+
+```shell
+date -s 06/18/14（2014年6月18日）
+date -s 14:20:50（14点20分50秒）
+date 0618141614.30（2014年6月18日14点16分30秒（MMDDhhmmYYYY.ss））
+```
+
+- 修改硬件时间
+
+```shell
+# 查看
+hwclock  --show
+# 或者
+clock  --show
+
+# 修改
+hwclock --set --date="06/18/14 14:55" （月/日/年时:分:秒）
+# 或者
+clock --set --date="06/18/14 14:55" （月/日/年时:分:秒）
+```
+
+- 同步时间
+
+```shell
+# 硬件时钟同步系统时钟(硬件为准),（hc代表硬件时间，sys代表系统时间）
+hwclock --hctosys
+#或者
+clock --hctosys
+
+# 用系统时钟同步硬件时钟
+hwclock --systohc
+#或者
+clock --systohc
+```
+
+### 1.5 防火墙
+
+- 查看状态
+
+```shell
+service iptables status
+/etc/init.d/iptables status
+```
+
+- 关闭
+
+```shell
+# 重启后生效，on:开启
+chkconfig iptables off
+
+# 即时生效，重启后失效, start:开启
+service iptables stop
+```
+
+- 验证
+
+```shell
+chkconfig --list | grep iptables
+```
+
+### 1.6 安装 lrzsz
+
+```
+yum install -y lrzsz
+```
+
+## 2. 大数据环境配置
+
+### 2.1 基本配置
+
+- 克隆2个副本
+
+- 修改克隆后的副本的主机名
+
+  ```shell
+  vim /etc/sysconfig/network
+  
+  # 上面命令需要重启机器，先hostname修改
+  hostname work1
+  hostname work2
+  ```
+
+- 修改 `host` 文件
+
+  ```shell
+  # vim /etc/host
+  192.168.154.130 master
+  192.168.154.132 work1
+  192.168.154.133 work2
+  ```
+
+- 配置ssh
+
+  ```shell
+  # 生成key
+  ssh-keygen
+  
+  # 从A复制到B上, 记得执行这步骤之前修改主机名
+  ssh-copy-id work1
+  
+  # 验证
+  ssh work1
+  
+  # 使用hadoop用户配置ssh使三台互通
+  su - hadoop
+  # 批量执行
+  ssh-copy-id master
+  ssh-copy-id work1
+  ssh-copy-id work2
+  ```
+
+### 2.2 基本开发工具
+
+#### 2.2.1 java、scala
+
+- 上传、解压、软连接
+
+  ```shell
+  tar -zxvf jdk-8u181-linux-x64.tar.gz
+  tar -zxvf scala-2.11.12.tgz
+  
+  ln -s jdk1.8.0_181 jdk1.8
+  ln -s scala-2.11.12 scala2.11
+  ```
+
+- scp.sh
+
+  ```shell
+  #!/bin/bash
+  if [ $# != 2 ];then
+    exit 1
+  fi
+  scp -r $1 work1:$2
+  scp -r $1 work2:$2
+  ```
+
+- vim /etc/profile
+
+```shell
+# jdk
+export JAVA_HOME=/zz/app/jdk1.8
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+# scala
+export SCALA_HOME=/zz/app/scala2.11
+
+export PATH=$JAVA_HOME/bin:$SCALA_HOME/bin:$PATH
+```
+
+### 2.3 搭建集群
+
+hadoop、kafka、spark、flink、hbase、hive、mysql
 
 
 
-# 1、linux
+# 二、linux
+
 ## 1.1、文件过多导致不能写入
 > [root@c3n-zj-nb1-183-136-128-47 delete_jenkins_logs]# df -i /
 > Filesystem      Inodes  IUsed   IFree IUse% Mounted on
@@ -85,226 +259,8 @@ chkconfig servicename list #查看
 chkconfig servicename off #关闭开机自启
 ```
 
-# 2、shell
-## 2.1、时间
-  ```
-  #当前时间
-  date '+%Y-%m-%d %H:%M:%S' #时间
-  date +%s #时间戳
-  
-  #在指定的时间基础上加一分钟：
-  date -d "2017-09-18 14:41 1 minute" +"%Y-%m-%d %H:%M:%S"
-  
-  #指定时间转timeunix
-  date -d '2017-12-14 16:52:10 +0800' +%s	
-  
-  #时间戳转时间：
-  date -d @1438617600 "+%Y-%m-%d %H:%M:%S"
-  ```
 
-## 2.2、字符串截取
-    var="http://www.fengbohello.xin3e.com/blog/shell-truncating-string"
-    echo ${#var} #字符长度
-    
-    echo ${var#*/}	#从左开始第一个/开始往后截取
-    echo ${var##*/} #从左最后一个/开始往后截取
-    
-    echo ${var%/*}	#从右开始第一个/开始往前截取
-    echo ${var%%/*}	#从右开始最后一个/开始往前截取
-    
-    echo ${var:start:len}	#从左开始从start开始截取len位
-    echo ${var:start}		#从左开始从start开始截到最后
-    
-    echo ${var:0-start:len}	#从右开始第start位往右截取len位
-    echo ${var:0-start}		#从右开始第start位往右截取到最后
-
-## 2.3、执行的脚本获取当前文件名
-获取文件名：`$(basename $0)`
-
-## 2.4、shell中IFS用法
-> IFS的值是空格，制表符，回车
-```
-echo "a b" > test
-for i in `cat test`;do echo $i; done
-```
-结果：
-> a
-> b
-```
-OLD_IFS="$IFS"
-IFS=$'\n' 
-for i in `cat test`;do echo $i; done
-IFS=$OLD_IFS
-```
-> 结果：
-> a b
-
-
-## 2.5、按最后修改时间删除文件夹
-### 2.5.1、删除7天前的文件夹 
-```
-find /var/lib/jenkins/jobs/*/builds/* -mtime +7 -type d | xargs rm -rf
-```
-
-## 2.6 把字符串当执行命令直接执行
-- vim test
-```
-echo "abc"
-```
-- 执行
-```
-a=`cat test`
-echo $a
-$a
-#$a 直接这样执行是不行的，使用eval
-eval ${a}
-```
-- 上面执行结果
-> echo "abc"
-> "abc"
-> abc
-
-
-## 2.7 加密
-```
-ak='92b83849e89143d01646df9f92b41c8306501f'
-uri='/kuaishou/slow_speed/_send'
-timestame=`date +%s`
-#timestame=1517803989
-str=$ak$uri$timestame
-
-BASE=`echo -n "${str}"|md5sum|cut -f 1 -d " "`
-str2=$timestame:$BASE
-echo -n "$str2"|base64
-```
-
-## 2.8 shell锁，保证只有一个实例
-- Body部分为你的程序
-```
-# start
-SELF_NAME=`basename $0`
-PID_FILE=/var/run/$SELF_NAME.pid
-# running lock 
-if ([ -f $PID_FILE ] && kill -0 `cat $PID_FILE` 2>/dev/null); then
-       # if grep -q $SELF_NAME /proc/`cat $PID_FILE 2>/dev/null`/cmdline; then
-                echo "$SELF_NAME already is running... "
-                exit 9
-       # fi
-fi
-echo $$ >$PID_FILE
-trap "rm -f $PID_FILE; exit 1" 2
-
-# body
-/bbd/sata09/bigdata/sinobbd/task/band/jdk1.8.0_111/bin/java -jar  /bbd/sata09/bigdata/sinobbd/task/band5mto1h_fcdn/Bandwidth5mTo1h.jar 1>>/bbd/sata09/bigdata/sinobbd/task/band5mto1h_fcdn/logs/task`date -d today +%Y%m%d`.log  2>>/bbd/sata09/bigdata/sinobbd/task/band5mto1h_fcdn/logs/error.log &
-echo start running...
-sleep 10
-
-# end
-rm -f $PID_FILE; exit 0
-```
-## 2.9 shell运算
-### 2.9.1 小数运算
-- expr只能用于整数之间的运算
-  ```
-  printf "%f" `echo 0.5432+2.432|bc`
-  echo "scale=2;0.97 / 0.48" | bc
-  ```
-### 2.9.2 保留2位小数
-```
-awk 'BEGIN{printf "%.2f\n",'$size_count'/1024}'
-```
-
-## 2.10 awk
-### 2.10.1 取值
-```
-$(NF-1) #倒数第二个
-awk –F ' ' '{print $NF}' #最后一个
-```
-
-## 2.11 文件置空
-### 2.11.1 彻底置空
-- 彻底置空，也就是ls文件的大小为0，文件里面什么都没有
-  ```
-  : > filename
-  true > filename
-  cat /dev/null > filename
-  > filename
-  ```
-### 2.11.1 普通置空
-- 置空文件，但是文件中有空行，ls文件的大小，显示还有大小
-  ```
-  echo "" > filename
-  echo > filename
-  ```
-
-## 2.12 json处理
-- 参考地址
-> [http://blog.csdn.net/u011641885/article/details/45559031](http://blog.csdn.net/u011641885/article/details/45559031)
-> [http://blog.csdn.net/offbye/article/details/38379195](http://blog.csdn.net/offbye/article/details/38379195)
-
-
-
-## 2.13 字符串转数组
-```
-function str_to_arr(){
-	str=$1 #字符
-	sep=$2 #分隔符
-	
-	OLD_IFS="$IFS"
-	IFS="$sep"
-	arr=($str)
-	IFS="$OLD_IFS"
-
-	echo "${arr[@]}"
-}
-result=(`str_to_arr "ERROR,100,1" ","`)
-echo ${result[0]}
-echo ${result[1]}
-for s in ${result[@]} ;do echo "--> $s"; done
-```
-
-## 2.14 文件重命名
-Linux Shell 批量重命名的方法总览: http://blog.csdn.net/kwame211/article/details/76019823
-有些系统的rename好像不支持正则: https://bbs.csdn.net/topics/392089145?page=1
-修复Bulk Rename不能使用正则表达式的Bug : http://blog.chinaunix.net/uid-20579666-id-1920361.html
-rename 命令： http://man.linuxde.net/rename
-rename在centos6.7中正则好像无法使用
-
-`sed -i 's/aa/bb/g' file`
-
-```
-for i in `ls ./`
-do
-	if [[ $(echo $i | grep "t") != "" ]]
-	then
-			newName=`echo $i|sed s/t/boy/g`
-			echo $newName
-			mv $i $newName
-	fi
-done
-```
-
-## 2.15 shell算术运算
-```shell
-((i=$j+$k))    等价于 i=`expr $j + $k`
-((i=$j-$k))     等价于   i=`expr $j -$k`
-((i=$j*$k))     等价于   i=`expr $j \*$k`
-((i=$j/$k))     等价于   i=`expr $j /$k`
-```
-> +：对两个变量做加法。
-> -：对两个变量做减法。
-> *：对两个变量做乘法。
-> /：对两个变量做除法。
-> **：对两个变量做幂运算。
-> %：取模运算，第一个变量除以第二个变量求余数。
-> +=：加等于，在自身基础上加第二个变量。
-> -=：减等于，在第一个变量的基础上减去第二个变量。
-> *=：乘等于，在第一个变量的基础上乘以第二个变量。
-> /=：除等于，在第一个变量的基础上除以第二个变量。
-> %=：取模赋值，第一个变量对第二个变量取模运算，再赋值给第一个变量。
-
-
-# 3、服务安装
+# 三、服务安装
 ## 3.1、httpd
 ### 3.1.1、安装
     yum install -y httpd
@@ -318,10 +274,3 @@ done
 
 
 
-# 资源
-
-[sort排序](http://blog.csdn.net/liu_sheng_1991/article/details/53230604)  
-[字符串截取](https://www.cnblogs.com/fengbohello/p/5954895.html)  
-[数组操作](https://www.cnblogs.com/Joke-Shi/p/5705856.html)  
-[向shell 函数传递数组 和 从函数返回数组](http://blog.csdn.net/guizaijianchic/article/details/78012179)  
-[linux shell 解压缩](http://blog.csdn.net/mingde_he/article/details/5750857)

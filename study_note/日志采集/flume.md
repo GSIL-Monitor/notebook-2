@@ -39,9 +39,9 @@
 
 - 修改点：
 1. 使用flume http服务端，修改url中的路径
-  修改类 org.apache.flume.source.http.HTTPSource 中的 start 方法，205行，修改如下：添加 kshttplog
-  `root.addServlet(new ServletHolder(new FlumeHTTPServlet()), "/kshttplog");`
-  如此url中就可以使用curl向地址 `http://x.x.x.x:1234/kshttplog` 发送数据，如果不修改地址则是`http://x.x.x.x:1234`
+    修改类 org.apache.flume.source.http.HTTPSource 中的 start 方法，205行，修改如下：添加 kshttplog
+    `root.addServlet(new ServletHolder(new FlumeHTTPServlet()), "/kshttplog");`
+    如此url中就可以使用curl向地址 `http://x.x.x.x:1234/kshttplog` 发送数据，如果不修改地址则是`http://x.x.x.x:1234`
 2. java模拟快手http post 发送压缩格式的数据
   ```
   import java.io.*;
@@ -259,5 +259,4 @@
 
 - InputStream转ByteArrayOutputStream：http://blog.csdn.net/it_magician/article/details/9240727
 - 使double保留两位小数的多方法 java保留两位小数：http://blog.csdn.net/a2459956664/article/details/55668495
-
 

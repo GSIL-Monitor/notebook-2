@@ -49,6 +49,7 @@ chown -R mysqladmin:dba /var/run/mysqld
 	yum -y install libaio
 	
 	#mysqladmin执行
+	su - mysqladmin
 	scripts/mysql_install_db --user=mysqladmin --basedir=/zz/app/mysql --datadir=/zz/app/mysql/data
 
 ## 1.6 命令的地方显示当前目录
@@ -123,17 +124,32 @@ flush privileges;
 ```
 
 ## 1.13 mysql启动异常
+#### 1.13.1 权限问题
+
 - 异常信息：
+
   ```
   Starting MySQL. ERROR! The server quit without updating PID file (/var/run/mysqld/mysqld.pid).
   ```
+
 - 处理：
   mysql工作目录权限问题，更改为 `mysqladmin:dba`
   ```
   chown -R mysqladmin:dba /usr/local/mysql
   ```
 
+#### 1.13.2 启动警告
+
+- 信息
+
+  TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_ti
+
+- 参考
+
+  https://blog.csdn.net/qq_36350532/article/details/79591757
+
 # 2. window 绿色版mysql安装
+
 ## 2.1 下载绿色版mysql
 - 下载地址：[https://downloads.mysql.com/archives/community/](https://downloads.mysql.com/archives/community/) 
 - 下载参考：http://blog.csdn.net/anndy_/article/details/51093326

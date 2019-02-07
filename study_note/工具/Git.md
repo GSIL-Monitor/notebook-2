@@ -1,5 +1,10 @@
 # 一、Git
 
+
+# 1. git命令
+
+![git帮助文档](../../study_note_access/工具/git-帮助文档.png)
+
 # 7. git
 ## 7.1 强制覆盖本地文件
 ```

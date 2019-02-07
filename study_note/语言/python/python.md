@@ -1,10 +1,30 @@
 # 1. 基础
-## 1.1 输入
-```
+## 1.1 查看版本、输入
+1.1.1 输入
+
+  ```
 print(input("shuru"))
-```
+  ```
+
+1.1.2 查看python版本 
+
+- cmd窗口
+
+  ```
+  python -V
+  ```
+
+- 进入python后利用sys模块查看
+
+  ```
+  import sys
+  print(sys.version)
+  ```
+
+
 
 ## 1.2 数据基本类型
+
 ### 1.2.1 获取类型
 ```
 a = ""
@@ -2022,29 +2042,66 @@ C:\Users\zhang>
   conda --version
   ```
 
+- 环境变量
+
+  ```
+  # ANACONDA_HOME
+  ANACONDA_HOME
+  C:\study\tools\Anaconda3
+  
+  # path
+  %ANACONDA_HOME%
+  %ANACONDA_HOME%\Scripts
+  %ANACONDA_HOME%\Library\bin
+  ```
+
 ### 10.2.2 安装scrapy
+
 - `conda install scrapy=1.4` , 会提示 是否更新
 
 ### 10.2.3 python 的虚拟环境
 - 创建python虚拟环境
   ```
   #默认路径在 C:\Users\zhang\Anaconda3\envs	
-  create -n python36 python=3.6
-
+  conda create -n python3.6 python=3.6
+  
   #安装虚拟环境到指定路径的命令如下：
-  conda create --prefix=D:\bigdata\tools-free\python\python3.6 python=3.6
+  conda create --prefix=C:\study\tools_free\python\python2.7 python=2.7
+  
+  # To activate this environment, use:
+  # > activate C:\study\tools_free\python\python2.7
+  #
+  # To deactivate an active environment, use:
+  # > deactivate
+  #
+  # * for power-users using bash, you must source
+  
+  # 激活和关闭
+  # 激活
+  activate C:\study\tools_free\python\python2.7
+  # 关闭
+  deactivate
   ```
 
 - 启动虚拟环境：
   ```
   activate.bat pythono36
-
+  
   #如果安装指定了目录，启动时也要指定目录
   activate D:\bigdata\tools-free\python\python3.6
-
+  
   #删除
   conda remove --help
   conda remove --prefix D:\bigdata\tools-free\python\python3.6 --all
+  ```
+
+- 启动虚拟环境bat脚本
+
+  ```
+  @echo off
+  #如果需要新窗口运行后自动关闭，请把k换成c
+  start "" cmd /k "activate C:\study\tools\Anaconda3\envs\python2.7"
+  #pause
   ```
 
 - 查看python版本
@@ -2070,6 +2127,99 @@ C:\Users\zhang>
 ## 10.3 命令
 - 参考地址：
   https://blog.csdn.net/menc15/article/details/71477949
+
+# 11 jupyter
+
+## 11.1 anoconda下的jupyter
+### 11.1.1 添加python环境
+- anoconda下的jupyter notebook 中同时添加Python2和3
+  https://www.cnblogs.com/luban/p/8874555.html
+```
+# 如果不是默认的路径则使用 --prefix 指定
+# 在anaconda Prompt下创建Python2环境
+conda create --name python2.7 python=2.7
+# 安装关于Python2的包
+conda install --name python2.7 anaconda
+#装完后将生成下面的4个文件（可以在开始菜单中的所有程序中看到，右键属性可以查看所在目录：C:\Users\zheng\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Anaconda3 (64-bit)）
+#Anaconda Prompt (python2.7)
+#Jupyter Notebook (python2.7)
+#Reset Spyder Settings (python2.7)
+#Spyder (python2.7)
+
+# 同时安装两个kernel
+activate python2.7
+python -m ipykernel install --name Python2.7
+# 执行完上面的命令后会生成配置文件（路径: C:\ProgramData\jupyter\kernels\python2.7）
+
+
+
+# 在anaconda Prompt下创建Python3环境
+conda create --name python3.6 python=3.6
+# conda create --prefix=C:\study\tools_free\python\python3.6 python=3.6 python=3.6
+# 安装关于Python3的包
+conda install --name python3.6 anaconda
+# conda install --prefix=C:\study\tools_free\python\python3.6 python=3.6 anaconda
+# 同时安装两个kernel
+activate python3.6
+python -m ipykernel install --name Python3.6
+```
+
+### 11.1.2 kernel
+- jupyter-notebook添加python虚拟环境的kernel
+  https://www.cnblogs.com/pursuiting/p/9447328.html
+
+- 查看已有的kernel
+```
+jupyter kernelspec list
+```
+- 删除已有的kernel
+```
+jupyter kernelspec remove kernelname
+```
+- 以上的命令删除仅仅是配置文件，并没有卸载相应虚拟环境的ipykernel，因此若要再次安装相应python虚拟环境的kernel，只需激活虚拟环境，然后
+```
+activate xxx
+python -m ipykernel install --name kernelname
+```
+
+
+### 11.1.3 默认工作路径
+- 修改Anaconda中的Jupyter Notebook默认工作路径的三种方式
+  https://blog.csdn.net/u014552678/article/details/62046638
+
+- 修改
+  - cmd
+  ```
+  jupyter notebook --generate-config
+  ```
+  - 到此路径修改jupyter_notebook_config.py文件 
+  ```
+  ## The directory to use for notebooks and kernels. 
+  #c.NotebookApp.notebook_dir = '' 
+  将其改为 
+  ## The directory to use for notebooks and kernels. 
+  c.NotebookApp.notebook_dir = 'E:\Jupyter' 
+  其中E:\Jupyter为我的工作空间，你可以改成你自己的，
+  ```
+
+- 我的修改过程
+  - 一种是通过第一种修改配置，然后再在cmd中运行 `jupyter notebook` 或者是 `jupyter notebook 目录地址`
+  - 一种是第二种方式，找到 anconda的jupyter的快捷键所在目录，右键-》属性-》修改起始位置 和 目标中的脚本参数（工作目录）
+  - 在修改起始目录时出现太长无法完整保存，改用下面的脚本的方式
+
+- 使用bat脚本启动notebook
+
+  ```
+  @echo off
+  #如果需要新窗口运行后自动关闭，请把k换成c
+  start "" cmd /k "activate C:\study\tools\Anaconda3\envs\python2.7 && jupyter notebook D:\study\workspace\jupyter\python2.7"
+  #pause
+  ```
+
+### 11.1.4 显示行号
+> 菜单栏View------Toggle Line Numbers
+
+
 
 
 # 资源地址

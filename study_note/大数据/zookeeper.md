@@ -1,5 +1,16 @@
 # 1. 安装
 ## 1.1 下载
+
+- 地址：
+
+  - Apache Software Foundation Distribution Directory
+
+    https://www-eu.apache.org/dist/
+
+  - zookeeper
+
+    https://www-eu.apache.org/dist/zookeeper/
+
 ```
 wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.9/zookeeper-3.4.9.tar.gz
 ```

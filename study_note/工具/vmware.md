@@ -1,0 +1,35 @@
+# 一. 下载安装
+## 1. 下载地址  
+https://www.vmware.com/cn/products/workstation-pro/workstation-pro-evaluation.html
+
+## 2. 激活密匙
+
+### 2.1 vmware10.0.2
+> 5F29M-48312-8ZDF9-A8A5K-2AM0Z
+
+### 2.2 vmware11
+> 1F04Z-6D111-7Z029-AV0Q4-3AEH8
+
+### 2.3 vmware12.1.0密匙：
+> 5A02H-AU243-TZJ49-GTC7K-3C61N
+AG1N8-DZZ53-484QP-0YN5C-QQ0F2
+GG59U-DVZD5-M854Y-NYN7C-P3KW4
+AA39H-61W50-H8DCY-1MM79-N2RZ4
+UU148-6VF44-M80JY-YYMQV-WF89D
+
+### 2.4 vmware14.x激活密匙
+> FF31K-AHZD1-H8ETZ-8WWEZ-WUUVA
+> CV7T2-6WY5Q-48EWP-ZXY7X-QGUWD
+
+### 2.5 vmware15 pro
+> YG5H2-ANZ0H-M8ERY-TXZZZ-YKRV8
+> UG5J2-0ME12-M89WY-NPWXX-WQH88
+> UA5DR-2ZD4H-089FY-6YQ5T-YPRX6
+> GA590-86Y05-4806Y-X4PEE-ZV8E0
+> ZF582-0NW5N-H8D2P-0XZEE-Z22VA
+> YA18K-0WY8P-H85DY-L4NZG-X7RAD
+
+# 二、异常
+## 1. 启动虚拟机异常
+
+![vmware启动异常1](..\..\study_note_access/工具/vmware启动异常1.png)

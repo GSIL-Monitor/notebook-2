@@ -182,6 +182,28 @@ ssh-copy-id work1 #复制公匙到work1上
 - 查看RM
   http://master:8088
 
+## 1.9 window本地运行mr
+- 环境变量
+  ```
+  HADOOP_HOME
+  C:\study\tools_free\bigdata\hadoop\hadoop-2.6.0
+  
+  path
+  %HADOOP_HOME%\bin
+  %HADOOP_HOME%\sbin
+  ```
+
+- 添加文件到bin目录
+  > winutils.exe
+  > hadoop.dll
+
+- 放文件到system32下
+
+  将hadoop.dll放到c:/windows/System32下
+
+- 注销window
+  重新运行mr任务
+
 
 # 2. 异常
 

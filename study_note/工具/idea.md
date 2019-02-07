@@ -1,4 +1,13 @@
-# 1. 下载
+# 一、下载安装
+## 1. 下载
+- 地址
+
+  http://www.jetbrains.com/idea/download/#section=windows
+
+- 历史版本
+
+  http://www.jetbrains.com/idea/download/previous.html
+
 
 # 2. 破解
 
@@ -8,6 +17,24 @@
 [注册码](http://idea.lanyus.com/)
 
 [插件下载地址](https://pan.baidu.com/s/1qgXrr8yHBhAI9gcqRsxrbA)
+
+## 2.2 idea-2018.3破解
+- idea下载地址：
+  http://www.jetbrains.com/idea/download/#section=windows
+
+- 破解参考地址：
+  https://www.jianshu.com/p/22717c0307e6
+  http://idea.lanyus.com/
+
+- 步骤
+
+  修改 `idea64.exe.vmoptions` 文件
+
+  ```
+  -javaagent:D:\bigdata\source\IDEA\idea_2018.3_patch/JetbrainsIdesCrack-3.4-release-enc.jar
+  ```
+
+  2018.3.3暂时无法输入activation code(2019.1.13)
 
 
 # 3. 配置
@@ -86,6 +113,10 @@
    * @return $return$ 
    */ 
   ```
+
+### 3.1.5 单行的*注释
+
+![1545641015748](../../study_note_access/工具/idea-单行注释.png)
 
 ## 3.2 jdk配置
 
